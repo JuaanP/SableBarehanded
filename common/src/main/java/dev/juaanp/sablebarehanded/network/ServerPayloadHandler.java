@@ -2,6 +2,7 @@ package dev.juaanp.sablebarehanded.network;
 
 import dev.juaanp.sablebarehanded.config.ServerConfig;
 import dev.juaanp.sablebarehanded.physics.*;
+import dev.juaanp.sablebarehanded.platform.Services;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.BlockItem;
@@ -69,11 +70,15 @@ public class ServerPayloadHandler {
                     dev.juaanp.sablebarehanded.config.ServerConfig.INSTANCE = updated;
                     dev.juaanp.sablebarehanded.config.ServerConfig.save();
 
-                    dev.juaanp.sablebarehanded.platform.Services.NETWORK.broadcastSyncConfig(player.server, packet.json());
+                    Services.NETWORK.broadcastSyncConfig(player.server, packet.json());
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    public static void handleAssemblyState(net.minecraft.server.level.ServerPlayer player, dev.juaanp.sablebarehanded.network.AssemblyStateC2SPacket packet) {
+        Services.NETWORK.broadcastAssemblyStateToTrackers(player, packet.active());
     }
 }

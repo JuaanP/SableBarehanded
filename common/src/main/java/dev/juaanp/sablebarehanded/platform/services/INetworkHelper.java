@@ -20,4 +20,6 @@ public interface INetworkHelper {
     void sendPhysicsPlaceRequest(BlockPos pos, net.minecraft.core.Direction face, boolean isMainHand);
     void sendUpdateServerConfig(String json);
     void broadcastSyncConfig(net.minecraft.server.MinecraftServer server, String json);
+    void sendAssemblyStateToServer(boolean active);
+    void broadcastAssemblyStateToTrackers(net.minecraft.server.level.ServerPlayer player, boolean active);
 }

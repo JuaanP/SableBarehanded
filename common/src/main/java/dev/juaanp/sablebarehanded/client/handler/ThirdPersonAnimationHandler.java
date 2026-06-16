@@ -19,9 +19,12 @@ public class ThirdPersonAnimationHandler {
 
         boolean isLocalPlayer = player == Minecraft.getInstance().player;
         boolean isGrabbing = ClientPayloadHandler.GRABBING_PLAYERS.contains(player.getUUID());
+        boolean isAssemblingNetwork = ClientPayloadHandler.ASSEMBLING_PLAYERS.contains(player.getUUID());
 
         if (isLocalPlayer) {
             isGrabbing = isGrabbing || ClientGrabSession.isHoldingGrab || ClientAssemblyTracker.isActive();
+        } else if (isAssemblingNetwork) {
+            isGrabbing = true;
         }
 
         if (!isGrabbing) return;

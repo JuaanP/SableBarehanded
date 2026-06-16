@@ -91,4 +91,17 @@ public class FabricNetworkHelper implements INetworkHelper {
             net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(player, packet);
         }
     }
+
+    @Override
+    public void sendAssemblyStateToServer(boolean active) {
+        net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.send(new dev.juaanp.sablebarehanded.network.AssemblyStateC2SPacket(active));
+    }
+
+    @Override
+    public void broadcastAssemblyStateToTrackers(net.minecraft.server.level.ServerPlayer player, boolean active) {
+        dev.juaanp.sablebarehanded.network.AssemblyStateS2CPacket packet = new dev.juaanp.sablebarehanded.network.AssemblyStateS2CPacket(player.getId(), active);
+        for (net.minecraft.server.level.ServerPlayer tracking : net.fabricmc.fabric.api.networking.v1.PlayerLookup.tracking(player)) {
+            net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(tracking, packet);
+        }
+    }
 }

@@ -79,7 +79,7 @@ public class SableBarehandedNeoForge {
     private void registerPayloads(final RegisterPayloadHandlersEvent event) {
         final PayloadRegistrar registrar = event.registrar(Constants.MOD_ID);
 
-        // C2S
+        // --- C2S ---
         registrar.playToServer(RequestGrabPacket.TYPE, RequestGrabPacket.CODEC, (payload, context) ->
                 context.enqueueWork(() -> ServerPayloadHandler.handleRequestGrab((ServerPlayer) context.player(), payload)));
 
@@ -101,7 +101,10 @@ public class SableBarehandedNeoForge {
         registrar.playToServer(UpdateServerConfigPacket.TYPE, UpdateServerConfigPacket.CODEC, (payload, context) ->
                 context.enqueueWork(() -> ServerPayloadHandler.handleUpdateServerConfig((ServerPlayer) context.player(), payload)));
 
-        // S2C
+        registrar.playToServer(AssemblyStateC2SPacket.TYPE, AssemblyStateC2SPacket.CODEC, (payload, context) ->
+                context.enqueueWork(() -> ServerPayloadHandler.handleAssemblyState((ServerPlayer) context.player(), payload)));
+
+        // --- S2C ---
         registrar.playToClient(StartGrabbingAnimationPacket.TYPE, StartGrabbingAnimationPacket.CODEC, (payload, context) ->
                 context.enqueueWork(() -> ClientPayloadHandler.handleStartGrabbingAnimation(payload)));
 
@@ -116,5 +119,8 @@ public class SableBarehandedNeoForge {
 
         registrar.playToClient(SyncConfigPacket.TYPE, SyncConfigPacket.CODEC, (payload, context) ->
                 context.enqueueWork(() -> ClientConfigSyncHandler.applyServerConfig(payload.configJson())));
+
+        registrar.playToClient(AssemblyStateS2CPacket.TYPE, AssemblyStateS2CPacket.CODEC, (payload, context) ->
+                context.enqueueWork(() -> ClientPayloadHandler.handleAssemblyStateSync(payload)));
     }
 }

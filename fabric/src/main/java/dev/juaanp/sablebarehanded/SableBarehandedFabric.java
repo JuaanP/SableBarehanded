@@ -29,12 +29,14 @@ public class SableBarehandedFabric implements ModInitializer {
         PayloadTypeRegistry.playC2S().register(DisassembleRequestPacket.TYPE, DisassembleRequestPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(PhysicsPlaceRequestPacket.TYPE, PhysicsPlaceRequestPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(UpdateServerConfigPacket.TYPE, UpdateServerConfigPacket.CODEC);
+        PayloadTypeRegistry.playC2S().register(AssemblyStateC2SPacket.TYPE, AssemblyStateC2SPacket.CODEC);
 
         PayloadTypeRegistry.playS2C().register(StartGrabbingAnimationPacket.TYPE, StartGrabbingAnimationPacket.CODEC);
         PayloadTypeRegistry.playS2C().register(StopGrabbingAnimationPacket.TYPE, StopGrabbingAnimationPacket.CODEC);
         PayloadTypeRegistry.playS2C().register(SyncGhostStatePacket.TYPE, SyncGhostStatePacket.CODEC);
         PayloadTypeRegistry.playS2C().register(SyncConfigPacket.TYPE, SyncConfigPacket.CODEC);
         PayloadTypeRegistry.playS2C().register(SyncGrabStatePacket.TYPE, SyncGrabStatePacket.CODEC);
+        PayloadTypeRegistry.playS2C().register(AssemblyStateS2CPacket.TYPE, AssemblyStateS2CPacket.CODEC);
 
         ServerPlayNetworking.registerGlobalReceiver(RequestGrabPacket.TYPE, (payload, context) -> {
             context.server().execute(() -> ServerPayloadHandler.handleRequestGrab(context.player(), payload));
@@ -62,6 +64,10 @@ public class SableBarehandedFabric implements ModInitializer {
 
         ServerPlayNetworking.registerGlobalReceiver(UpdateServerConfigPacket.TYPE, (payload, context) -> {
             context.server().execute(() -> ServerPayloadHandler.handleUpdateServerConfig(context.player(), payload));
+        });
+
+        ServerPlayNetworking.registerGlobalReceiver(AssemblyStateC2SPacket.TYPE, (payload, context) -> {
+            context.server().execute(() -> ServerPayloadHandler.handleAssemblyState(context.player(), payload));
         });
 
         ServerTickEvents.END_SERVER_TICK.register(server -> {

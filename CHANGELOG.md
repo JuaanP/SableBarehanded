@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.0]
+
+### Added
+- **Sub-Level Disassembly:** You can now disassemble grabbed sub-levels either by physically slamming them into world blocks or by using a dedicated keybind.
+- **Physics Place Toggle:** Added a new keybind to toggle between normal block placement and placing blocks directly as sub-levels.
+- **New Config Options:** Added settings to hide the HUD overlays while grabbing, hide custom arms, and a configuration to set a maximum block limit for grabbed structures.
+
+### Fixed
+- **Animation Mods Compatibility:** Resolved rendering conflicts with animation mods like Punchy that caused duplicate arms or visual glitches in first person.
+- **Continuous Punching Bug:** Fixed an engine issue where the player character would continuously play the attack animation while holding an object.
+- **Third Person Animations:** Fixed and properly synchronized third-person grabbing animations so they correctly appear for all players in multiplayer via tracking events.
+- **Mount/Seat Ejection:** Fixed a bug where interacting or grabbing objects would unexpectedly kick the player out of their current seat or mount.
+
 ## [1.3.3]
 
 ### Changed

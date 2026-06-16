@@ -23,6 +23,7 @@ public class ClientTickOrchestrator {
     private static Level lastLevel = null;
     private static Player lastPlayer = null;
     private static boolean wasDisassembleKeyDown = false;
+    private static boolean wasAssemblingLastTick = false;
 
     public static void tick(Minecraft mc) {
         if (mc.player == null || mc.level == null) {
@@ -130,5 +131,11 @@ public class ClientTickOrchestrator {
             Services.NETWORK.sendDisassembleRequest();
         }
         wasDisassembleKeyDown = isDisassembleKeyDown;
+
+        boolean currentAssemblyState = ClientAssemblyTracker.isActive();
+        if (currentAssemblyState != wasAssemblingLastTick) {
+            Services.NETWORK.sendAssemblyStateToServer(currentAssemblyState);
+            wasAssemblingLastTick = currentAssemblyState;
+        }
     }
 }

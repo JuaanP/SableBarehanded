@@ -42,6 +42,10 @@ public class FabricClientSetup implements ClientModInitializer {
             context.client().execute(() -> ClientPayloadHandler.handleSyncGrabState(payload));
         });
 
+        ClientPlayNetworking.registerGlobalReceiver(AssemblyStateS2CPacket.TYPE, (payload, context) -> {
+            context.client().execute(() -> ClientPayloadHandler.handleAssemblyStateSync(payload));
+        });
+
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
             ServerConfig.load();
             ClientConfig.load();

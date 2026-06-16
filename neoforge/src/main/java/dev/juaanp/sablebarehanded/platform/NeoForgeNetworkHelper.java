@@ -71,4 +71,14 @@ public class NeoForgeNetworkHelper implements INetworkHelper {
     public void broadcastSyncConfig(net.minecraft.server.MinecraftServer server, String json) {
         net.neoforged.neoforge.network.PacketDistributor.sendToAllPlayers(new SyncConfigPacket(json));
     }
+
+    @Override
+    public void sendAssemblyStateToServer(boolean active) {
+        net.neoforged.neoforge.network.PacketDistributor.sendToServer(new dev.juaanp.sablebarehanded.network.AssemblyStateC2SPacket(active));
+    }
+
+    @Override
+    public void broadcastAssemblyStateToTrackers(net.minecraft.server.level.ServerPlayer player, boolean active) {
+        net.neoforged.neoforge.network.PacketDistributor.sendToPlayersTrackingEntity(player, new dev.juaanp.sablebarehanded.network.AssemblyStateS2CPacket(player.getId(), active));
+    }
 }

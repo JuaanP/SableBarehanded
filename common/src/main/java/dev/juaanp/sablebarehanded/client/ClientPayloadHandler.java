@@ -15,6 +15,7 @@ import java.util.UUID;
 
 public class ClientPayloadHandler {
     public static final Set<UUID> GRABBING_PLAYERS = new HashSet<>();
+    public static final Set<UUID> ASSEMBLING_PLAYERS = new java.util.HashSet<>();
 
     public static void handleStartGrabbingAnimation(StartGrabbingAnimationPacket packet) {
         Player player = getPlayerFromId(packet.entityId());
@@ -55,5 +56,16 @@ public class ClientPayloadHandler {
             }
         }
         return null;
+    }
+
+    public static void handleAssemblyStateSync(dev.juaanp.sablebarehanded.network.AssemblyStateS2CPacket packet) {
+        Player player = getPlayerFromId(packet.entityId());
+        if (player != null) {
+            if (packet.active()) {
+                ASSEMBLING_PLAYERS.add(player.getUUID());
+            } else {
+                ASSEMBLING_PLAYERS.remove(player.getUUID());
+            }
+        }
     }
 }
