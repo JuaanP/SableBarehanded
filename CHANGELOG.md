@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.1]
+
+### Fixed
+- **Keybind Conflict:** Changed the default 'Toggle Pivot' keybind from `Shift` to `Alt` to resolve a conflict with the vanilla Sneak action that prevented the block detachment (assembly) mechanic from triggering properly. *(Note: Players updating from older versions will need to reset the Pivot Key to default).*
+
 ## [1.4.0]
 
 ### Added

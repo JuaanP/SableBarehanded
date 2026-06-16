@@ -14,7 +14,7 @@ public class KeyBindings {
 
     public static final KeyMapping PIVOT_KEY = new KeyMapping(
             "Alternative Rotation Pivot",
-            InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_LEFT_SHIFT,
+            InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_LEFT_ALT,
             "Barehanded"
     );
 
