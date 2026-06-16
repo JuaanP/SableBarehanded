@@ -6,6 +6,7 @@ import dev.juaanp.sablebarehanded.physics.GrabRotationController;
 import dev.juaanp.sablebarehanded.physics.ServerGrabManager;
 import dev.ryanhcode.sable.sublevel.ServerSubLevel;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,8 +33,8 @@ public class SableBarehandedAPI {
         ServerGrabManager.stopGrabbing(player.getUUID());
     }
 
-    public static void forceGrab(Player player, BlockPos targetPos) {
-        GrabActionHandler.startGrabbing(player, targetPos);
+    public static void forceGrab(ServerPlayer serverPlayer, BlockPos targetPos) {
+        GrabActionHandler.startGrabbing(serverPlayer, targetPos);
     }
 
     public static void forceAssembleAndGrab(Player player, BlockPos targetPos) {

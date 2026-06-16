@@ -3,7 +3,6 @@ package dev.juaanp.sablebarehanded.client;
 import dev.juaanp.sablebarehanded.config.ClientConfig;
 import dev.juaanp.sablebarehanded.config.ServerConfig;
 import dev.juaanp.sablebarehanded.network.*;
-import dev.juaanp.sablebarehanded.physics.GrabCollisionHandler;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -15,10 +14,13 @@ import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.world.InteractionResult;
 
 public class FabricClientSetup implements ClientModInitializer {
+
     @Override
     public void onInitializeClient() {
         KeyBindingHelper.registerKeyBinding(KeyBindings.ROTATE_KEY);
         KeyBindingHelper.registerKeyBinding(KeyBindings.PIVOT_KEY);
+        KeyBindingHelper.registerKeyBinding(KeyBindings.DISASSEMBLE_KEY);
+        KeyBindingHelper.registerKeyBinding(KeyBindings.PLACE_TOGGLE_KEY);
 
         ClientPlayNetworking.registerGlobalReceiver(StartGrabbingAnimationPacket.TYPE, (payload, context) -> {
             context.client().execute(() -> ClientPayloadHandler.handleStartGrabbingAnimation(payload));
@@ -48,7 +50,7 @@ public class FabricClientSetup implements ClientModInitializer {
         ClientTickEvents.END_CLIENT_TICK.register(ClientTickOrchestrator::tick);
         ClientTickEvents.END_CLIENT_TICK.register(client -> KeyBindings.clientTick());
 
-        HudRenderCallback.EVENT.register((graphics, tickDelta) -> ClientHudRenderer.renderSableOverlay(graphics));
+        HudRenderCallback.EVENT.register((graphics, tickDelta) -> ClientHudRenderer.renderOverlay(graphics));
 
         AttackBlockCallback.EVENT.register((player, world, hand, pos, direction) -> {
             if (world.isClientSide() && dev.juaanp.sablebarehanded.client.handler.ClientInteractionHandler.shouldCancelInteraction()) {

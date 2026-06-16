@@ -1,8 +1,12 @@
 package dev.juaanp.sablebarehanded.mixin;
 
+import com.mojang.blaze3d.platform.InputConstants;
+import dev.juaanp.sablebarehanded.client.ClientAssemblyTracker;
 import dev.juaanp.sablebarehanded.client.ClientGrabSession;
+import dev.juaanp.sablebarehanded.client.KeyBindings;
 import dev.juaanp.sablebarehanded.client.handler.RotationInputHandler;
 import dev.juaanp.sablebarehanded.config.ServerConfig;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.util.Mth;
@@ -21,8 +25,31 @@ public class MixinMouseHandler {
     @Shadow private double accumulatedDY;
     @Shadow private Minecraft minecraft;
 
+    @Inject(method = "onPress", at = @At("HEAD"), cancellable = true)
+    private void barehanded$onMousePress(long windowPointer, int button, int action, int modifiers, CallbackInfo ci) {
+        if (this.minecraft.screen != null) return;
+
+        boolean isGrabbing = ClientGrabSession.isHoldingGrab || ClientAssemblyTracker.isActive();
+        if (!isGrabbing) return;
+
+        KeyMapping[] ourKeys = {
+                KeyBindings.ROTATE_KEY,
+                KeyBindings.PIVOT_KEY,
+                KeyBindings.DISASSEMBLE_KEY,
+                KeyBindings.PLACE_TOGGLE_KEY
+        };
+
+        for (KeyMapping ourKey : ourKeys) {
+            InputConstants.Key boundKey = InputConstants.getKey(ourKey.saveString());
+            if (boundKey.getType() == InputConstants.Type.MOUSE && boundKey.getValue() == button) {
+                ci.cancel();
+                return;
+            }
+        }
+    }
+
     @Inject(method = "turnPlayer", at = @At("HEAD"), cancellable = true)
-    private void onTurnPlayer(CallbackInfo ci) {
+    private void barehanded$onTurnPlayer(CallbackInfo ci) {
         if (RotationInputHandler.handleRotation(this.accumulatedDX, this.accumulatedDY)) {
             this.accumulatedDX = 0.0;
             this.accumulatedDY = 0.0;
@@ -31,7 +58,7 @@ public class MixinMouseHandler {
     }
 
     @Inject(method = "turnPlayer", at = @At("HEAD"))
-    private void restrictCamera(CallbackInfo ci) {
+    private void barehanded$restrictCamera(CallbackInfo ci) {
         if (this.minecraft == null || this.minecraft.player == null) return;
 
         Player player = this.minecraft.player;

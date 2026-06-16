@@ -31,6 +31,8 @@ public class GrabSession {
 
     public final Vector3d accumulatedPivotOffset = new Vector3d();
 
+    public int impactTicks = 0;
+
     public GrabSession(ServerSubLevel subLevel, float distance, Vector3d localPivot, Vector3d localCenterOfMass,
                        Vector3d initialTarget, Quaterniond initialOrient, PhysicsPipeline pipeline) {
         this.subLevel = subLevel;

@@ -5,7 +5,6 @@ import com.google.gson.GsonBuilder;
 import dev.juaanp.sablebarehanded.Constants;
 import org.slf4j.Logger;
 import com.mojang.logging.LogUtils;
-
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -16,7 +15,7 @@ public class ServerConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final File FILE = Paths.get("config", Constants.MOD_ID + "-server.json").toFile();
 
-    public int configVersion = 3;
+    public int configVersion = 5;
 
     public double maxForce = 120.0;
     public double minDistance = 1.5;
@@ -46,6 +45,25 @@ public class ServerConfig {
     public double assemblyTetherStiffness = 0.5;
     public double assemblyMaxStretchBuffer = 2.0;
 
+    public boolean enablePhysicsBlockPlacement = true;
+
+    public int blockLimit = 0;
+
+    public boolean enableImpactDisassemble = true;
+    public double impactForceThreshold = 3.55;
+    public double impactMinSpeed = 0.55;
+    public double impactContactDistance = 1.5;
+    public double impactSlowdownRatio = 0.1;
+    public boolean impactRequireIntentionalThrow = true;
+    public double impactThrowSpeedRatio = 2.0;
+    public boolean impactBreakReplaceableBlocks = true;
+    public double impactRotationTolerance = 45.0;
+    public double impactPositionTolerance = 0.5;
+
+    public boolean enableKeybindDisassemble = true;
+    public boolean showDisassembleMessages = true;
+    public double keybindRotationTolerance = 45.0;
+    public double keybindPositionTolerance = 0.5;
     public boolean ignoreCollisionsGrabEverything = false;
     public boolean ignoreCollisionsGrabEntities = false;
     public boolean ignoreCollisionsGrabOtherPlayers = false;
@@ -58,10 +76,10 @@ public class ServerConfig {
     public boolean ignoreCollisionsRotationSelf = true;
 
     public int standingOnGrabSuspendTicks = 15;
-    public double grabProximityEyeSuspendDistance = 1.0;
-    public double grabProximityBodySuspendDistance = 1.5;
-    public double tensionSuspendThreshold = 2.5;
-    public double tensionBreakThreshold = 2.0;
+    public double grabProximityEyeSuspendDistance = 0.8;
+    public double grabProximityBodySuspendDistance = 0.6;
+    public double tensionSuspendThreshold = 3.5;
+    public double tensionBreakThreshold = 3.0;
     public double creativeTensionSuspendThreshold = 64.0;
     public double creativeTensionBreakThreshold = 64.0;
 
@@ -69,12 +87,12 @@ public class ServerConfig {
     public double maxPlayerVelocityYDown = -4.0;
     public double maxPlayerVelocityXZ = 2.5;
 
-    public double stiffness = 1000.0;
-    public double damping = 125.0;
-    public double angularDamping = 850.0;
+    public double stiffness = 800.0;
+    public double damping = 45.0;
+    public double angularDamping = 60.0;
     public double creativeStrengthMultiplier = 10.0;
-    public double speedStiffnessMultiplierFactor = 15.0;
-    public double maxSpeedStiffnessMultiplier = 8.0;
+    public double speedStiffnessMultiplierFactor = 2.5;
+    public double maxSpeedStiffnessMultiplier = 3.5;
     public double baseAngularForceFactor = 0.15;
     public double stableAngularForceMassBase = 10.0;
     public double stableAngularForceMassFactor = 0.5;
@@ -96,8 +114,9 @@ public class ServerConfig {
     public boolean enableEncumbrance = true;
     public double physicsGravity = 9.81;
     public double maxMovementPenalty = 0.85;
-    public double jumpPreventionThreshold = 0.70;
-    public double maxCameraPenalty = 0.60;
+    public double jumpPreventionThreshold = 0.7;
+    public double sneakPreventionThreshold = 0.3;
+    public double maxCameraPenalty = 0.6;
     public boolean enablePhysicalTether = true;
     public double armStretchTolerance = 0.3;
     public double tetherStiffnessBase = 0.15;
@@ -119,9 +138,10 @@ public class ServerConfig {
     public double exhaustionVerticalWeightFactor = 4.0;
 
     public double minPhysicsMass = 0.01;
-    public double leadVelocityThreshold = 0.1;
-    public double leadPredictionFactor = 2.0;
-    public double leadDownwardClamp = -0.5;
+
+    public double leadVelocityThreshold = 0.12;
+    public double leadPredictionFactor = 0.5;
+    public double leadDownwardClamp = 0.0;
     public double creativeMaxMotorForce = 1e12;
 
     public static ServerConfig INSTANCE = new ServerConfig();
@@ -132,9 +152,8 @@ public class ServerConfig {
                 try (FileReader reader = new FileReader(FILE)) {
                     ServerConfig loaded = GSON.fromJson(reader, ServerConfig.class);
                     if (loaded != null) {
-
                         if (loaded.configVersion < INSTANCE.configVersion) {
-                            LOGGER.warn("Sable Barehanded server config is outdated (v{} -> v{}). Migrating...",
+                            LOGGER.warn("Sable Barehanded server config outdated (v{} -> v{}). Migrating...",
                                     loaded.configVersion, INSTANCE.configVersion);
                             loaded.configVersion = INSTANCE.configVersion;
                             INSTANCE = loaded;

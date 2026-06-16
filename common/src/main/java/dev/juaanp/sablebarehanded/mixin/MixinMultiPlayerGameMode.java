@@ -20,38 +20,38 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class MixinMultiPlayerGameMode {
 
     @Inject(method = "startDestroyBlock", at = @At("HEAD"), cancellable = true)
-    private void onStartDestroyBlock(BlockPos pos, Direction face, CallbackInfoReturnable<Boolean> cir) {
+    private void barehanded$onStartDestroyBlock(BlockPos pos, Direction face, CallbackInfoReturnable<Boolean> cir) {
         if (ClientInteractionHandler.shouldCancelInteraction()) {
             cir.setReturnValue(false);
         }
     }
 
     @Inject(method = "continueDestroyBlock", at = @At("HEAD"), cancellable = true)
-    private void onContinueDestroyBlock(BlockPos pos, Direction face, CallbackInfoReturnable<Boolean> cir) {
+    private void barehanded$onContinueDestroyBlock(BlockPos pos, Direction face, CallbackInfoReturnable<Boolean> cir) {
         if (ClientInteractionHandler.shouldCancelInteraction()) {
             cir.setReturnValue(false);
         }
     }
 
     @Inject(method = "useItemOn", at = @At("HEAD"), cancellable = true)
-    private void onUseItemOn(LocalPlayer player, InteractionHand hand, BlockHitResult result, CallbackInfoReturnable<InteractionResult> cir) {
-        InteractionResult override = ClientInteractionHandler.handleItemUse(player, hand);
+    private void barehanded$onUseItemOn(LocalPlayer player, InteractionHand hand, BlockHitResult result, CallbackInfoReturnable<InteractionResult> cir) {
+        InteractionResult override = ClientInteractionHandler.handleItemUseOn(player, hand, result);
         if (override != null) cir.setReturnValue(override);
     }
 
     @Inject(method = "useItem", at = @At("HEAD"), cancellable = true)
-    private void onUseItem(Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
+    private void barehanded$onUseItem(Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
         InteractionResult override = ClientInteractionHandler.handleItemUse(player, hand);
         if (override != null) cir.setReturnValue(override);
     }
 
     @Inject(method = "interact", at = @At("HEAD"), cancellable = true)
-    private void onInteractEntity(Player player, Entity target, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
+    private void barehanded$onInteractEntity(Player player, Entity target, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
         if (ClientInteractionHandler.shouldCancelEntityInteraction()) cir.setReturnValue(InteractionResult.FAIL);
     }
 
     @Inject(method = "interactAt", at = @At("HEAD"), cancellable = true)
-    private void onInteractEntityAt(Player player, Entity target, EntityHitResult result, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
+    private void barehanded$onInteractEntityAt(Player player, Entity target, EntityHitResult result, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
         if (ClientInteractionHandler.shouldCancelEntityInteraction()) cir.setReturnValue(InteractionResult.FAIL);
     }
 }

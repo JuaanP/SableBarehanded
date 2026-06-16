@@ -9,10 +9,23 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
 
 @EventBusSubscriber(modid = Constants.MOD_ID, value = Dist.CLIENT)
-public class NeoForgeClientEvents {
+public class NeoForgeClient {
+
+    public static void init(net.neoforged.bus.api.IEventBus modEventBus, net.neoforged.fml.ModContainer modContainer) {
+        modContainer.registerExtensionPoint(net.neoforged.neoforge.client.gui.IConfigScreenFactory.class, (client, parent) -> dev.juaanp.sablebarehanded.client.BarehandedConfigScreen.create(parent));
+        modEventBus.addListener(NeoForgeClient::registerKeyMappings);
+    }
+
+    public static void registerKeyMappings(RegisterKeyMappingsEvent event) {
+        event.register(KeyBindings.ROTATE_KEY);
+        event.register(KeyBindings.PIVOT_KEY);
+        event.register(KeyBindings.DISASSEMBLE_KEY);
+        event.register(KeyBindings.PLACE_TOGGLE_KEY);
+    }
 
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {
@@ -25,7 +38,7 @@ public class NeoForgeClientEvents {
 
     @SubscribeEvent
     public static void onRenderGui(RenderGuiEvent.Post event) {
-        ClientHudRenderer.renderSableOverlay(event.getGuiGraphics());
+        ClientHudRenderer.renderOverlay(event.getGuiGraphics());
     }
 
     @SubscribeEvent

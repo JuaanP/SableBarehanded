@@ -68,4 +68,27 @@ public class FabricNetworkHelper implements INetworkHelper {
             ServerPlayNetworking.send(serverPlayer, new SyncGrabStatePacket(player.getId(), mass, subLevelId, localPivot, distance));
         }
     }
+
+    @Override
+    public void sendDisassembleRequest() {
+        ClientPlayNetworking.send(new DisassembleRequestPacket());
+    }
+
+    @Override
+    public void sendPhysicsPlaceRequest(BlockPos pos, net.minecraft.core.Direction face, boolean isMainHand) {
+        ClientPlayNetworking.send(new dev.juaanp.sablebarehanded.network.PhysicsPlaceRequestPacket(pos, face, isMainHand));
+    }
+
+    @Override
+    public void sendUpdateServerConfig(String json) {
+        net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.send(new UpdateServerConfigPacket(json));
+    }
+
+    @Override
+    public void broadcastSyncConfig(net.minecraft.server.MinecraftServer server, String json) {
+        SyncConfigPacket packet = new SyncConfigPacket(json);
+        for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+            net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(player, packet);
+        }
+    }
 }

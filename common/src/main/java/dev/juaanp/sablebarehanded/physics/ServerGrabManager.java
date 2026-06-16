@@ -11,12 +11,36 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 public class ServerGrabManager {
     private static final ResourceLocation MOVEMENT_PENALTY_ID = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "grab_movement_penalty");
     private static final Map<UUID, GrabSession> ACTIVE_GRABS = new HashMap<>();
+    private static final Set<UUID> PENDING_PHYSICS_PLACEMENTS = new HashSet<>();
+
+    // Método añadido para solucionar el error de GrabCollisionHandler
+    public static Map<UUID, GrabSession> getActiveGrabs() {
+        return ACTIVE_GRABS;
+    }
+
+    public static void markPendingPhysicsPlacement(Player player) {
+        PENDING_PHYSICS_PLACEMENTS.add(player.getUUID());
+    }
+
+    public static void clearPendingPhysicsPlacement(Player player) {
+        PENDING_PHYSICS_PLACEMENTS.remove(player.getUUID());
+    }
+
+    public static boolean hasPendingPhysicsPlacement(Player player) {
+        return PENDING_PHYSICS_PLACEMENTS.contains(player.getUUID());
+    }
+
+    public static boolean canPlayerGrab(Player player) {
+        return !ACTIVE_GRABS.containsKey(player.getUUID()) && !player.isSpectator();
+    }
 
     public static boolean isHoldingSubLevel(Player player, ServerSubLevel subLevel) {
         GrabSession grab = ACTIVE_GRABS.get(player.getUUID());
@@ -34,10 +58,6 @@ public class ServerGrabManager {
 
     public static GrabSession getGrabSession(Player player) {
         return ACTIVE_GRABS.get(player.getUUID());
-    }
-
-    public static Map<UUID, GrabSession> getActiveGrabs() {
-        return ACTIVE_GRABS;
     }
 
     public static void registerGrab(Player player, GrabSession session) {
@@ -77,9 +97,11 @@ public class ServerGrabManager {
 
     public static void onPlayerLoggedOut(Player player) {
         stopGrabbing(player.getUUID());
+        clearPendingPhysicsPlacement(player);
     }
 
     public static void onPlayerDeath(Player player) {
         stopGrabbing(player.getUUID());
+        clearPendingPhysicsPlacement(player);
     }
 }

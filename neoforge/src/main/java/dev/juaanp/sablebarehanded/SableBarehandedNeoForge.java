@@ -2,12 +2,13 @@ package dev.juaanp.sablebarehanded;
 
 import com.google.gson.Gson;
 import dev.juaanp.sablebarehanded.client.ClientPayloadHandler;
-import dev.juaanp.sablebarehanded.client.NeoForgeClientSetup;
+import dev.juaanp.sablebarehanded.client.NeoForgeClient;
 import dev.juaanp.sablebarehanded.config.ServerConfig;
 import dev.juaanp.sablebarehanded.network.*;
 import dev.juaanp.sablebarehanded.physics.GrabPhysicsController;
 import dev.juaanp.sablebarehanded.physics.ServerGrabManager;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -33,9 +34,10 @@ public class SableBarehandedNeoForge {
         NeoForge.EVENT_BUS.addListener(this::onPlayerLoggedOut);
         NeoForge.EVENT_BUS.addListener(this::onPlayerDeath);
         NeoForge.EVENT_BUS.addListener(this::onPlayerTick);
+        NeoForge.EVENT_BUS.addListener(this::onStartTracking);
 
         if (FMLEnvironment.dist.isClient()) {
-            NeoForgeClientSetup.init(modEventBus, modContainer);
+            NeoForgeClient.init(modEventBus, modContainer);
         }
     }
 
@@ -64,6 +66,16 @@ public class SableBarehandedNeoForge {
         }
     }
 
+    private void onStartTracking(PlayerEvent.StartTracking event) {
+        if (event.getTarget() instanceof Player targetPlayer) {
+            if (ServerGrabManager.isPlayerGrabbing(targetPlayer)) {
+                if (event.getEntity() instanceof ServerPlayer tracker) {
+                    PacketDistributor.sendToPlayer(tracker, new StartGrabbingAnimationPacket(targetPlayer.getId()));
+                }
+            }
+        }
+    }
+
     private void registerPayloads(final RegisterPayloadHandlersEvent event) {
         final PayloadRegistrar registrar = event.registrar(Constants.MOD_ID);
 
@@ -79,6 +91,15 @@ public class SableBarehandedNeoForge {
 
         registrar.playToServer(RotateGrabPacket.TYPE, RotateGrabPacket.CODEC, (payload, context) ->
                 context.enqueueWork(() -> ServerPayloadHandler.handleRotateGrab((ServerPlayer) context.player(), payload)));
+
+        registrar.playToServer(DisassembleRequestPacket.TYPE, DisassembleRequestPacket.CODEC, (payload, context) ->
+                context.enqueueWork(() -> ServerPayloadHandler.handleDisassembleRequest((ServerPlayer) context.player(), payload)));
+
+        registrar.playToServer(PhysicsPlaceRequestPacket.TYPE, PhysicsPlaceRequestPacket.CODEC, (payload, context) ->
+                context.enqueueWork(() -> ServerPayloadHandler.handlePhysicsPlaceRequest((ServerPlayer) context.player(), payload)));
+
+        registrar.playToServer(UpdateServerConfigPacket.TYPE, UpdateServerConfigPacket.CODEC, (payload, context) ->
+                context.enqueueWork(() -> ServerPayloadHandler.handleUpdateServerConfig((ServerPlayer) context.player(), payload)));
 
         // S2C
         registrar.playToClient(StartGrabbingAnimationPacket.TYPE, StartGrabbingAnimationPacket.CODEC, (payload, context) ->

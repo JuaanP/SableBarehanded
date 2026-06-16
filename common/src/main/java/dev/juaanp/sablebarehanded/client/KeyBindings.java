@@ -6,46 +6,53 @@ import net.minecraft.client.Minecraft;
 import org.lwjgl.glfw.GLFW;
 
 public class KeyBindings {
-
     public static final KeyMapping ROTATE_KEY = new KeyMapping(
-            "key.sable-barehanded.rotate",
-            InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_R,
-            "key.categories.sable-barehanded"
+            "Rotate Sub-level",
+            InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_R,
+            "Barehanded"
     );
 
     public static final KeyMapping PIVOT_KEY = new KeyMapping(
-            "key.sable-barehanded.pivot",
-            InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_LEFT_SHIFT,
-            "key.categories.sable-barehanded"
+            "Alternative Rotation Pivot",
+            InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_LEFT_SHIFT,
+            "Barehanded"
+    );
+
+    public static final KeyMapping DISASSEMBLE_KEY = new KeyMapping(
+            "Disassemble Sub-level",
+            InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_Q,
+            "Barehanded"
+    );
+
+    public static final KeyMapping PLACE_TOGGLE_KEY = new KeyMapping(
+            "Physics Placement Toggle",
+            InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_X,
+            "Barehanded"
     );
 
     public static void clientTick() {
         Minecraft mc = Minecraft.getInstance();
         if (mc.getWindow() == null) return;
-
         long window = mc.getWindow().getWindow();
-        KeyMapping[] ourKeys = { ROTATE_KEY, PIVOT_KEY };
+        KeyMapping[] ourKeys = {ROTATE_KEY, PIVOT_KEY, DISASSEMBLE_KEY, PLACE_TOGGLE_KEY};
+
+        boolean isGrabbing = ClientGrabSession.isHoldingGrab || ClientAssemblyTracker.isActive();
 
         for (KeyMapping ourKey : ourKeys) {
-
             InputConstants.Key key = InputConstants.getKey(ourKey.saveString());
-
             if (key != InputConstants.UNKNOWN) {
-                boolean isPhysicallyDown = false;
-
-                if (key.getType() == InputConstants.Type.MOUSE) {
-                    isPhysicallyDown = GLFW.glfwGetMouseButton(window, key.getValue()) == GLFW.GLFW_PRESS;
-                } else if (key.getType() == InputConstants.Type.KEYSYM) {
-                    isPhysicallyDown = GLFW.glfwGetKey(window, key.getValue()) == GLFW.GLFW_PRESS;
-                }
+                boolean isPhysicallyDown = key.getType() == InputConstants.Type.MOUSE
+                        ? GLFW.glfwGetMouseButton(window, key.getValue()) == GLFW.GLFW_PRESS
+                        : GLFW.glfwGetKey(window, key.getValue()) == GLFW.GLFW_PRESS;
 
                 ourKey.setDown(isPhysicallyDown);
 
-                for (KeyMapping mapping : mc.options.keyMappings) {
-                    if (mapping != ourKey && mapping.same(ourKey)) {
-                        mapping.setDown(isPhysicallyDown);
+                if (isGrabbing) {
+                    for (KeyMapping mapping : mc.options.keyMappings) {
+                        if (mapping != ourKey && mapping.same(ourKey)) {
+                            mapping.setDown(false);
+                            while (mapping.consumeClick()) {}
+                        }
                     }
                 }
             }

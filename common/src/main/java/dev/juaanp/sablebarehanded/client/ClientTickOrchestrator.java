@@ -3,6 +3,7 @@ package dev.juaanp.sablebarehanded.client;
 import dev.juaanp.sablebarehanded.config.ClientConfig;
 import dev.juaanp.sablebarehanded.config.ServerConfig;
 import dev.juaanp.sablebarehanded.mixin.accesor.MultiPlayerGameModeAccessor;
+import dev.juaanp.sablebarehanded.network.DisassembleRequestPacket;
 import dev.juaanp.sablebarehanded.physics.GrabPhysicsController;
 import dev.juaanp.sablebarehanded.platform.Services;
 import dev.juaanp.sablebarehanded.util.AssemblyBehaviorHelper;
@@ -19,9 +20,9 @@ import net.minecraft.world.entity.player.Player;
 import org.joml.Vector3d;
 
 public class ClientTickOrchestrator {
-
     private static Level lastLevel = null;
     private static Player lastPlayer = null;
+    private static boolean wasDisassembleKeyDown = false;
 
     public static void tick(Minecraft mc) {
         if (mc.player == null || mc.level == null) {
@@ -123,5 +124,11 @@ public class ClientTickOrchestrator {
             ClientInputTracker.pendingYaw = 0.0;
             ClientInputTracker.pendingPitch = 0.0;
         }
+
+        boolean isDisassembleKeyDown = KeyBindings.DISASSEMBLE_KEY.isDown();
+        if (ClientGrabSession.isHoldingGrab && isDisassembleKeyDown && !wasDisassembleKeyDown) {
+            Services.NETWORK.sendDisassembleRequest();
+        }
+        wasDisassembleKeyDown = isDisassembleKeyDown;
     }
 }

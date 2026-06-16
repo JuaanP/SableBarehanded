@@ -23,25 +23,33 @@ public class GrabCollisionHandler {
     }
 
     public static boolean shouldIgnoreEntityCollision(SubLevel subLevel, Entity entity) {
+        // --- LÓGICA DEL CLIENTE ---
         if (subLevel.getLevel().isClientSide()) {
             for (Map.Entry<UUID, ClientGhostState> entry : CLIENT_GHOST_STATES.entrySet()) {
                 ClientGhostState state = entry.getValue();
 
-                if (state.subLevelId.equals(subLevel.getUniqueId())) {
+                if (state.subLevelId().equals(subLevel.getUniqueId())) {
                     UUID grabberId = entry.getKey();
+                    boolean isRotating = state.collisionMask() == 2;
 
-                    if (state.ignoreEverything) return true;
+                    boolean ignoreEverything = isRotating ? ServerConfig.INSTANCE.ignoreCollisionsRotationEverything : ServerConfig.INSTANCE.ignoreCollisionsGrabEverything;
+                    if (ignoreEverything) return true;
 
                     if (entity instanceof Player player) {
-                        if (player.getUUID().equals(grabberId) ? state.ignoreSelf : state.ignoreOthers) return true;
+                        boolean ignoreSelf = isRotating ? ServerConfig.INSTANCE.ignoreCollisionsRotationSelf : ServerConfig.INSTANCE.ignoreCollisionsGrabSelf;
+                        boolean ignoreOthers = isRotating ? ServerConfig.INSTANCE.ignoreCollisionsRotationOtherPlayers : ServerConfig.INSTANCE.ignoreCollisionsGrabOtherPlayers;
+                        boolean isSelf = player.getUUID().equals(grabberId);
+
+                        return isSelf ? ignoreSelf : ignoreOthers;
                     } else {
-                        if (state.ignoreEntities) return true;
+                        return isRotating ? ServerConfig.INSTANCE.ignoreCollisionsRotationEntities : ServerConfig.INSTANCE.ignoreCollisionsGrabEntities;
                     }
                 }
             }
             return false;
         }
 
+        // --- LÓGICA DEL SERVIDOR ---
         for (Map.Entry<UUID, GrabSession> entry : ServerGrabManager.getActiveGrabs().entrySet()) {
             if (entry.getValue().subLevel.equals(subLevel)) {
                 UUID grabberId = entry.getKey();
@@ -71,4 +79,7 @@ public class GrabCollisionHandler {
         }
         return false;
     }
+
+    // Definición formal del estado fantasma del cliente
+    private record ClientGhostState(UUID subLevelId, byte collisionMask) {}
 }

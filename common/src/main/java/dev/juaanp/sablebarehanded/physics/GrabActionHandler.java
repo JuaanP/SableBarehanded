@@ -9,10 +9,13 @@ import dev.ryanhcode.sable.api.SubLevelAssemblyHelper;
 import dev.ryanhcode.sable.api.sublevel.ServerSubLevelContainer;
 import dev.ryanhcode.sable.api.sublevel.SubLevelContainer;
 import dev.ryanhcode.sable.companion.math.BoundingBox3i;
+import dev.ryanhcode.sable.companion.math.BoundingBox3ic;
 import dev.ryanhcode.sable.companion.math.JOMLConversion;
 import dev.ryanhcode.sable.sublevel.ServerSubLevel;
 import dev.ryanhcode.sable.sublevel.SubLevel;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -31,13 +34,7 @@ public class GrabActionHandler {
         Level level = player.level();
         if (level.isClientSide()) return;
 
-        if (ServerGrabManager.isPlayerGrabbing(player) || !player.getMainHandItem().isEmpty()) {
-            Services.NETWORK.sendStopGrabbingAnimation(player);
-            return;
-        }
-
-        double reach = GrabPhysicsController.getGrabReach(player);
-        if (player.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) > (reach * reach)) {
+        if (!ServerGrabManager.canPlayerGrab(player) || !player.getMainHandItem().isEmpty()) {
             Services.NETWORK.sendStopGrabbingAnimation(player);
             return;
         }
@@ -48,17 +45,84 @@ public class GrabActionHandler {
             return;
         }
 
-        Vector3d localGrabBlock = new Vector3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
+        // 1. pos proviene del cliente y pertenece a las coordenadas del Plot interno.
+        // Lo centramos añadiendo 0.5 a cada eje.
+        Vector3d localGrabPosJoml = new Vector3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
 
-        performGrab(player, serverSubLevel, localGrabBlock);
-        SableBarehandedEvents.fireOnGrab(player, serverSubLevel);
+        // 2. Transformamos esa coordenada local a una coordenada global (Mundo real)
+        Vector3d globalGrabBlockPos = serverSubLevel.logicalPose().transformPosition(new Vector3d(localGrabPosJoml));
+
+        // 3. Calculamos la distancia usando la posición global del objeto
+        float distance = (float) player.getEyePosition().distanceTo(new Vec3(globalGrabBlockPos.x, globalGrabBlockPos.y, globalGrabBlockPos.z));
+        double reach = GrabPhysicsController.getGrabReach(player);
+
+        if (distance > reach) {
+            Services.NETWORK.sendStopGrabbingAnimation(player);
+            return;
+        }
+
+        if (!SableBarehandedEvents.fireBeforeGrab(player, serverSubLevel)) {
+            Services.NETWORK.sendStopGrabbingAnimation(player);
+            return;
+        }
+
+        dev.ryanhcode.sable.api.physics.PhysicsPipeline pipeline = ((ServerSubLevelContainer) SubLevelContainer.getContainer(level)).physicsSystem().getPipeline();
+
+        org.joml.Vector3dc com = serverSubLevel.getMassTracker().getCenterOfMass();
+        if (com == null || serverSubLevel.getMassTracker().getMass() <= ServerConfig.INSTANCE.minPhysicsMass) {
+            Services.NETWORK.sendStopGrabbingAnimation(player);
+            return;
+        }
+
+        int limit = ServerConfig.INSTANCE.blockLimit;
+        if (limit > 0) {
+            int blockCount = 0;
+            ServerLevel subLevelLevel = (ServerLevel) serverSubLevel.getLevel();
+            for (dev.ryanhcode.sable.sublevel.plot.PlotChunkHolder chunk : serverSubLevel.getPlot().getLoadedChunks()) {
+                BoundingBox3ic bounds = chunk.getBoundingBox();
+                if (bounds == null) continue;
+                for (int x = bounds.minX(); x <= bounds.maxX(); x++) {
+                    for (int y = bounds.minY(); y <= bounds.maxY(); y++) {
+                        for (int z = bounds.minZ(); z <= bounds.maxZ(); z++) {
+                            BlockPos iterPos = new BlockPos(x + chunk.getPos().getMinBlockX(), y, z + chunk.getPos().getMinBlockZ());
+                            if (!subLevelLevel.getBlockState(iterPos).isAir()) {
+                                blockCount++;
+                                if (blockCount > limit) {
+                                    player.displayClientMessage(Component.literal("[Sable] Too many blocks (Limit: " + limit + ")").withStyle(ChatFormatting.RED), true);
+                                    Services.NETWORK.sendStopGrabbingAnimation(player);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        Vector3d localCenterOfMass = new Vector3d(com);
+        Vector3d crosshairTarget = JOMLConversion.toJOML(player.getEyePosition().add(player.getLookAngle().scale(Math.max(ServerConfig.INSTANCE.minDistance, distance))));
+        Quaterniond initialOrient = serverSubLevel.logicalPose().orientation();
+
+        GrabSession session = new GrabSession(serverSubLevel, distance, localGrabPosJoml, localCenterOfMass, crosshairTarget, initialOrient, pipeline);
+
+        pipeline.wakeUp(serverSubLevel);
+
+        GrabPhysicsController.rebuildConstraint(session);
+        Services.NETWORK.sendStartGrabbingAnimation(player);
+        Services.NETWORK.sendSyncGrabState(player,
+                serverSubLevel.getMassTracker().getMass(),
+                serverSubLevel.getUniqueId(),
+                localGrabPosJoml,
+                distance
+        );
+        ServerGrabManager.registerGrab(player, session);
     }
 
     public static void assembleAndGrab(Player player, BlockPos pos) {
         Level level = player.level();
         if (level.isClientSide()) return;
 
-        if (ServerGrabManager.isPlayerGrabbing(player) || !player.getMainHandItem().isEmpty()) {
+        if (!ServerGrabManager.canPlayerGrab(player) || !player.getMainHandItem().isEmpty()) {
             Services.NETWORK.sendStopGrabbingAnimation(player);
             return;
         }
@@ -135,22 +199,17 @@ public class GrabActionHandler {
                 container.physicsSystem().getPipeline().wakeUp(serverSubLevel);
             }
 
-            Vector3d globalVec = new Vector3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
-            Vector3d localGrabBlock = serverSubLevel.logicalPose().transformPositionInverse(globalVec, new Vector3d());
-
-            performGrab(player, serverSubLevel, localGrabBlock);
-            SableBarehandedEvents.fireOnGrab(player, serverSubLevel);
+            BlockPos localPos = serverSubLevel.getPlot().getCenterBlock();
+            forceGrab(player, serverSubLevel, localPos);
         } else {
             Services.NETWORK.sendStopGrabbingAnimation(player);
         }
     }
 
-    private static void performGrab(Player player, ServerSubLevel serverSubLevel, Vector3d localGrabBlock) {
-        Level level = player.level();
-        ServerSubLevelContainer container = (ServerSubLevelContainer) SubLevelContainer.getContainer(level);
-        if (container == null) return;
+    public static void forceGrab(Player player, ServerSubLevel serverSubLevel, BlockPos localGrabBlock) {
+        if (!ServerGrabManager.canPlayerGrab(player)) return;
 
-        var pipeline = container.physicsSystem().getPipeline();
+        dev.ryanhcode.sable.api.physics.PhysicsPipeline pipeline = ((ServerSubLevelContainer) SubLevelContainer.getContainer(player.level())).physicsSystem().getPipeline();
 
         org.joml.Vector3dc com = serverSubLevel.getMassTracker().getCenterOfMass();
         if (com == null || serverSubLevel.getMassTracker().getMass() <= ServerConfig.INSTANCE.minPhysicsMass) {
@@ -159,23 +218,24 @@ public class GrabActionHandler {
         }
 
         Vector3d localCenterOfMass = new Vector3d(com);
+        Vector3d localGrabPosJoml = new Vector3d(localGrabBlock.getX() + 0.5, localGrabBlock.getY() + 0.5, localGrabBlock.getZ() + 0.5);
 
-        Vector3d globalGrabBlockPos = serverSubLevel.logicalPose().transformPosition(new Vector3d(localGrabBlock));
+        Vector3d globalGrabBlockPos = serverSubLevel.logicalPose().transformPosition(new Vector3d(localGrabPosJoml));
         float distance = (float) player.getEyePosition().distanceTo(new Vec3(globalGrabBlockPos.x, globalGrabBlockPos.y, globalGrabBlockPos.z));
 
         Vector3d crosshairTarget = JOMLConversion.toJOML(player.getEyePosition().add(player.getLookAngle().scale(Math.max(ServerConfig.INSTANCE.minDistance, distance))));
         Quaterniond initialOrient = serverSubLevel.logicalPose().orientation();
 
-        GrabSession session = new GrabSession(serverSubLevel, distance, localGrabBlock, localCenterOfMass, crosshairTarget, initialOrient, pipeline);
+        GrabSession session = new GrabSession(serverSubLevel, distance, localGrabPosJoml, localCenterOfMass, crosshairTarget, initialOrient, pipeline);
 
         pipeline.wakeUp(serverSubLevel);
-
         GrabPhysicsController.rebuildConstraint(session);
+
         Services.NETWORK.sendStartGrabbingAnimation(player);
         Services.NETWORK.sendSyncGrabState(player,
-                com != null ? serverSubLevel.getMassTracker().getMass() : 0.0,
+                serverSubLevel.getMassTracker().getMass(),
                 serverSubLevel.getUniqueId(),
-                localGrabBlock,
+                localGrabPosJoml,
                 distance
         );
         ServerGrabManager.registerGrab(player, session);

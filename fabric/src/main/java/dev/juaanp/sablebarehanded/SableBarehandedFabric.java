@@ -8,6 +8,7 @@ import dev.juaanp.sablebarehanded.physics.ServerGrabManager;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -25,6 +26,9 @@ public class SableBarehandedFabric implements ModInitializer {
         PayloadTypeRegistry.playC2S().register(AssembleGrabPacket.TYPE, AssembleGrabPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(StopGrabbingPacket.TYPE, StopGrabbingPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(RotateGrabPacket.TYPE, RotateGrabPacket.CODEC);
+        PayloadTypeRegistry.playC2S().register(DisassembleRequestPacket.TYPE, DisassembleRequestPacket.CODEC);
+        PayloadTypeRegistry.playC2S().register(PhysicsPlaceRequestPacket.TYPE, PhysicsPlaceRequestPacket.CODEC);
+        PayloadTypeRegistry.playC2S().register(UpdateServerConfigPacket.TYPE, UpdateServerConfigPacket.CODEC);
 
         PayloadTypeRegistry.playS2C().register(StartGrabbingAnimationPacket.TYPE, StartGrabbingAnimationPacket.CODEC);
         PayloadTypeRegistry.playS2C().register(StopGrabbingAnimationPacket.TYPE, StopGrabbingAnimationPacket.CODEC);
@@ -48,6 +52,18 @@ public class SableBarehandedFabric implements ModInitializer {
             context.server().execute(() -> ServerPayloadHandler.handleRotateGrab(context.player(), payload));
         });
 
+        ServerPlayNetworking.registerGlobalReceiver(DisassembleRequestPacket.TYPE, (payload, context) -> {
+            context.server().execute(() -> ServerPayloadHandler.handleDisassembleRequest(context.player(), payload));
+        });
+
+        ServerPlayNetworking.registerGlobalReceiver(PhysicsPlaceRequestPacket.TYPE, (payload, context) -> {
+            context.server().execute(() -> ServerPayloadHandler.handlePhysicsPlaceRequest(context.player(), payload));
+        });
+
+        ServerPlayNetworking.registerGlobalReceiver(UpdateServerConfigPacket.TYPE, (payload, context) -> {
+            context.server().execute(() -> ServerPayloadHandler.handleUpdateServerConfig(context.player(), payload));
+        });
+
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             for (ServerPlayer player : server.getPlayerList().getPlayers()) {
                 GrabPhysicsController.tickPlayer(player);
@@ -66,6 +82,15 @@ public class SableBarehandedFabric implements ModInitializer {
         ServerLivingEntityEvents.AFTER_DEATH.register((entity, damageSource) -> {
             if (entity instanceof Player player) {
                 ServerGrabManager.onPlayerDeath(player);
+            }
+        });
+
+        EntityTrackingEvents.START_TRACKING.register((trackedEntity, trackingPlayer) -> {
+            if (trackedEntity instanceof Player targetPlayer) {
+                if (ServerGrabManager.isPlayerGrabbing(targetPlayer)) {
+                    StartGrabbingAnimationPacket packet = new StartGrabbingAnimationPacket(targetPlayer.getId());
+                    ServerPlayNetworking.send(trackingPlayer, packet);
+                }
             }
         });
     }

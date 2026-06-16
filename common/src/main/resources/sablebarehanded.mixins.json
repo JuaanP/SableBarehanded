@@ -5,7 +5,8 @@
   "refmap": "${mod_id}.refmap.json",
   "compatibilityLevel": "JAVA_18",
   "mixins": [
-    "MixinSubLevelEntityCollision"
+    "MixinSubLevelEntityCollision",
+    "MixinBlockItem"
   ],
   "client": [
     "MixinMultiPlayerGameMode",
@@ -13,7 +14,13 @@
     "MixinPlayerModel",
     "MixinItemInHandRenderer",
     "MixinKeyboardInput",
-    "accesor.MultiPlayerGameModeAccessor"
+    "accesor.MultiPlayerGameModeAccessor",
+    "MixinKeyboardHandler",
+    "MixinMinecraft",
+    "MixinLocalPlayer",
+    "MixinLivingEntityRenderer",
+    "MixinPlayerRenderer",
+    "MixinEntityRenderDispatcher"
   ],
   "server": [],
   "injectors": {

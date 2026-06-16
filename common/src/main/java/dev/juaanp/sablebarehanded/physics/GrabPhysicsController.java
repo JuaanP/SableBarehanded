@@ -9,6 +9,7 @@ import dev.ryanhcode.sable.api.sublevel.ServerSubLevelContainer;
 import dev.ryanhcode.sable.api.sublevel.SubLevelContainer;
 import dev.ryanhcode.sable.companion.math.JOMLConversion;
 import dev.ryanhcode.sable.sublevel.ServerSubLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -64,6 +65,10 @@ public class GrabPhysicsController {
         }
 
         grab.pipeline.wakeUp(grab.subLevel);
+
+        if (player instanceof ServerPlayer serverPlayer) {
+            ImpactDisassembleHandler.checkImpact(serverPlayer, grab.subLevel, grab);
+        }
 
         player.yBodyRot = player.yHeadRot;
         player.yBodyRotO = player.yHeadRotO;

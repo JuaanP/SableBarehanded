@@ -30,7 +30,6 @@ public class AssemblyBehaviorHelper {
     public static boolean isIgnored(Level level, BlockPos pos, BlockState state) {
         if (state.isAir() || state.getDestroySpeed(level, pos) < 0.0F) return true;
         if (!state.getFluidState().isEmpty() && !state.isSolidRender(level, pos)) return true;
-        if (state.getCollisionShape(level, pos).isEmpty()) return true;
         return false;
     }
 
@@ -41,7 +40,6 @@ public class AssemblyBehaviorHelper {
     public static List<BlockPos> getConnectedBlocks(Level level, BlockPos pos) {
         List<BlockPos> blocks = new ArrayList<>();
         blocks.add(pos);
-
         BlockState baseState = level.getBlockState(pos);
 
         if (baseState.getBlock() instanceof ChestBlock) {
@@ -95,13 +93,11 @@ public class AssemblyBehaviorHelper {
 
         while (!queue.isEmpty()) {
             BlockPos current = queue.poll();
-
             for (net.minecraft.core.Direction dir : net.minecraft.core.Direction.values()) {
                 BlockPos adj = current.relative(dir);
                 if (assembly.contains(adj)) continue;
 
                 BlockState adjState = level.getBlockState(adj);
-
                 if (adjState.isAir() || adjState.getDestroySpeed(level, adj) < 0.0F || !adjState.getFluidState().isEmpty()) continue;
 
                 if (!adjState.canSurvive(simulatedLevel, adj)) {
@@ -111,7 +107,14 @@ public class AssemblyBehaviorHelper {
             }
         }
 
-        return new ArrayList<>(assembly);
+        List<BlockPos> result = new ArrayList<>(assembly);
+        int limit = ServerConfig.INSTANCE.blockLimit;
+
+        if (limit > 0 && result.size() > limit) {
+            return result.subList(0, limit);
+        }
+
+        return result;
     }
 
     public static int calculateAssemblyTicks(Player player, Level level, List<BlockPos> blocks) {
@@ -121,13 +124,11 @@ public class AssemblyBehaviorHelper {
         int totalTicks = 0;
         for (BlockPos pos : blocks) {
             BlockState state = level.getBlockState(pos);
-
             if (isFastLift(level, pos, state)) {
                 totalTicks += ServerConfig.INSTANCE.fastLiftAssemblyTicks;
             } else {
                 float progressPerTick = state.getDestroyProgress(player, level, pos);
                 if (progressPerTick <= 0.0F) return Integer.MAX_VALUE;
-
                 int vanillaTicks = (int) Math.ceil(1.0F / progressPerTick);
                 totalTicks += vanillaTicks;
             }

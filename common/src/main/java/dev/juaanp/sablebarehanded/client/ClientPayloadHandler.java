@@ -41,7 +41,7 @@ public class ClientPayloadHandler {
             }
         }
     }
-    
+
     public static void handleSyncGhostState(SyncGhostStatePacket packet) {
         GrabCollisionHandler.setClientGhostState(packet.subLevelId(), packet.grabberId(), packet.collisionMask());
     }

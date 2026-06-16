@@ -7,6 +7,7 @@ import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.ItemStack;
@@ -18,12 +19,10 @@ public class RenderAnimationHandler {
 
     public static void renderGrabArm(
             AbstractClientPlayer player, InteractionHand hand,
-            float equippedProgress, ItemStack stack, PoseStack poseStack, MultiBufferSource buffer,
+            float swingProgress, float equippedProgress, ItemStack stack, PoseStack poseStack, MultiBufferSource buffer,
             int combinedLight, EntityRenderDispatcher dispatcher, float ease) {
 
-        if (ClientConfig.INSTANCE.hideHandsWhileGrabbing) {
-            return;
-        }
+        if (ClientConfig.INSTANCE.hideFirstPersonArms) return;
 
         boolean isMainHand = (hand == InteractionHand.MAIN_HAND);
         boolean isVanillaVisible = isMainHand || !stack.isEmpty();
@@ -56,33 +55,39 @@ public class RenderAnimationHandler {
         Matrix4f matCustom = customStack.last().pose();
 
         Vector3f transVanilla = matVanilla.getTranslation(new Vector3f());
-        Vector3f transCustom  = matCustom.getTranslation(new Vector3f());
-
+        Vector3f transCustom = matCustom.getTranslation(new Vector3f());
         Quaternionf rotVanilla = matVanilla.getNormalizedRotation(new Quaternionf());
-        Quaternionf rotCustom  = matCustom.getNormalizedRotation(new Quaternionf());
+        Quaternionf rotCustom = matCustom.getNormalizedRotation(new Quaternionf());
 
         Vector3f lerpedTrans = transVanilla.lerp(transCustom, ease);
         Quaternionf slerpedRot = rotVanilla.slerp(rotCustom, ease);
 
-        float customArmYOffset = 0.0F;
-        if (needsSwapOffset) {
-            customArmYOffset = -(1.0F - ease) * 1.5F;
-        }
-
+        float customArmYOffset = needsSwapOffset ? -(1.0F - ease) * 1.5F : 0.0F;
         float dip = (float) Math.sin(ease * Math.PI);
 
         poseStack.pushPose();
-
         poseStack.translate(lerpedTrans.x(), lerpedTrans.y() - (0.8F * dip) + customArmYOffset, lerpedTrans.z());
         poseStack.mulPose(Axis.XP.rotationDegrees(50.0F * dip));
+
+        if (swingProgress > 0.0F && ease < 0.95F) {
+            float swingBlend = swingProgress * (1.0F - ease);
+            float swingRotX = Mth.sin(Mth.sqrt(swingProgress) * (float) Math.PI * 2.0F) * 0.3F * swingBlend;
+            poseStack.mulPose(Axis.XP.rotation(swingRotX));
+        }
+
         poseStack.mulPose(slerpedRot);
 
         PlayerRenderer playerRenderer = (PlayerRenderer) dispatcher.getRenderer(player);
+
+        ClientRenderState.isRenderingCustomArm = true;
+
         if (isRight) {
             playerRenderer.renderRightHand(poseStack, buffer, combinedLight, player);
         } else {
             playerRenderer.renderLeftHand(poseStack, buffer, combinedLight, player);
         }
+
+        ClientRenderState.isRenderingCustomArm = false;
 
         poseStack.popPose();
     }

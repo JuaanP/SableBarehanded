@@ -4,6 +4,7 @@ import dev.juaanp.sablebarehanded.network.*;
 import dev.juaanp.sablebarehanded.platform.services.INetworkHelper;
 import dev.ryanhcode.sable.sublevel.ServerSubLevel;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.PacketDistributor;
 import java.util.UUID;
@@ -49,5 +50,25 @@ public class NeoForgeNetworkHelper implements INetworkHelper {
         if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
             PacketDistributor.sendToPlayer(serverPlayer, new SyncGrabStatePacket(player.getId(), mass, subLevelId, localPivot, distance));
         }
+    }
+
+    @Override
+    public void sendDisassembleRequest() {
+        PacketDistributor.sendToServer(new DisassembleRequestPacket());
+    }
+
+    @Override
+    public void sendPhysicsPlaceRequest(BlockPos pos, net.minecraft.core.Direction face, boolean isMainHand) {
+        PacketDistributor.sendToServer(new dev.juaanp.sablebarehanded.network.PhysicsPlaceRequestPacket(pos, face, isMainHand));
+    }
+
+    @Override
+    public void sendUpdateServerConfig(String json) {
+        net.neoforged.neoforge.network.PacketDistributor.sendToServer(new UpdateServerConfigPacket(json));
+    }
+
+    @Override
+    public void broadcastSyncConfig(net.minecraft.server.MinecraftServer server, String json) {
+        net.neoforged.neoforge.network.PacketDistributor.sendToAllPlayers(new SyncConfigPacket(json));
     }
 }

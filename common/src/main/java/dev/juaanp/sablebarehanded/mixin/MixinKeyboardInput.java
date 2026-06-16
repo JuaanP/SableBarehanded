@@ -1,10 +1,12 @@
 package dev.juaanp.sablebarehanded.mixin;
 
+import dev.juaanp.sablebarehanded.client.ClientAssemblyTracker;
 import dev.juaanp.sablebarehanded.client.ClientGrabSession;
 import dev.juaanp.sablebarehanded.client.handler.MovementInputHandler;
 import dev.juaanp.sablebarehanded.config.ServerConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.KeyboardInput;
+import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -14,8 +16,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinKeyboardInput {
 
     @Inject(method = "tick", at = @At("TAIL"))
-    private void onTick(boolean isMovingSlowly, float slowFactor, CallbackInfo ci) {
+    private void barehanded$onTick(boolean isMovingSlowly, float slowFactor, CallbackInfo ci) {
         KeyboardInput input = (KeyboardInput) (Object) this;
+        Minecraft mc = Minecraft.getInstance();
+        Player player = mc.player;
+
+        if (player == null) return;
+
+        boolean isSeated = player.isPassenger() && player.getVehicle() != null;
 
         if (MovementInputHandler.shouldPreventMovement()) {
             input.up = false;
@@ -25,21 +33,24 @@ public class MixinKeyboardInput {
             input.forwardImpulse = 0.0F;
             input.leftImpulse = 0.0F;
             input.jumping = false;
-            input.shiftKeyDown = false;
+            if (!isSeated) input.shiftKeyDown = false;
             return;
         }
 
-        if (Minecraft.getInstance().player != null) {
-            double encumbrance = ClientGrabSession.getEffectiveEncumbranceRatio(Minecraft.getInstance().player);
+        double encumbrance = ClientGrabSession.getEffectiveEncumbranceRatio(player);
 
-            if (encumbrance > 0.0) {
-                float movementScale = (float) (1.0 - (encumbrance * ServerConfig.INSTANCE.maxMovementPenalty));
+        if (encumbrance > 0.0) {
+            float movementScale = (float) (1.0 - (encumbrance * ServerConfig.INSTANCE.maxMovementPenalty));
+            input.forwardImpulse *= movementScale;
+            input.leftImpulse *= movementScale;
 
-                input.forwardImpulse *= movementScale;
-                input.leftImpulse *= movementScale;
+            if (encumbrance >= ServerConfig.INSTANCE.jumpPreventionThreshold) {
+                input.jumping = false;
+            }
 
-                if (encumbrance >= ServerConfig.INSTANCE.jumpPreventionThreshold) {
-                    input.jumping = false;
+            if (!isSeated && encumbrance >= ServerConfig.INSTANCE.sneakPreventionThreshold) {
+                if (!ClientAssemblyTracker.isActive()) {
+                    input.shiftKeyDown = false;
                 }
             }
         }
