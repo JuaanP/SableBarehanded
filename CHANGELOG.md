@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.5.0]
+
+### Changed
+- **Mod ID:** Changed mod id from "sablebarehanded" to "barehanded".
+
+### Added
+- **Scroll Distance Adjustment:** You can now use the mouse scroll wheel to smoothly push or pull grabbed sub-levels closer or further away.
+- **Single-Button Grab Retention:** After initially grabbing an object (Left + Right Click), you can now release one of the buttons and keep holding the object as long as either mouse button remains pressed.
+- **Ungrabbable Block Tags:** Added the `#barehanded:ungrabbable` block tag, allowing modpack developers to easily blacklist specific blocks via datapacks or KubeJS from being detached or grabbed.
+- **Disassembly Size Limit:** Added a new configuration option to restrict the maximum number of blocks a structure can contain in order to be disassembled.
+- **Spawner Config Override:** Added a direct config toggle to explicitly allow or prevent grabbing Monster Spawners, overriding the tag system for quick and easy server setup.
+
+### Fixed & Compatibility
+- **ImmediatelyFast:** Fixed a rendering issue where first-person arms would completely disappear when grabbing objects alongside the ImmediatelyFast mod.
+- **Falling Blocks Fix:** Grabbing or assembling gravity-affected blocks will no longer cause them to update and fall out of the sub-level into the void.
+- **Animation Stuck:** Fixed a network desync issue where players would get permanently stuck in the grabbing animation pose if they disconnected, teleported, or died while holding an object.
+- **Auto Mining:** Improved input interception to prevent accidental block mining while attempting to assemble or rotate a sub-level.
+- **Continuous Punching:** Fully disabled vanilla attack/use inputs while carrying objects to prevent duplicate arms and infinite punching loops with combat animation mods like Punchy or Better Combat.
+
 ## [1.4.1]
 
 ### Fixed

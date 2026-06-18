@@ -22,29 +22,29 @@ repositories {
 }
 
 dependencies {
-    compileOnly "maven.modrinth:sablebarehanded:<version>"
+    api "maven.modrinth:barehanded:<version>"
 }
 ```
 
 ### Examples using the API
 
 ```
-import dev.juaanp.sablebarehanded.api.SableBarehandedAPI;
+import dev.juaanp.barehanded.api.BarehandedAPI;
 
 // Check if a player is grabbing something
-boolean isGrabbing = SableBarehandedAPI.isPlayerGrabbing(player);
+boolean isGrabbing = BarehandedAPI.isPlayerGrabbing(player);
 
 // Get the currently grabbed sub-level
-ServerSubLevel subLevel = SableBarehandedAPI.getGrabbedSubLevel(player);
+ServerSubLevel subLevel = BarehandedAPI.getGrabbedSubLevel(player);
 
 // Force the player to drop the object
-SableBarehandedAPI.forceDrop(player);
+BarehandedAPI.forceDrop(player);
 ```
 
 #### Cancel a grab
 
 ```
-SableBarehandedEvents.onBeforeGrab((player, subLevel) -> {
+BarehandedEvents.onBeforeGrab((player, subLevel) -> {
 if (subLevel.getMassTracker().getMass() > 50000) {
 player.sendSystemMessage(Component.literal("This object is too heavy to grab."));
 return false; // Cancels the grab
@@ -55,11 +55,11 @@ return true; // Allows the grab
 #### React to Grab / Release
 
 ```
-SableBarehandedEvents.onGrab((player, subLevel) -> {
+BarehandedEvents.onGrab((player, subLevel) -> {
 System.out.println(player.getName().getString() + " grabbed a sub-level!");
 });
 
-SableBarehandedEvents.onRelease((player, subLevel) -> {
+BarehandedEvents.onRelease((player, subLevel) -> {
 System.out.println("Sub-level released.");
 });
 ```

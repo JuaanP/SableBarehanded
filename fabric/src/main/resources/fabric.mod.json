@@ -16,17 +16,17 @@
     "environment": "*",
     "entrypoints": {
         "main": [
-            "dev.juaanp.sablebarehanded.SableBarehandedFabric"
+            "dev.juaanp.barehanded.BarehandedFabric"
         ],
         "client": [
-            "dev.juaanp.sablebarehanded.client.FabricClientSetup"
+            "dev.juaanp.barehanded.client.FabricClientSetup"
         ],
         "modmenu": [
-            "dev.juaanp.sablebarehanded.client.ModMenuIntegration"
+            "dev.juaanp.barehanded.client.ModMenuIntegration"
         ]
     },
     "mixins": [
-        "sablebarehanded.mixins.json"
+      "barehanded.mixins.json"
     ],
     "depends": {
         "fabricloader": ">=${fabric_loader_version}",

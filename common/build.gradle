@@ -20,9 +20,6 @@ dependencies {
     compileOnly group: 'io.github.llamalad7', name: 'mixinextras-common', version: '0.3.5'
     annotationProcessor group: 'io.github.llamalad7', name: 'mixinextras-common', version: '0.3.5'
 
-    // compileOnly "maven.modrinth:sable:1.2.2+mc1.21.1"
-    // why ?
-
     api("dev.ryanhcode.sable:sable-common-${minecraft_version}:${sable_version}") { transitive = false }
     api("dev.ryanhcode.sable-companion:sable-companion-common-${minecraft_version}:${sable_companion_version}") { transitive = false }
     compileOnly("me.shedaniel.cloth:cloth-config-neoforge:15.0.140")
