@@ -88,8 +88,7 @@ public class ServerPayloadHandler {
         GrabSession grab = ServerGrabManager.getGrabSession(player);
         if (grab == null || grab.subLevel.isRemoved()) return;
 
-        double reach = GrabPhysicsController.getGrabReach(player);
-        double maxAllowed = Math.min(reach, ServerConfig.INSTANCE.scrollMaxDistance);
+        double maxAllowed = GrabPhysicsController.getMaxScrollDistance(player);
         double minAllowed = ServerConfig.INSTANCE.scrollMinDistance;
 
         grab.targetDistance = (float) net.minecraft.util.Mth.clamp(grab.targetDistance + packet.amount(), minAllowed, maxAllowed);
