@@ -89,21 +89,37 @@ public class RenderAnimationHandler {
         ModelPart armPart = isRight ? model.rightArm : model.leftArm;
         ModelPart sleevePart = isRight ? model.rightSleeve : model.leftSleeve;
 
-        float oldArmX = armPart.xRot;
-        float oldArmY = armPart.yRot;
-        float oldArmZ = armPart.zRot;
+        float oldArmRotX = armPart.xRot;
+        float oldArmRotY = armPart.yRot;
+        float oldArmRotZ = armPart.zRot;
+        float oldArmPosX = armPart.x;
+        float oldArmPosY = armPart.y;
+        float oldArmPosZ = armPart.z;
         boolean oldArmVisible = armPart.visible;
 
-        float oldSleeveX = sleevePart.xRot;
-        float oldSleeveY = sleevePart.yRot;
-        float oldSleeveZ = sleevePart.zRot;
+        float oldSleeveRotX = sleevePart.xRot;
+        float oldSleeveRotY = sleevePart.yRot;
+        float oldSleeveRotZ = sleevePart.zRot;
+        float oldSleevePosX = sleevePart.x;
+        float oldSleevePosY = sleevePart.y;
+        float oldSleevePosZ = sleevePart.z;
         boolean oldSleeveVisible = sleevePart.visible;
 
+        boolean isSlim = player.getSkin().model() == net.minecraft.client.resources.PlayerSkin.Model.SLIM;
+        float defaultY = isSlim ? 2.5F : 2.0F;
+        float defaultX = isRight ? -5.0F : 5.0F;
+
+        armPart.x = defaultX;
+        armPart.y = defaultY;
+        armPart.z = 0.0F;
         armPart.xRot = 0.0F;
         armPart.yRot = 0.0F;
         armPart.zRot = 0.0F;
         armPart.visible = true;
 
+        sleevePart.x = defaultX;
+        sleevePart.y = defaultY;
+        sleevePart.z = 0.0F;
         sleevePart.xRot = 0.0F;
         sleevePart.yRot = 0.0F;
         sleevePart.zRot = 0.0F;
@@ -121,14 +137,20 @@ public class RenderAnimationHandler {
 
         ClientRenderState.isRenderingCustomArm = false;
 
-        armPart.xRot = oldArmX;
-        armPart.yRot = oldArmY;
-        armPart.zRot = oldArmZ;
+        armPart.x = oldArmPosX;
+        armPart.y = oldArmPosY;
+        armPart.z = oldArmPosZ;
+        armPart.xRot = oldArmRotX;
+        armPart.yRot = oldArmRotY;
+        armPart.zRot = oldArmRotZ;
         armPart.visible = oldArmVisible;
 
-        sleevePart.xRot = oldSleeveX;
-        sleevePart.yRot = oldSleeveY;
-        sleevePart.zRot = oldSleeveZ;
+        sleevePart.x = oldSleevePosX;
+        sleevePart.y = oldSleevePosY;
+        sleevePart.z = oldSleevePosZ;
+        sleevePart.xRot = oldSleeveRotX;
+        sleevePart.yRot = oldSleeveRotY;
+        sleevePart.zRot = oldSleeveRotZ;
         sleevePart.visible = oldSleeveVisible;
 
         poseStack.popPose();

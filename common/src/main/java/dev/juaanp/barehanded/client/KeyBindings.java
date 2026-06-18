@@ -47,7 +47,7 @@ public class KeyBindings {
 
                 ourKey.setDown(isPhysicallyDown);
 
-                if (isGrabbing) {
+                if (isGrabbing && ourKey != PIVOT_KEY) {
                     for (KeyMapping mapping : mc.options.keyMappings) {
                         if (mapping != ourKey && mapping.same(ourKey)) {
                             mapping.setDown(false);
@@ -55,6 +55,17 @@ public class KeyBindings {
                         }
                     }
                 }
+            }
+        }
+
+        if (ClientGrabSession.isHoldingGrab && !ClientGrabSession.isWaitingForGrabSync) {
+            boolean leftDown = GLFW.glfwGetMouseButton(window, GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS;
+            boolean rightDown = GLFW.glfwGetMouseButton(window, GLFW.GLFW_MOUSE_BUTTON_RIGHT) == GLFW.GLFW_PRESS;
+
+            if (!leftDown && !rightDown && !ClientGrabSession.pendingStopGrab) {
+                dev.juaanp.barehanded.platform.Services.NETWORK.sendStopGrabbingRequest();
+                ClientGrabSession.isHoldingGrab = false;
+                ClientGrabSession.pendingStopGrab = true;
             }
         }
     }

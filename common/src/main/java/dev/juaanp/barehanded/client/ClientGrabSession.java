@@ -34,20 +34,25 @@ public class ClientGrabSession {
 
     public static void syncFromServer(int entityId, double mass, UUID subLevelId, Vector3d localPivot, double distance) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null || mc.player.getId() != entityId) return;
-
-        if (pendingStopGrab) {
-            forceResetAndNotify();
-            return;
-        }
+        if (mc.player == null || mc.level == null) return;
 
         isHoldingGrab = true;
         isWaitingForGrabSync = false;
-        waitingTicks = 0;
         grabbedMass = mass;
         grabbedSubLevelId = subLevelId;
-        localGrabPivot = localPivot;
+        ClientGrabSession.localGrabPivot = localPivot;
         grabRestDistance = distance;
+        currentTetherStrain = 0.0;
+
+        long window = mc.getWindow().getWindow();
+        boolean isLeftPhysicallyDown = org.lwjgl.glfw.GLFW.glfwGetMouseButton(window, org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT) == org.lwjgl.glfw.GLFW.GLFW_PRESS;
+        boolean isRightPhysicallyDown = org.lwjgl.glfw.GLFW.glfwGetMouseButton(window, org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT) == org.lwjgl.glfw.GLFW.GLFW_PRESS;
+
+        if (!isLeftPhysicallyDown && !isRightPhysicallyDown) {
+            dev.juaanp.barehanded.platform.Services.NETWORK.sendStopGrabbingRequest();
+            isHoldingGrab = false;
+            pendingStopGrab = true;
+        }
     }
 
     public static void reset() {
@@ -122,7 +127,7 @@ public class ClientGrabSession {
     public static double getEncumbranceRatio(Player player) {
         if (!ServerConfig.INSTANCE.enableEncumbrance || !isHoldingGrab) return 0.0;
         if (player.isCreative() || player.isSpectator()) return 0.0;
-        if (isWaitingForGrabSync && grabbedMass <= 0.0) return 1.0;
+
         if (grabbedMass <= 0.0) return 0.0;
 
         double strengthMultiplier = 1.0;
@@ -141,7 +146,6 @@ public class ClientGrabSession {
     public static double getEffectiveEncumbranceRatio(Player player) {
         if (ClientAssemblyTracker.isActive()) return 1.0;
         if (isHoldingGrab) {
-            if (isWaitingForGrabSync && grabbedMass <= 0.0) return 1.0;
             return getEncumbranceRatio(player);
         }
         return 0.0;
