@@ -4,6 +4,7 @@ import dev.juaanp.barehanded.client.ClientAssemblyTracker;
 import dev.juaanp.barehanded.client.ClientGrabSession;
 import dev.juaanp.barehanded.client.handler.ClientRenderState;
 import dev.juaanp.barehanded.client.handler.ThirdPersonAnimationHandler;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -27,14 +28,18 @@ public class MixinPlayerModel {
         if (entity instanceof AbstractClientPlayer player && player == mc.player) {
             if (mc.options.getCameraType().isFirstPerson()) {
 
-                if (!ClientRenderState.isRenderingCustomArm) {
-                    boolean isGrabbing = ClientGrabSession.isHoldingGrab || ClientAssemblyTracker.isActive();
+                Camera camera = mc.gameRenderer.getMainCamera();
+                if (camera.getEntity() == entity && !camera.isDetached()) {
 
-                    if (isGrabbing) {
-                        model.rightArm.visible = false;
-                        model.rightSleeve.visible = false;
-                        model.leftArm.visible = false;
-                        model.leftSleeve.visible = false;
+                    if (!ClientRenderState.isRenderingCustomArm) {
+                        boolean isGrabbing = ClientGrabSession.isHoldingGrab || ClientAssemblyTracker.isActive();
+
+                        if (isGrabbing) {
+                            model.rightArm.visible = false;
+                            model.rightSleeve.visible = false;
+                            model.leftArm.visible = false;
+                            model.leftSleeve.visible = false;
+                        }
                     }
                 }
             }

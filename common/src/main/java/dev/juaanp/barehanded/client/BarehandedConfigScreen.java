@@ -69,7 +69,8 @@ public class BarehandedConfigScreen {
 
         addBoolean(grab, eb, "Enable Distance Scroll", "Allows players to adjust the grab distance using the scroll wheel.", ServerConfig.INSTANCE.enableDistanceScroll, SERVER_DEFAULTS.enableDistanceScroll, v -> ServerConfig.INSTANCE.enableDistanceScroll = v);
         addDouble(grab, eb, "Scroll Min Distance", "Minimum distance allowed when scrolling.", 0.5, 5.0, ServerConfig.INSTANCE.scrollMinDistance, SERVER_DEFAULTS.scrollMinDistance, v -> ServerConfig.INSTANCE.scrollMinDistance = v);
-        addDouble(grab, eb, "Scroll Max Distance", "Maximum distance allowed when scrolling.", 2.0, 32.0, ServerConfig.INSTANCE.scrollMaxDistance, SERVER_DEFAULTS.scrollMaxDistance, v -> ServerConfig.INSTANCE.scrollMaxDistance = v);
+        addDouble(grab, eb, "Scroll Max Distance", "Maximum distance allowed when scrolling.", 2.0, 256.0, ServerConfig.INSTANCE.scrollMaxDistance, SERVER_DEFAULTS.scrollMaxDistance, v -> ServerConfig.INSTANCE.scrollMaxDistance = v);
+        addBoolean(grab, eb, "Dynamic Max Scroll", "Automatically matches the max scroll distance to the player's reach.", ServerConfig.INSTANCE.dynamicScrollMaxDistance, SERVER_DEFAULTS.dynamicScrollMaxDistance, v -> ServerConfig.INSTANCE.dynamicScrollMaxDistance = v);
 
         addBoolean(grab, eb, "Prevent Gravity In Sub-Levels", "Stops blocks like sand or gravel from falling down while they are part of a grabbed structure.", ServerConfig.INSTANCE.preventGravityInSubLevels, SERVER_DEFAULTS.preventGravityInSubLevels, v -> ServerConfig.INSTANCE.preventGravityInSubLevels = v);
         addBoolean(grab, eb, "Allow Grabbing Spawners", "Overrides all restrictions to explicitly allow grabbing Monster Spawners.", ServerConfig.INSTANCE.allowGrabbingSpawners, SERVER_DEFAULTS.allowGrabbingSpawners, v -> ServerConfig.INSTANCE.allowGrabbingSpawners = v);

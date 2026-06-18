@@ -51,7 +51,9 @@ public class GrabActionHandler {
         float distance = (float) player.getEyePosition().distanceTo(new Vec3(globalGrabBlockPos.x, globalGrabBlockPos.y, globalGrabBlockPos.z));
         double reach = GrabPhysicsController.getGrabReach(player);
 
-        if (distance > reach) {
+        double serverTolerance = ServerConfig.INSTANCE.assemblyServerDistanceTolerance;
+
+        if (distance > (reach + serverTolerance)) {
             Services.NETWORK.sendStopGrabbingAnimation(player);
             return;
         }

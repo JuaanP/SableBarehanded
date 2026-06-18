@@ -15,7 +15,7 @@ public class ClientConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final File FILE = Paths.get("config", Constants.MOD_ID + "-client.json").toFile();
 
-    public int configVersion = 6;
+    public int configVersion = 7;
 
     public double verticalRotationSensitivity = 0.5;
     public double horizontalRotationSensitivity = 0.5;

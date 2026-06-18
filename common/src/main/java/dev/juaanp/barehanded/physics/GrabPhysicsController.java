@@ -83,6 +83,14 @@ public class GrabPhysicsController {
         }
         double actualMaxForce = ServerConfig.INSTANCE.maxForce * strengthMultiplier;
 
+        double maxScroll = getMaxScrollDistance(player);
+        if (grab.targetDistance > maxScroll) {
+            grab.targetDistance = (float) maxScroll;
+        }
+        if (grab.targetDistance < ServerConfig.INSTANCE.scrollMinDistance) {
+            grab.targetDistance = (float) ServerConfig.INSTANCE.scrollMinDistance;
+        }
+
         if (grab.distance != grab.targetDistance) {
             grab.distance = net.minecraft.util.Mth.lerp(0.15F, grab.distance, grab.targetDistance);
 
@@ -286,5 +294,12 @@ public class GrabPhysicsController {
             return Math.max(CREATIVE_REACH, normalReach);
         }
         return normalReach;
+    }
+
+    public static double getMaxScrollDistance(Player player) {
+        if (ServerConfig.INSTANCE.dynamicScrollMaxDistance) {
+            return getGrabReach(player);
+        }
+        return ServerConfig.INSTANCE.scrollMaxDistance;
     }
 }

@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.5.2]
+
+### Added
+- **Dynamic Scroll Distance:** The maximum scroll distance now automatically adapts to the player's dynamic reach.
+
+### Fixed & Compatibility
+- **Vista:** Fixed a bug where the player's body and arms would become invisible when viewed through TVs while the player was in first-person mode.
+- **Grab Animation Flickering:** Fixed the visual flickering that occurred on the client when grabbing sub-levels at the maximum distance of the player's reach.
+
 ## [1.5.1]
 
 ### Fixed

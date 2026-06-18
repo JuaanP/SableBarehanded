@@ -1,12 +1,18 @@
 package dev.juaanp.barehanded.client.handler;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import dev.juaanp.barehanded.config.ClientConfig;
+import net.minecraft.client.model.PlayerModel;
+import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
@@ -78,16 +84,52 @@ public class RenderAnimationHandler {
         poseStack.mulPose(slerpedRot);
 
         PlayerRenderer playerRenderer = (PlayerRenderer) dispatcher.getRenderer(player);
+        PlayerModel<AbstractClientPlayer> model = playerRenderer.getModel();
+
+        ModelPart armPart = isRight ? model.rightArm : model.leftArm;
+        ModelPart sleevePart = isRight ? model.rightSleeve : model.leftSleeve;
+
+        float oldArmX = armPart.xRot;
+        float oldArmY = armPart.yRot;
+        float oldArmZ = armPart.zRot;
+        boolean oldArmVisible = armPart.visible;
+
+        float oldSleeveX = sleevePart.xRot;
+        float oldSleeveY = sleevePart.yRot;
+        float oldSleeveZ = sleevePart.zRot;
+        boolean oldSleeveVisible = sleevePart.visible;
+
+        armPart.xRot = 0.0F;
+        armPart.yRot = 0.0F;
+        armPart.zRot = 0.0F;
+        armPart.visible = true;
+
+        sleevePart.xRot = 0.0F;
+        sleevePart.yRot = 0.0F;
+        sleevePart.zRot = 0.0F;
+        sleevePart.visible = true;
 
         ClientRenderState.isRenderingCustomArm = true;
 
-        if (isRight) {
-            playerRenderer.renderRightHand(poseStack, buffer, combinedLight, player);
-        } else {
-            playerRenderer.renderLeftHand(poseStack, buffer, combinedLight, player);
-        }
+        ResourceLocation texture = playerRenderer.getTextureLocation(player);
+
+        VertexConsumer solidBuffer = buffer.getBuffer(RenderType.entitySolid(texture));
+        armPart.render(poseStack, solidBuffer, combinedLight, OverlayTexture.NO_OVERLAY);
+
+        VertexConsumer translucentBuffer = buffer.getBuffer(RenderType.entityTranslucent(texture));
+        sleevePart.render(poseStack, translucentBuffer, combinedLight, OverlayTexture.NO_OVERLAY);
 
         ClientRenderState.isRenderingCustomArm = false;
+
+        armPart.xRot = oldArmX;
+        armPart.yRot = oldArmY;
+        armPart.zRot = oldArmZ;
+        armPart.visible = oldArmVisible;
+
+        sleevePart.xRot = oldSleeveX;
+        sleevePart.yRot = oldSleeveY;
+        sleevePart.zRot = oldSleeveZ;
+        sleevePart.visible = oldSleeveVisible;
 
         poseStack.popPose();
     }
