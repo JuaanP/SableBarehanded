@@ -51,7 +51,7 @@ public class FabricClientSetup implements ClientModInitializer {
             ClientConfig.load();
         });
 
-        ClientTickEvents.END_CLIENT_TICK.register(ClientTickOrchestrator::tick);
+        ClientTickEvents.START_CLIENT_TICK.register(ClientTickOrchestrator::tick);
         ClientTickEvents.END_CLIENT_TICK.register(client -> KeyBindings.clientTick());
 
         HudRenderCallback.EVENT.register((graphics, tickDelta) -> ClientHudRenderer.renderOverlay(graphics));

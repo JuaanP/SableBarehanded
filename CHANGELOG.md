@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.5.1]
+
+### Fixed
+- **Creative Assemble:** Fixed an issue introduced in version 1.5.0 where attempting to grab an object in Creative mode would accidentally mine/break the block instead. Adjusted the client's internal tick priority to properly intercept mouse inputs before the vanilla engine processes block destruction. (thanks to @HintSystem)
+
 ## [1.5.0]
 
 ### Changed
