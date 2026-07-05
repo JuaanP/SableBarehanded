@@ -18,9 +18,9 @@ public class ServerConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final File FILE = Paths.get("config", Constants.MOD_ID + "-server.json").toFile();
 
-    public int configVersion = 8;
+    public int configVersion = 9;
 
-    public double maxForce = 120.0;
+    public double maxForce = 90.0;
     public double minDistance = 1.5;
     public double grabReachBonus = 0.0;
     public double grabStabilization = 0.05;
@@ -41,6 +41,7 @@ public class ServerConfig {
     public boolean dynamicScrollMaxDistance = true;
     public double scrollMinDistance = 1.0;
     public double scrollMaxDistance = 256.0;
+    public double scrollSpeedReduction = 0.8;
 
     public boolean enableRotation = true;
     public boolean cameraLockedRotationX = false;
@@ -52,17 +53,17 @@ public class ServerConfig {
     public int rotationTicksWindow = 8;
     public double rotationRebuildThreshold = 0.3;
 
-    public double angularDamping = 180.0;
+    public double angularDamping = 300.0;
     public double rotatingAngularStiffnessBase = 0.8;
-    public double rotatingAngularStiffnessRange = 1.2;
-    public double swayAngularStiffnessBase = 0.05;
+    public double rotatingAngularStiffnessRange = 1.5;
+    public double swayAngularStiffnessBase = 0.5;
     public double swayAngularStiffnessRange = 2.0;
     public double stabilizationExponent = 2.0;
     public double rotationStabilization = 0.3;
 
-    public double angularBrakeThreshold = 0.15;
+    public double angularBrakeThreshold = 0.3;
     public double angularBrakeMultiplier = 8.0;
-    public double freePivotDampingMultiplier = 3.0;
+    public double freePivotDampingMultiplier = 5.0;
 
     public boolean enableBarehandedAssembly = true;
     public double barehandedAssemblySpeedMultiplier = 1.0;
@@ -125,7 +126,7 @@ public class ServerConfig {
     public double speedStiffnessMultiplierFactor = 2.5;
     public double maxSpeedStiffnessMultiplier = 3.5;
 
-    public double baseAngularForceFactor = 0.02;
+    public double baseAngularForceFactor = 0.03;
     public double stableAngularForceMassBase = 10.0;
     public double stableAngularForceMassFactor = 0.5;
 
@@ -133,7 +134,7 @@ public class ServerConfig {
     public double heavyObjectMaxForceFactor = 0.4;
     public double grabElasticityStiffnessFactor = 0.65;
     public double grabElasticityDampingFactor = 0.85;
-    public double swayStiffnessEdgeFactor = 0.35;
+    public double swayStiffnessEdgeFactor = 0.7;
     public double swayStiffnessEdgeRangeFactor = 0.45;
 
     public double baseMovementPenalty = 0.0;
@@ -150,7 +151,7 @@ public class ServerConfig {
     public double maxMovementPenalty = 0.85;
     public double jumpPreventionThreshold = 0.7;
     public double sneakPreventionThreshold = 0.3;
-    public double maxCameraPenalty = 0.6;
+    public double maxCameraPenalty = 0.5;
 
     public boolean enablePhysicalTether = true;
     public double armStretchTolerance = 0.3;
@@ -161,10 +162,10 @@ public class ServerConfig {
     public double tetherHardEscapeBuffer = 2.0;
 
     public boolean enableExhaustion = true;
-    public double exhaustionIdleRate = 0.04;
-    public double exhaustionMovementRate = 0.1;
-    public double exhaustionTensionRate = 0.1;
-    public double exhaustionForceRate = 0.1;
+    public double exhaustionIdleRate = 0.03;
+    public double exhaustionMovementRate = 0.08;
+    public double exhaustionTensionRate = 0.06;
+    public double exhaustionForceRate = 0.07;
     public double exhaustionPassiveThreshold = 20.0;
     public double exhaustionSupportHeightThreshold = 0.8;
     public double exhaustionLowSupportMultiplier = 0.5;

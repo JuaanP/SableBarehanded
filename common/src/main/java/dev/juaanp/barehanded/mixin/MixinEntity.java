@@ -44,7 +44,7 @@ public abstract class MixinEntity {
         }
 
         double encumbrance = ClientGrabSession.getEffectiveEncumbranceRatio(player);
-        if (encumbrance > 0.0) {
+        if (encumbrance > 0.0 && ServerConfig.INSTANCE.maxCameraPenalty > 0.0) {
             double scale = 1.0 - (encumbrance * ServerConfig.INSTANCE.maxCameraPenalty);
 
             Vec3 objectPos = ClientGrabSession.getCurrentObjectPosition();
@@ -64,9 +64,10 @@ public abstract class MixinEntity {
                 }
 
                 if (turningAway > 0.0) {
-                    double dynamicResistance = turningAway * encumbrance * 15.0;
+                    double penaltyScale = ServerConfig.INSTANCE.maxCameraPenalty;
+                    double dynamicResistance = turningAway * encumbrance * 15.0 * penaltyScale;
                     double currentAwayness = Math.max(0.0, 1.0 - currentDot);
-                    double angleResistance = currentAwayness * encumbrance * 2.5;
+                    double angleResistance = currentAwayness * encumbrance * 2.5 * penaltyScale;
                     double directionalScale = 1.0 - (dynamicResistance + angleResistance);
                     scale *= Math.max(0.0, directionalScale);
                 }

@@ -128,7 +128,6 @@ public class ClientTickOrchestrator {
         }
 
         if (ClientInputTracker.suppressMiningUntilRelease) {
-            mc.options.keyAttack.setDown(false);
             if (mc.gameMode != null) {
                 mc.gameMode.stopDestroyBlock();
             }

@@ -30,6 +30,10 @@ public class ClientInteractionHandler {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.level == null) return false;
 
+        if (ClientInputTracker.suppressMiningUntilRelease || ClientInputTracker.suppressUseUntilRelease) {
+            return true;
+        }
+
         if (ClientAssemblyTracker.isActive() || ClientGrabSession.isHoldingGrab || ClientGrabSession.isWaitingForGrabSync) {
             return true;
         }
@@ -87,6 +91,10 @@ public class ClientInteractionHandler {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.level == null) return null;
 
+        if (ClientInputTracker.suppressUseUntilRelease) {
+            return InteractionResult.FAIL;
+        }
+
         if (ClientGrabSession.isHoldingGrab || ClientAssemblyTracker.isActive()) {
             return InteractionResult.FAIL;
         }
@@ -115,6 +123,10 @@ public class ClientInteractionHandler {
     }
 
     public static InteractionResult handleItemUse(Player player, InteractionHand hand) {
+        if (ClientInputTracker.suppressUseUntilRelease) {
+            return InteractionResult.FAIL;
+        }
+
         if (ClientGrabSession.isHoldingGrab || ClientAssemblyTracker.isActive()) {
             return InteractionResult.FAIL;
         }

@@ -167,7 +167,23 @@ public class GrabPhysicsController {
         }
 
         if (grab.distance != grab.targetDistance) {
-            grab.distance = net.minecraft.util.Mth.lerp(0.15F, grab.distance, grab.targetDistance);
+            double baseLerpSpeed = 0.15F;
+            double lerpSpeed = baseLerpSpeed;
+
+            if (!hasSuperStrength && ServerConfig.INSTANCE.enableEncumbrance && ServerConfig.INSTANCE.scrollSpeedReduction > 0.0) {
+                double mass = grab.subLevel.getMassTracker().getMass();
+                double maxCapacity = ServerConfig.INSTANCE.maxForce * strengthMultiplier;
+                double objectWeight = mass * ServerConfig.INSTANCE.physicsGravity;
+                double rawRatio = maxCapacity > 0 ? objectWeight / maxCapacity : 0.0;
+                double encumbrance = Math.min(Math.pow(rawRatio, 2.0), 1.0);
+
+                double speedReduction = 1.0 - (encumbrance * ServerConfig.INSTANCE.scrollSpeedReduction);
+                lerpSpeed = baseLerpSpeed * speedReduction;
+
+                lerpSpeed = Math.max(0.02, lerpSpeed);
+            }
+
+            grab.distance = net.minecraft.util.Mth.lerp((float) lerpSpeed, grab.distance, grab.targetDistance);
             if (Math.abs(grab.distance - grab.targetDistance) < 0.01F) {
                 grab.distance = grab.targetDistance;
             }
