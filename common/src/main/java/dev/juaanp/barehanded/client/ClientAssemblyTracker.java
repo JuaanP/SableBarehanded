@@ -130,7 +130,6 @@ public class ClientAssemblyTracker {
         }
     }
 
-    // CORRECCIÓN: Se añade 'boolean isAltDown' como cuarto parámetro para que coincida con el Orchestrator.
     public static boolean tryStartAssembly(Minecraft mc, BlockHitResult blockHit, boolean isSneaking, boolean isAltDown) {
         if (!ServerConfig.INSTANCE.enableBarehandedAssembly || !isSneaking) return false;
 
@@ -138,7 +137,6 @@ public class ClientAssemblyTracker {
         Vector3d hitPos = new Vector3d(blockHit.getLocation().x, blockHit.getLocation().y, blockHit.getLocation().z);
         SubLevel subLevel = Sable.HELPER.getContaining(mc.level, hitPos);
 
-        // Ya no necesitamos leer el KeyBinding aquí porque Orchestrator nos lo envía por parámetro
         if (subLevel != null && (!isAltDown || !ServerConfig.INSTANCE.enableRipOffBlocks)) return false;
 
         Level levelToUse = subLevel != null ? subLevel.getLevel() : mc.level;

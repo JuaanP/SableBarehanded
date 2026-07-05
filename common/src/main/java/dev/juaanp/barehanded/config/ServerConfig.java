@@ -42,13 +42,11 @@ public class ServerConfig {
     public boolean cameraLockedRotationY = false;
     public boolean preventFastRotations = true;
 
-    // --- ROTACIÓN ---
     public double maxRotationSpeed = 0.08;
     public double rotationMassDampingFactor = 0.05;
     public int rotationTicksWindow = 8;
     public double rotationRebuildThreshold = 0.3;
 
-    // --- FUERZAS ANGULARES ---
     public double angularDamping = 180.0;
     public double rotatingAngularStiffnessBase = 0.8;
     public double rotatingAngularStiffnessRange = 1.2;
@@ -57,7 +55,6 @@ public class ServerConfig {
     public double stabilizationExponent = 2.0;
     public double rotationStabilization = 0.3;
 
-    // --- NUEVOS PARÁMETROS DE CONTROL ---
     public double angularBrakeThreshold = 0.15;
     public double angularBrakeMultiplier = 8.0;
     public double freePivotDampingMultiplier = 3.0;
@@ -123,7 +120,6 @@ public class ServerConfig {
     public double speedStiffnessMultiplierFactor = 2.5;
     public double maxSpeedStiffnessMultiplier = 3.5;
 
-    // Aquí estaba el error. Agregada la variable faltante:
     public double baseAngularForceFactor = 0.02;
     public double stableAngularForceMassBase = 10.0;
     public double stableAngularForceMassFactor = 0.5;

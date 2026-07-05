@@ -24,7 +24,6 @@ public class KeybindDisassembleHandler {
 
         ServerLevel level = (ServerLevel) player.level();
 
-        // 1. SIEMPRE intentar buscar un sublevel cercano para fusionar (Prioridad de SubLevel)
         ServerSubLevel targetShip = DisassembleHandler.findTargetSubLevel(level, subLevel);
 
         if (targetShip != null) {
@@ -32,11 +31,9 @@ public class KeybindDisassembleHandler {
             if (success) {
                 ServerGrabManager.stopGrabbing(player.getUUID());
             }
-            // Si hay un sublevel cerca, siempre intentamos el merge. Retornamos.
             return;
         }
 
-        // 2. Si NO hay sublevel cerca y se presionó el Modificador, fallar intencionalmente.
         if (isAltDown) {
             if (ServerConfig.INSTANCE.showDisassembleMessages) {
                 player.displayClientMessage(Component.literal("Merge Failed: No nearby SubLevel detected.").withStyle(ChatFormatting.RED), true);
@@ -44,7 +41,6 @@ public class KeybindDisassembleHandler {
             return;
         }
 
-        // 3. Sin Modificador y sin sublevel cerca -> Disassemble normal en el mundo (bloques)
         if (!DisassembleHandler.isAlignedToGrid(subLevel,
                 ServerConfig.INSTANCE.keybindRotationTolerance,
                 ServerConfig.INSTANCE.keybindPositionTolerance)) {

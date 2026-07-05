@@ -34,7 +34,6 @@ public abstract class MixinLivingEntity {
                 double movementScale = 1.0 - (encumbrance * ServerConfig.INSTANCE.maxMovementPenalty);
                 movementScale = Math.max(movementScale, ServerConfig.INSTANCE.minSpeedWhileGrabbing);
 
-                // Escala los impulsos X y Z (izquierda/derecha y adelante/atrás)
                 return new Vec3(
                         movementInput.x * movementScale,
                         movementInput.y,

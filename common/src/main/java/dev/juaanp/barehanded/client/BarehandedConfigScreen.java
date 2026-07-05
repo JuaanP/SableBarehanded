@@ -219,10 +219,8 @@ public class BarehandedConfigScreen {
         addDouble(advanced, eb, "Max Speed Stiffness Mult", "Cap on the speed-based stiffness multiplier.", 1.0, 10000.0, ServerConfig.INSTANCE.maxSpeedStiffnessMultiplier, SERVER_DEFAULTS.maxSpeedStiffnessMultiplier, v -> ServerConfig.INSTANCE.maxSpeedStiffnessMultiplier = v);
         addDouble(advanced, eb, "Base Angular Force Factor", "Fraction of maxForce used as minimum angular force.", 0.0, 1.0, ServerConfig.INSTANCE.baseAngularForceFactor, SERVER_DEFAULTS.baseAngularForceFactor, v -> ServerConfig.INSTANCE.baseAngularForceFactor = v);
 
-        // --- Variables Agregadas Oficialmente ---
         addDouble(advanced, eb, "Stable Angular Force: Mass Base", "Constant term in the stable angular force formula.", 0.0, 1000000.0, ServerConfig.INSTANCE.stableAngularForceMassBase, SERVER_DEFAULTS.stableAngularForceMassBase, v -> ServerConfig.INSTANCE.stableAngularForceMassBase = v);
         addDouble(advanced, eb, "Stable Angular Force: Mass Factor", "Mass coefficient in the stable angular force formula.", 0.0, 100000.0, ServerConfig.INSTANCE.stableAngularForceMassFactor, SERVER_DEFAULTS.stableAngularForceMassFactor, v -> ServerConfig.INSTANCE.stableAngularForceMassFactor = v);
-        // ----------------------------------------
 
         addDouble(advanced, eb, "Rotating Angular Stiffness: Base", "Base angular stiffness multiplier while actively rotating.", 0.0, 1000.0, ServerConfig.INSTANCE.rotatingAngularStiffnessBase, SERVER_DEFAULTS.rotatingAngularStiffnessBase, v -> ServerConfig.INSTANCE.rotatingAngularStiffnessBase = v);
         addDouble(advanced, eb, "Rotating Angular Stiffness: Range", "Range component of the rotation stiffness multiplier.", 0.0, 5000.0, ServerConfig.INSTANCE.rotatingAngularStiffnessRange, SERVER_DEFAULTS.rotatingAngularStiffnessRange, v -> ServerConfig.INSTANCE.rotatingAngularStiffnessRange = v);

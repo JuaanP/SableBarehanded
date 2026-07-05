@@ -416,7 +416,6 @@ public class GrabPhysicsController {
                 grab.constraintHandle.setMotor(ConstraintJointAxis.ANGULAR_Y, errorY, angularStiffness, currentAngularDamping, true, angularMaxForce);
                 grab.constraintHandle.setMotor(ConstraintJointAxis.ANGULAR_Z, errorZ, angularStiffness, currentAngularDamping, true, angularMaxForce);
             } else {
-                // Cuando NO está rotando, usa damping muy alto para frenar oscilaciones
                 double freeDamping = angularDamping * ServerConfig.INSTANCE.freePivotDampingMultiplier;
                 double swayStiffness = baseStiffness * (ServerConfig.INSTANCE.swayAngularStiffnessBase * ServerConfig.INSTANCE.swayStiffnessEdgeFactor + (ServerConfig.INSTANCE.swayAngularStiffnessRange * grabStable * ServerConfig.INSTANCE.swayStiffnessEdgeRangeFactor));
                 double angularMaxForce = disableMotors ? 0.0 : (hasSuperStrength ? ServerConfig.INSTANCE.creativeMaxMotorForce : (baseAngularForce + ((stableAngularForce - baseAngularForce) * grabStable)));

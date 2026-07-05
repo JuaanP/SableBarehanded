@@ -32,7 +32,6 @@ public class DisassembleHandler {
 
     public record PlacementResult(BlockPos plotAnchor, BlockPos disassemblyGoal, Rotation rotation) {}
 
-    // --- ESCÁNER DE INTERSECCIÓN AABB GLOBAL ---
     public static ServerSubLevel findTargetSubLevel(ServerLevel level, ServerSubLevel source) {
         SubLevelContainer container = SubLevelContainer.getContainer(level);
         if (container == null) return null;
@@ -57,12 +56,10 @@ public class DisassembleHandler {
         return null;
     }
 
-    // --- LA MAGIA DEL MERGEO ---
     public static boolean disassembleIntoSubLevel(ServerLevel worldLevel, ServerSubLevel source, ServerSubLevel target, ServerPlayer player) {
         BlockPos sourceAnchor = getFirstSolidBlockPos(source);
         if (sourceAnchor == null) return false;
 
-        // Capturamos el bloque exacto que estamos fusionando para usar sus partículas y sonidos luego
         BlockState placedBlockState = ((ServerLevel) source.getLevel()).getBlockState(sourceAnchor);
 
         Rotation relativeRot = getRelativeRotation(source, target);
@@ -104,7 +101,6 @@ public class DisassembleHandler {
                 sourceAnchor, targetPlotAnchor, angle, relativeRot, plotLevel
         );
 
-        // 1. Chequear Colisiones en el Plot destino
         for (BlockPos p : blocks) {
             BlockPos tp = transform.apply(p);
             BlockState targetState = plotLevel.getBlockState(tp);
@@ -116,7 +112,6 @@ public class DisassembleHandler {
             }
         }
 
-        // 2. Chequeo de Adyacencia (Para que no flote en el aire)
         boolean hasSupport = false;
         for (BlockPos p : blocks) {
             BlockPos tp = transform.apply(p);
@@ -138,13 +133,11 @@ public class DisassembleHandler {
             return false;
         }
 
-        // 3. Expandir el plot destino para alojar los bloques
         for (BlockPos p : blocks) {
             BlockPos tp = transform.apply(p);
             targetPlot.expandIfNecessary(tp);
         }
 
-        // 4. Mover entidades y Bloques
         ((ServerLevelPlot) sourcePlot).kickAllEntities();
         SubLevelAssemblyHelper.moveBlocks(plotLevel, transform, blocks);
 
@@ -153,7 +146,6 @@ public class DisassembleHandler {
 
         source.markRemoved();
 
-        // 5. Refrescar físicas en Rapier
         dev.ryanhcode.sable.api.physics.PhysicsPipeline pipeline = ((ServerSubLevelContainer) SubLevelContainer.getContainer(worldLevel)).physicsSystem().getPipeline();
         pipeline.wakeUp(target);
 
@@ -162,7 +154,6 @@ public class DisassembleHandler {
         target.updateMergedMassData(1.0f);
         pipeline.onStatsChanged(target);
 
-        // 6. Efectos Visuales y Sonoros (Igual que un Drop normal en el mundo)
         BlockPos soundPos = BlockPos.containing(globalAnchor.x, globalAnchor.y, globalAnchor.z);
         if (placedBlockState != null && !placedBlockState.isAir()) {
             SoundType placedSound = placedBlockState.getSoundType();
@@ -221,10 +212,6 @@ public class DisassembleHandler {
         if (errZ <= posTol) goodCoords++;
         return goodCoords >= 2;
     }
-
-    // -----------------------------------------------------------
-    // LÓGICA NORMAL EXISTENTE
-    // -----------------------------------------------------------
 
     public static boolean disassemble(ServerLevel worldLevel, ServerSubLevel subLevel,
                                       BlockPos subLevelAnchor, BlockPos disassemblyGoal, Rotation rotation,

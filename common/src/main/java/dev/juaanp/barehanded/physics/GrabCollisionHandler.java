@@ -23,7 +23,6 @@ public class GrabCollisionHandler {
     }
 
     public static boolean shouldIgnoreEntityCollision(SubLevel subLevel, Entity entity) {
-        // --- LÓGICA DEL CLIENTE ---
         if (subLevel.getLevel().isClientSide()) {
             for (Map.Entry<UUID, ClientGhostState> entry : CLIENT_GHOST_STATES.entrySet()) {
                 ClientGhostState state = entry.getValue();
@@ -49,7 +48,6 @@ public class GrabCollisionHandler {
             return false;
         }
 
-        // --- LÓGICA DEL SERVIDOR ---
         for (Map.Entry<UUID, GrabSession> entry : ServerGrabManager.getActiveGrabs().entrySet()) {
             if (entry.getValue().subLevel.equals(subLevel)) {
                 UUID grabberId = entry.getKey();
@@ -80,6 +78,5 @@ public class GrabCollisionHandler {
         return false;
     }
 
-    // Definición formal del estado fantasma del cliente
     private record ClientGhostState(UUID subLevelId, byte collisionMask) {}
 }

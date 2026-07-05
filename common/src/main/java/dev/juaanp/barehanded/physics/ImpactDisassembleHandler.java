@@ -58,7 +58,6 @@ public class ImpactDisassembleHandler {
 
         ServerLevel level = (ServerLevel) player.level();
 
-        // 1. SIEMPRE buscar sublevel cercano para fusionar (Prioridad de SubLevel)
         ServerSubLevel targetShip = DisassembleHandler.findTargetSubLevel(level, subLevel);
         if (targetShip != null) {
             boolean success = DisassembleHandler.disassembleIntoSubLevel(level, subLevel, targetShip, player);
@@ -66,15 +65,13 @@ public class ImpactDisassembleHandler {
                 ServerGrabManager.stopGrabbing(player.getUUID());
                 cleanup(subLevel.getUniqueId());
             }
-            return; // Prioridad de sublevel evaluada
+            return;
         }
 
-        // 2. Si NO hay sublevel cerca y se presionó el Modificador, no impactar en el mundo
         if (grab.isAltDown) {
             return;
         }
 
-        // 3. Impacto normal contra el Mundo
         Vec3 approachDir = PlayerIntentValidator.getApproachDirection(previousVelocity);
         Optional<ImpactResult> impact = ImpactFaceDetector.detectImpact(level, subLevel, approachDir);
         if (impact.isEmpty()) return;
