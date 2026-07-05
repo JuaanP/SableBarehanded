@@ -3,10 +3,13 @@ package dev.juaanp.barehanded.physics;
 import dev.juaanp.barehanded.config.ServerConfig;
 import dev.juaanp.barehanded.util.BlockReplacementHelper;
 import dev.ryanhcode.sable.api.SubLevelAssemblyHelper;
+import dev.ryanhcode.sable.api.sublevel.ServerSubLevelContainer;
+import dev.ryanhcode.sable.api.sublevel.SubLevelContainer;
 import dev.ryanhcode.sable.companion.math.BoundingBox3dc;
 import dev.ryanhcode.sable.companion.math.BoundingBox3i;
 import dev.ryanhcode.sable.companion.math.BoundingBox3ic;
 import dev.ryanhcode.sable.sublevel.ServerSubLevel;
+import dev.ryanhcode.sable.sublevel.SubLevel;
 import dev.ryanhcode.sable.sublevel.plot.LevelPlot;
 import dev.ryanhcode.sable.sublevel.plot.PlotChunkHolder;
 import dev.ryanhcode.sable.sublevel.plot.ServerLevelPlot;
@@ -16,6 +19,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.SoundType;
@@ -27,6 +31,200 @@ import org.joml.Vector3d;
 public class DisassembleHandler {
 
     public record PlacementResult(BlockPos plotAnchor, BlockPos disassemblyGoal, Rotation rotation) {}
+
+    // --- ESCÁNER DE INTERSECCIÓN AABB GLOBAL ---
+    public static ServerSubLevel findTargetSubLevel(ServerLevel level, ServerSubLevel source) {
+        SubLevelContainer container = SubLevelContainer.getContainer(level);
+        if (container == null) return null;
+
+        double margin = 1.0;
+        BoundingBox3dc sourceBounds = source.boundingBox();
+        if (sourceBounds == null) return null;
+
+        for (SubLevel sl : container.getAllSubLevels()) {
+            if (sl == source || sl.isRemoved() || !(sl instanceof ServerSubLevel target)) continue;
+
+            BoundingBox3dc targetBounds = target.boundingBox();
+            if (targetBounds == null) continue;
+
+            if (sourceBounds.minX() <= targetBounds.maxX() + margin && sourceBounds.maxX() >= targetBounds.minX() - margin &&
+                    sourceBounds.minY() <= targetBounds.maxY() + margin && sourceBounds.maxY() >= targetBounds.minY() - margin &&
+                    sourceBounds.minZ() <= targetBounds.maxZ() + margin && sourceBounds.maxZ() >= targetBounds.minZ() - margin) {
+
+                return target;
+            }
+        }
+        return null;
+    }
+
+    // --- LA MAGIA DEL MERGEO ---
+    public static boolean disassembleIntoSubLevel(ServerLevel worldLevel, ServerSubLevel source, ServerSubLevel target, ServerPlayer player) {
+        BlockPos sourceAnchor = getFirstSolidBlockPos(source);
+        if (sourceAnchor == null) return false;
+
+        // Capturamos el bloque exacto que estamos fusionando para usar sus partículas y sonidos luego
+        BlockState placedBlockState = ((ServerLevel) source.getLevel()).getBlockState(sourceAnchor);
+
+        Rotation relativeRot = getRelativeRotation(source, target);
+        if (!isRelativelyAligned(source, target, ServerConfig.INSTANCE.impactRotationTolerance, ServerConfig.INSTANCE.impactPositionTolerance)) {
+            if (ServerConfig.INSTANCE.showDisassembleMessages) {
+                player.displayClientMessage(net.minecraft.network.chat.Component.literal("Merge Failed: Poor alignment or invalid angle.").withStyle(net.minecraft.ChatFormatting.RED), true);
+            }
+            return false;
+        }
+
+        Vector3d localAnchor = new Vector3d(sourceAnchor.getX() + 0.5, sourceAnchor.getY() + 0.5, sourceAnchor.getZ() + 0.5);
+        Vector3d globalAnchor = source.logicalPose().transformPosition(localAnchor);
+        Vector3d targetLocalAnchor = target.logicalPose().transformPositionInverse(new Vector3d(globalAnchor));
+
+        BlockPos targetPlotAnchor = BlockPos.containing(targetLocalAnchor.x, targetLocalAnchor.y, targetLocalAnchor.z);
+
+        LevelPlot sourcePlot = source.getPlot();
+        LevelPlot targetPlot = target.getPlot();
+        ServerLevel plotLevel = (ServerLevel) source.getLevel();
+
+        ObjectArrayList<BlockPos> blocks = new ObjectArrayList<>();
+        for (PlotChunkHolder chunk : sourcePlot.getLoadedChunks()) {
+            BoundingBox3ic bounds = chunk.getBoundingBox();
+            if (bounds == null || bounds == BoundingBox3i.EMPTY) continue;
+            for (int x = bounds.minX(); x <= bounds.maxX(); x++) {
+                for (int y = bounds.minY(); y <= bounds.maxY(); y++) {
+                    for (int z = bounds.minZ(); z <= bounds.maxZ(); z++) {
+                        BlockPos p = new BlockPos(x + chunk.getPos().getMinBlockX(), y, z + chunk.getPos().getMinBlockZ());
+                        if (!plotLevel.getBlockState(p).isAir()) blocks.add(p);
+                    }
+                }
+            }
+        }
+
+        if (blocks.isEmpty()) return false;
+
+        int angle = relativeRot == Rotation.NONE ? 0 : (4 - relativeRot.ordinal());
+        SubLevelAssemblyHelper.AssemblyTransform transform = new SubLevelAssemblyHelper.AssemblyTransform(
+                sourceAnchor, targetPlotAnchor, angle, relativeRot, plotLevel
+        );
+
+        // 1. Chequear Colisiones en el Plot destino
+        for (BlockPos p : blocks) {
+            BlockPos tp = transform.apply(p);
+            BlockState targetState = plotLevel.getBlockState(tp);
+            if (!targetState.isAir() && !targetState.canBeReplaced()) {
+                if (ServerConfig.INSTANCE.showDisassembleMessages) {
+                    player.displayClientMessage(net.minecraft.network.chat.Component.literal("Merge Failed: Blocks are overlapping.").withStyle(net.minecraft.ChatFormatting.RED), true);
+                }
+                return false;
+            }
+        }
+
+        // 2. Chequeo de Adyacencia (Para que no flote en el aire)
+        boolean hasSupport = false;
+        for (BlockPos p : blocks) {
+            BlockPos tp = transform.apply(p);
+            for (Direction dir : Direction.values()) {
+                BlockPos adjacent = tp.relative(dir);
+                BlockState adjacentState = plotLevel.getBlockState(adjacent);
+                if (!adjacentState.isAir() && !adjacentState.canBeReplaced()) {
+                    hasSupport = true;
+                    break;
+                }
+            }
+            if (hasSupport) break;
+        }
+
+        if (!hasSupport) {
+            if (ServerConfig.INSTANCE.showDisassembleMessages) {
+                player.displayClientMessage(net.minecraft.network.chat.Component.literal("Merge Failed: Must be attached to the ship.").withStyle(net.minecraft.ChatFormatting.RED), true);
+            }
+            return false;
+        }
+
+        // 3. Expandir el plot destino para alojar los bloques
+        for (BlockPos p : blocks) {
+            BlockPos tp = transform.apply(p);
+            targetPlot.expandIfNecessary(tp);
+        }
+
+        // 4. Mover entidades y Bloques
+        ((ServerLevelPlot) sourcePlot).kickAllEntities();
+        SubLevelAssemblyHelper.moveBlocks(plotLevel, transform, blocks);
+
+        BoundingBox3i plotBounds = new BoundingBox3i(sourcePlot.getBoundingBox());
+        SubLevelAssemblyHelper.moveTrackingPoints(worldLevel, plotBounds, target, transform);
+
+        source.markRemoved();
+
+        // 5. Refrescar físicas en Rapier
+        dev.ryanhcode.sable.api.physics.PhysicsPipeline pipeline = ((ServerSubLevelContainer) SubLevelContainer.getContainer(worldLevel)).physicsSystem().getPipeline();
+        pipeline.wakeUp(target);
+
+        target.getPlot().updateBoundingBox();
+        target.updateBoundingBox();
+        target.updateMergedMassData(1.0f);
+        pipeline.onStatsChanged(target);
+
+        // 6. Efectos Visuales y Sonoros (Igual que un Drop normal en el mundo)
+        BlockPos soundPos = BlockPos.containing(globalAnchor.x, globalAnchor.y, globalAnchor.z);
+        if (placedBlockState != null && !placedBlockState.isAir()) {
+            SoundType placedSound = placedBlockState.getSoundType();
+            worldLevel.playSound(null, soundPos, placedSound.getPlaceSound(), SoundSource.BLOCKS, 1.5f, 0.8f);
+            spawnPlacementParticles(worldLevel, soundPos, Direction.UP, placedBlockState);
+        } else {
+            worldLevel.playSound(null, soundPos, net.minecraft.sounds.SoundEvents.STONE_PLACE, SoundSource.BLOCKS, 1.0f, 1.0f);
+        }
+
+        return true;
+    }
+
+    private static Rotation getRelativeRotation(ServerSubLevel source, ServerSubLevel target) {
+        Quaterniond targetInv = new Quaterniond(target.logicalPose().orientation()).invert();
+        Quaterniond rel = targetInv.mul(source.logicalPose().orientation());
+        double yaw = Math.atan2(2.0 * (rel.y * rel.w - rel.x * rel.z), 1.0 - 2.0 * (rel.y * rel.y + rel.x * rel.x));
+        double degrees = (Math.toDegrees(yaw) + 360) % 360;
+        if (degrees >= 315 || degrees < 45) return Rotation.NONE;
+        if (degrees >= 45 && degrees < 135) return Rotation.CLOCKWISE_90;
+        if (degrees >= 135 && degrees < 225) return Rotation.CLOCKWISE_180;
+        return Rotation.COUNTERCLOCKWISE_90;
+    }
+
+    private static boolean isRelativelyAligned(ServerSubLevel source, ServerSubLevel target, double rotTol, double posTol) {
+        Quaterniond targetInv = new Quaterniond(target.logicalPose().orientation()).invert();
+        Quaterniond rel = targetInv.mul(source.logicalPose().orientation());
+
+        double angle = Math.toDegrees(2.0 * Math.acos(Math.abs(rel.w)));
+        if (Double.isNaN(angle)) angle = 0.0;
+        if (angle > 180.0) angle = 360.0 - angle;
+        double nearest90 = Math.round(angle / 90.0) * 90.0;
+        double rotDev = Math.abs(angle - nearest90);
+        double effectiveRotTolerance = rotDev < rotTol * 0.5 ? rotTol * 1.5 : rotTol;
+        if (rotDev > effectiveRotTolerance) return false;
+
+        if (posTol >= 1.0) return true;
+
+        BlockPos sAnchor = getFirstSolidBlockPos(source);
+        if (sAnchor == null) return false;
+        Vector3d localAnchor = new Vector3d(sAnchor.getX() + 0.5, sAnchor.getY() + 0.5, sAnchor.getZ() + 0.5);
+        Vector3d globalAnchor = source.logicalPose().transformPosition(localAnchor);
+
+        Vector3d targetLocal = target.logicalPose().transformPositionInverse(new Vector3d(globalAnchor));
+
+        double fracX = Math.abs(targetLocal.x - Math.floor(targetLocal.x));
+        double fracY = Math.abs(targetLocal.y - Math.floor(targetLocal.y));
+        double fracZ = Math.abs(targetLocal.z - Math.floor(targetLocal.z));
+
+        double errX = Math.abs(fracX - 0.5);
+        double errY = Math.abs(fracY - 0.5);
+        double errZ = Math.abs(fracZ - 0.5);
+
+        int goodCoords = 0;
+        if (errX <= posTol) goodCoords++;
+        if (errY <= posTol) goodCoords++;
+        if (errZ <= posTol) goodCoords++;
+        return goodCoords >= 2;
+    }
+
+    // -----------------------------------------------------------
+    // LÓGICA NORMAL EXISTENTE
+    // -----------------------------------------------------------
 
     public static boolean disassemble(ServerLevel worldLevel, ServerSubLevel subLevel,
                                       BlockPos subLevelAnchor, BlockPos disassemblyGoal, Rotation rotation,
@@ -298,6 +496,7 @@ public class DisassembleHandler {
     public static boolean isAlignedToGrid(ServerSubLevel subLevel, double rotationTolerance, double positionTolerance) {
         Quaterniond orientation = subLevel.logicalPose().orientation();
         double angle = Math.toDegrees(2.0 * Math.acos(Math.abs(orientation.w)));
+        if (Double.isNaN(angle)) angle = 0.0;
         if (angle > 180.0) angle = 360.0 - angle;
         double nearest90 = Math.round(angle / 90.0) * 90.0;
         double rotationDeviation = Math.abs(angle - nearest90);
@@ -320,9 +519,9 @@ public class DisassembleHandler {
         double errZ = Math.abs(fracZ - 0.5);
 
         int goodCoords = 0;
-        if (errX < positionTolerance) goodCoords++;
-        if (errY < positionTolerance) goodCoords++;
-        if (errZ < positionTolerance) goodCoords++;
+        if (errX <= positionTolerance) goodCoords++;
+        if (errY <= positionTolerance) goodCoords++;
+        if (errZ <= positionTolerance) goodCoords++;
         return goodCoords >= 2;
     }
 

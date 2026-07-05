@@ -12,16 +12,17 @@ public class GrabSession {
     public float targetDistance;
     public final PhysicsPipeline pipeline;
     public PhysicsConstraintHandle constraintHandle;
-
     public final Vector3d localPivot;
     public final Vector3d localCenterOfMass;
 
     public boolean isRotating = false;
     public int rotationTicksLeft = 0;
 
-    public boolean rotateAroundCenter = true;
+    public boolean rotateAroundCenter = false;
 
     public int suspendTicksLeft = 0;
+
+    public boolean isAltDown = false;
 
     public byte lastCollisionMask = -1;
     public boolean hasSyncedGhostState = false;
@@ -29,8 +30,6 @@ public class GrabSession {
     public final Vector3d anchorGlobalOrigin = new Vector3d();
     public final Quaterniond baseOrientation = new Quaterniond();
     public final Quaterniond targetGlobalOrientation = new Quaterniond();
-
-    public final Vector3d accumulatedPivotOffset = new Vector3d();
 
     public int impactTicks = 0;
 
@@ -46,5 +45,10 @@ public class GrabSession {
         this.anchorGlobalOrigin.set(initialTarget);
         this.baseOrientation.set(initialOrient);
         this.targetGlobalOrientation.set(initialOrient);
+    }
+
+    public static boolean hasSuperStrength(net.minecraft.world.entity.player.Player player) {
+        return (player.isCreative() && dev.juaanp.barehanded.config.ServerConfig.INSTANCE.creativeSuperStrength) ||
+                (player.isSpectator() && dev.juaanp.barehanded.config.ServerConfig.INSTANCE.spectatorSuperStrength);
     }
 }

@@ -3,7 +3,6 @@ package dev.juaanp.barehanded.client;
 import dev.juaanp.barehanded.config.ClientConfig;
 import dev.juaanp.barehanded.config.ServerConfig;
 import dev.juaanp.barehanded.mixin.accesor.MultiPlayerGameModeAccessor;
-import dev.juaanp.barehanded.network.DisassembleRequestPacket;
 import dev.juaanp.barehanded.physics.GrabPhysicsController;
 import dev.juaanp.barehanded.platform.Services;
 import dev.juaanp.barehanded.util.AssemblyBehaviorHelper;
@@ -24,8 +23,10 @@ public class ClientTickOrchestrator {
     private static Player lastPlayer = null;
     private static boolean wasDisassembleKeyDown = false;
     private static boolean wasAssemblingLastTick = false;
+    private static boolean wasAltDownLastTick = false;
 
-    public static boolean isPhysicallyDown(net.minecraft.client.KeyMapping mapping) {
+    public static boolean isActionDown(net.minecraft.client.KeyMapping mapping) {
+        if (mapping.isDown()) return true;
         if (mapping.isUnbound()) return false;
 
         com.mojang.blaze3d.platform.InputConstants.Key key = com.mojang.blaze3d.platform.InputConstants.getKey(mapping.saveString());
@@ -40,6 +41,7 @@ public class ClientTickOrchestrator {
 
     public static void tick(Minecraft mc) {
         if (mc.player == null || mc.level == null) {
+            if (ClientGrabSession.isHoldingGrab) Services.NETWORK.sendStopGrabbingRequest();
             ClientGrabSession.forceResetAndNotify();
             ClientAssemblyTracker.reset();
             lastLevel = null;
@@ -50,6 +52,7 @@ public class ClientTickOrchestrator {
         ClientPayloadHandler.GRABBING_PLAYERS.removeIf(uuid -> mc.level.getPlayerByUUID(uuid) == null);
 
         if (mc.level != lastLevel || mc.player != lastPlayer) {
+            if (ClientGrabSession.isHoldingGrab) Services.NETWORK.sendStopGrabbingRequest();
             ClientGrabSession.forceResetAndNotify();
             ClientAssemblyTracker.reset();
             lastLevel = mc.level;
@@ -68,9 +71,17 @@ public class ClientTickOrchestrator {
             mc.player.yBodyRotO = mc.player.yHeadRotO;
             ClientGrabSession.tickTetherStrain(mc.player);
 
+            double distanceDelta = 0.0;
+            if (isActionDown(KeyBindings.PULL_KEY)) distanceDelta -= ClientConfig.INSTANCE.scrollDistanceSensitivity * 0.25;
+            if (isActionDown(KeyBindings.PUSH_KEY)) distanceDelta += ClientConfig.INSTANCE.scrollDistanceSensitivity * 0.25;
+            if (distanceDelta != 0.0) {
+                Services.NETWORK.sendAdjustDistance(distanceDelta);
+            }
+
             if (!ClientGrabSession.isWaitingForGrabSync && ClientGrabSession.grabbedSubLevelId != null) {
                 SubLevelContainer container = SubLevelContainer.getContainer(mc.level);
                 if (container == null || container.getSubLevel(ClientGrabSession.grabbedSubLevelId) == null) {
+                    Services.NETWORK.sendStopGrabbingRequest();
                     ClientGrabSession.forceResetAndNotify();
                 }
             }
@@ -78,6 +89,7 @@ public class ClientTickOrchestrator {
 
         if (mc.screen != null) {
             if (ClientGrabSession.isHoldingGrab || ClientGrabSession.isWaitingForGrabSync) {
+                Services.NETWORK.sendStopGrabbingRequest();
                 ClientGrabSession.forceResetAndNotify();
             }
             ClientAssemblyTracker.reset();
@@ -86,22 +98,28 @@ public class ClientTickOrchestrator {
 
         ClientAssemblyTracker.tickAssemblyTether(mc);
 
-        boolean attackDown = isPhysicallyDown(mc.options.keyAttack);
-        boolean useDown = isPhysicallyDown(mc.options.keyUse);
+        boolean attackDown = isActionDown(mc.options.keyAttack);
+        boolean useDown = isActionDown(mc.options.keyUse);
         boolean bothDown = attackDown && useDown;
         boolean eitherDown = attackDown || useDown;
+
+        boolean grabKeyPressed = isActionDown(KeyBindings.GRAB_KEY);
         boolean isSneaking = mc.player.isShiftKeyDown();
+        boolean isAltDown = isActionDown(KeyBindings.PIVOT_KEY);
+
+        if (isAltDown != wasAltDownLastTick) {
+            Services.NETWORK.sendAltStateToServer(isAltDown);
+            wasAltDownLastTick = isAltDown;
+        }
 
         boolean isGrabbingState = ClientGrabSession.isHoldingGrab || ClientGrabSession.isWaitingForGrabSync || ClientAssemblyTracker.isActive();
 
-        if (isGrabbingState) {
-            mc.options.keyAttack.setDown(false);
-            mc.options.keyUse.setDown(false);
-        }
+        ClientInputTracker.tickDebounce(eitherDown, bothDown, grabKeyPressed);
 
-        ClientInputTracker.tickDebounce(eitherDown, bothDown);
+        boolean isTryingToGrab = bothDown || ClientInputTracker.grabToggleActive;
+        boolean isMaintainingGrab = eitherDown || ClientInputTracker.grabToggleActive;
 
-        if (bothDown && !isGrabbingState && mc.player.getMainHandItem().isEmpty() && ClientInputTracker.canInitiateGrab()) {
+        if (isTryingToGrab && !isGrabbingState && mc.player.getMainHandItem().isEmpty() && ClientInputTracker.canInitiateGrab()) {
             if (!ClientAssemblyTracker.isActive()) {
                 double reach = GrabPhysicsController.getGrabReach(mc.player);
                 HitResult hit = mc.player.pick(reach, 0.0f, false);
@@ -121,39 +139,50 @@ public class ClientTickOrchestrator {
                         if (miningProgress > ClientConfig.INSTANCE.barehandedAssemblyMiningThreshold) preventDueToMining = true;
                     }
 
-                    if (Sable.HELPER.getContaining(mc.level, hitPos) != null) {
-                        Services.NETWORK.sendRequestGrab(currentPos);
-                        ClientGrabSession.startWaiting();
-                        if (mc.gameMode != null) mc.gameMode.stopDestroyBlock();
-                        ClientAssemblyTracker.reset();
+                    boolean isSubLevel = Sable.HELPER.getContaining(mc.level, hitPos) != null;
+
+                    if (isSubLevel) {
+                        if (isSneaking && isAltDown && ServerConfig.INSTANCE.enableRipOffBlocks) {
+                            ClientAssemblyTracker.tryStartAssembly(mc, blockHit, isSneaking, isAltDown);
+                        } else {
+                            Services.NETWORK.sendRequestGrab(currentPos);
+                            ClientGrabSession.startWaiting();
+                            if (mc.gameMode != null) mc.gameMode.stopDestroyBlock();
+                            ClientAssemblyTracker.reset();
+                        }
                     } else if (isSneaking && ServerConfig.INSTANCE.enableBarehandedAssembly && distanceToHit <= ServerConfig.INSTANCE.barehandedAssemblyMaxDistance && !isIgnored && !preventDueToMining) {
-                        ClientAssemblyTracker.tryStartAssembly(mc, blockHit, isSneaking);
+                        ClientAssemblyTracker.tryStartAssembly(mc, blockHit, isSneaking, isAltDown);
                     }
                 }
             }
         } else if (ClientAssemblyTracker.isActive()) {
-            if (eitherDown) {
+            if (isMaintainingGrab) {
                 ClientAssemblyTracker.tickCharge(mc, isSneaking);
             } else {
                 ClientAssemblyTracker.reset();
             }
-        } else if (!eitherDown && (ClientGrabSession.isHoldingGrab || ClientGrabSession.isWaitingForGrabSync)) {
+        } else if (!isMaintainingGrab && (ClientGrabSession.isHoldingGrab || ClientGrabSession.isWaitingForGrabSync)) {
+            Services.NETWORK.sendStopGrabbingRequest();
             ClientGrabSession.forceResetAndNotify();
             ClientAssemblyTracker.reset();
+        } else if (ClientGrabSession.isHoldingGrab && !mc.player.getMainHandItem().isEmpty()) {
+            Services.NETWORK.sendStopGrabbingRequest();
+            ClientGrabSession.forceResetAndNotify();
+            ClientInputTracker.grabToggleActive = false;
         }
 
-        boolean isRotateKeyDown = KeyBindings.ROTATE_KEY.isDown();
+        boolean isRotateKeyDown = isActionDown(KeyBindings.ROTATE_KEY);
         if (ClientGrabSession.isHoldingGrab && (isRotateKeyDown || ClientInputTracker.pendingYaw != 0.0 || ClientInputTracker.pendingPitch != 0.0)) {
-            boolean useCenter = ClientConfig.INSTANCE.rotateAroundCenter ^ KeyBindings.PIVOT_KEY.isDown();
+            boolean useCenter = ClientConfig.INSTANCE.rotateAroundCenter ^ isAltDown;
             Services.NETWORK.sendRotateGrab(ClientInputTracker.pendingYaw, ClientInputTracker.pendingPitch, useCenter);
 
             ClientInputTracker.pendingYaw = 0.0;
             ClientInputTracker.pendingPitch = 0.0;
         }
 
-        boolean isDisassembleKeyDown = KeyBindings.DISASSEMBLE_KEY.isDown();
+        boolean isDisassembleKeyDown = isActionDown(KeyBindings.DISASSEMBLE_KEY);
         if (ClientGrabSession.isHoldingGrab && isDisassembleKeyDown && !wasDisassembleKeyDown) {
-            Services.NETWORK.sendDisassembleRequest();
+            Services.NETWORK.sendDisassembleRequest(isAltDown);
         }
         wasDisassembleKeyDown = isDisassembleKeyDown;
 

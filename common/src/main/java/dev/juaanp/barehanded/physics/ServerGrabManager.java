@@ -2,6 +2,7 @@ package dev.juaanp.barehanded.physics;
 
 import dev.juaanp.barehanded.Constants;
 import dev.juaanp.barehanded.api.BarehandedEvents;
+import dev.juaanp.barehanded.config.ServerConfig;
 import dev.juaanp.barehanded.platform.Services;
 import dev.ryanhcode.sable.sublevel.ServerSubLevel;
 import net.minecraft.resources.ResourceLocation;
@@ -21,7 +22,6 @@ public class ServerGrabManager {
     private static final Map<UUID, GrabSession> ACTIVE_GRABS = new HashMap<>();
     private static final Set<UUID> PENDING_PHYSICS_PLACEMENTS = new HashSet<>();
 
-    // Método añadido para solucionar el error de GrabCollisionHandler
     public static Map<UUID, GrabSession> getActiveGrabs() {
         return ACTIVE_GRABS;
     }
@@ -39,7 +39,8 @@ public class ServerGrabManager {
     }
 
     public static boolean canPlayerGrab(Player player) {
-        return !ACTIVE_GRABS.containsKey(player.getUUID()) && !player.isSpectator();
+        if (player.isSpectator() && !ServerConfig.INSTANCE.allowSpectatorGrabbing) return false;
+        return !ACTIVE_GRABS.containsKey(player.getUUID());
     }
 
     public static boolean isHoldingSubLevel(Player player, ServerSubLevel subLevel) {

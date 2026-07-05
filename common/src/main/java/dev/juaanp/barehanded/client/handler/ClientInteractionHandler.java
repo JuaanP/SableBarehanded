@@ -4,10 +4,12 @@ import dev.juaanp.barehanded.client.ClientAssemblyTracker;
 import dev.juaanp.barehanded.client.ClientGrabSession;
 import dev.juaanp.barehanded.client.ClientInputTracker;
 import dev.juaanp.barehanded.client.ClientTickOrchestrator;
+import dev.juaanp.barehanded.client.KeyBindings;
 import dev.juaanp.barehanded.config.ServerConfig;
 import dev.juaanp.barehanded.physics.GrabPhysicsController;
 import dev.juaanp.barehanded.platform.Services;
 import dev.ryanhcode.sable.Sable;
+import dev.ryanhcode.sable.sublevel.SubLevel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
@@ -32,14 +34,14 @@ public class ClientInteractionHandler {
             return true;
         }
 
-        boolean attackDown = ClientTickOrchestrator.isPhysicallyDown(mc.options.keyAttack);
-        boolean useDown = ClientTickOrchestrator.isPhysicallyDown(mc.options.keyUse);
+        boolean attackDown = ClientTickOrchestrator.isActionDown(mc.options.keyAttack);
+        boolean useDown = ClientTickOrchestrator.isActionDown(mc.options.keyUse);
+        boolean bothDown = attackDown && useDown;
+        boolean grabToggle = ClientInputTracker.grabToggleActive;
 
-        if (attackDown && useDown) {
+        if (bothDown || grabToggle) {
             if (isValidGrabTarget(mc)) {
                 return true;
-            } else {
-                return false;
             }
         }
 
@@ -48,7 +50,7 @@ public class ClientInteractionHandler {
 
     private static boolean isValidGrabTarget(Minecraft mc) {
         if (!ClientInputTracker.canInitiateGrab()) return false;
-        if (!mc.player.getMainHandItem().isEmpty()) return false; // Debe tener la mano vacía
+        if (!mc.player.getMainHandItem().isEmpty()) return false;
 
         HitResult hit = mc.hitResult;
         if (hit == null || hit.getType() != HitResult.Type.BLOCK) {
@@ -58,17 +60,26 @@ public class ClientInteractionHandler {
         BlockHitResult blockHit = (BlockHitResult) hit;
         Vector3d hitPos = new Vector3d(blockHit.getLocation().x, blockHit.getLocation().y, blockHit.getLocation().z);
         double distanceToHitExact = mc.player.getEyePosition().distanceTo(blockHit.getLocation());
-        double distanceToHitCenter = mc.player.getEyePosition().distanceTo(Vec3.atCenterOf(blockHit.getBlockPos()));
 
-        if (Sable.HELPER.getContaining(mc.level, hitPos) != null) {
-            double reach = GrabPhysicsController.getGrabReach(mc.player);
-            return distanceToHitExact <= reach;
+        SubLevel subLevel = Sable.HELPER.getContaining(mc.level, hitPos);
+        boolean isAltDown = ClientTickOrchestrator.isActionDown(KeyBindings.PIVOT_KEY);
+
+        if (subLevel != null) {
+            if (mc.player.isShiftKeyDown() && isAltDown && ServerConfig.INSTANCE.enableRipOffBlocks) {
+                Vector3d localCenter = new Vector3d(blockHit.getBlockPos().getX() + 0.5, blockHit.getBlockPos().getY() + 0.5, blockHit.getBlockPos().getZ() + 0.5);
+                Vector3d globalCenter = subLevel.logicalPose().transformPosition(localCenter);
+                double distanceToHitCenter = mc.player.getEyePosition().distanceTo(new Vec3(globalCenter.x, globalCenter.y, globalCenter.z));
+                return distanceToHitCenter <= ServerConfig.INSTANCE.barehandedAssemblyMaxDistance;
+            } else {
+                double reach = GrabPhysicsController.getGrabReach(mc.player);
+                return distanceToHitExact <= reach;
+            }
         }
 
         if (!ServerConfig.INSTANCE.enableBarehandedAssembly) return false;
-
         if (!mc.player.isShiftKeyDown()) return false;
 
+        double distanceToHitCenter = mc.player.getEyePosition().distanceTo(Vec3.atCenterOf(blockHit.getBlockPos()));
         return distanceToHitCenter <= ServerConfig.INSTANCE.barehandedAssemblyMaxDistance;
     }
 

@@ -98,13 +98,14 @@ public class GrabActionHandler {
 
         Vector3d localCenterOfMass = new Vector3d(com);
         Vector3d crosshairTarget = JOMLConversion.toJOML(player.getEyePosition().add(player.getLookAngle().scale(Math.max(ServerConfig.INSTANCE.minDistance, distance))));
-        Quaterniond initialOrient = serverSubLevel.logicalPose().orientation();
+        Quaterniond initialOrient = new Quaterniond(serverSubLevel.logicalPose().orientation());
 
         GrabSession session = new GrabSession(serverSubLevel, distance, localGrabPosJoml, localCenterOfMass, crosshairTarget, initialOrient, pipeline);
 
         pipeline.wakeUp(serverSubLevel);
-
         GrabPhysicsController.rebuildConstraint(session);
+        GrabPhysicsController.setGraceTicks(player, 5); // Inmunidad de tensión sin suspender físicas
+
         Services.NETWORK.sendStartGrabbingAnimation(player);
         Services.NETWORK.sendSyncGrabState(player,
                 serverSubLevel.getMassTracker().getMass(),
@@ -121,6 +122,16 @@ public class GrabActionHandler {
 
         if (!ServerGrabManager.canPlayerGrab(player) || !player.getMainHandItem().isEmpty()) {
             Services.NETWORK.sendStopGrabbingAnimation(player);
+            return;
+        }
+
+        SubLevel existingSubLevel = Sable.HELPER.getContaining(level, pos);
+        if (existingSubLevel instanceof ServerSubLevel serverSubLevel) {
+            if (!ServerConfig.INSTANCE.enableRipOffBlocks) {
+                Services.NETWORK.sendStopGrabbingAnimation(player);
+                return;
+            }
+            ripBlockOffAndGrab(player, serverSubLevel, pos);
             return;
         }
 
@@ -205,6 +216,65 @@ public class GrabActionHandler {
         }
     }
 
+    private static void ripBlockOffAndGrab(Player player, ServerSubLevel serverSubLevel, BlockPos localPos) {
+        ServerLevel subLevelLevel = (ServerLevel) serverSubLevel.getLevel();
+        BlockState stateToRip = subLevelLevel.getBlockState(localPos);
+
+        if (stateToRip.isAir()) {
+            Services.NETWORK.sendStopGrabbingAnimation(player);
+            return;
+        }
+
+        if (DisassembleHandler.getBlockCount(serverSubLevel) <= 1) {
+            forceGrab(player, serverSubLevel, localPos);
+            return;
+        }
+
+        subLevelLevel.setBlock(localPos, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 3);
+        player.level().playSound(null, player.blockPosition(), stateToRip.getSoundType().getBreakSound(), SoundSource.BLOCKS, 1.0f, 1.0f);
+
+        Vector3d localCenter = new Vector3d(localPos.getX() + 0.5, localPos.getY() + 0.5, localPos.getZ() + 0.5);
+        Vector3d globalCenter = serverSubLevel.logicalPose().transformPosition(localCenter);
+        Quaterniond originalRot = new Quaterniond(serverSubLevel.logicalPose().orientation());
+
+        BlockPos globalBlockPos = BlockPos.containing(globalCenter.x, globalCenter.y, globalCenter.z);
+
+        ServerLevel worldLevel = (ServerLevel) player.level();
+        BlockState originalWorldState = worldLevel.getBlockState(globalBlockPos);
+
+        if (originalWorldState.canBeReplaced()) {
+            worldLevel.setBlock(globalBlockPos, stateToRip, 3);
+            SubLevel newSubLevel = SubLevelAssemblyHelper.assembleBlocks(worldLevel, globalBlockPos, List.of(globalBlockPos), BoundingBox3i.from(List.of(globalBlockPos)));
+            if (newSubLevel instanceof ServerSubLevel newServerSubLevel) {
+
+                BlockPos newLocalPos = DisassembleHandler.getFirstSolidBlockPos(newServerSubLevel);
+                if (newLocalPos == null) newLocalPos = newServerSubLevel.getPlot().getCenterBlock();
+
+                Vector3d newLocalCenter = new Vector3d(newLocalPos.getX() + 0.5, newLocalPos.getY() + 0.5, newLocalPos.getZ() + 0.5);
+
+                Vector3d rotPoint = newServerSubLevel.logicalPose().rotationPoint();
+                Vector3d offsetFromRot = new Vector3d(newLocalCenter).sub(rotPoint);
+                Vector3d rotatedOffset = new Vector3d(offsetFromRot).rotate(originalRot);
+                Vector3d targetPos = new Vector3d(globalCenter).sub(rotatedOffset);
+
+                newServerSubLevel.logicalPose().position().set(targetPos);
+                newServerSubLevel.logicalPose().orientation().set(originalRot);
+
+                dev.ryanhcode.sable.api.physics.PhysicsPipeline pipeline = ((ServerSubLevelContainer) SubLevelContainer.getContainer(worldLevel)).physicsSystem().getPipeline();
+                pipeline.teleport(newServerSubLevel, targetPos, originalRot);
+
+                newServerSubLevel.latestLinearVelocity.set(serverSubLevel.latestLinearVelocity);
+                newServerSubLevel.latestAngularVelocity.set(serverSubLevel.latestAngularVelocity);
+
+                forceGrab(player, newServerSubLevel, newLocalPos);
+                return;
+            }
+        } else {
+            net.minecraft.world.level.block.Block.dropResources(stateToRip, worldLevel, globalBlockPos);
+        }
+        Services.NETWORK.sendStopGrabbingAnimation(player);
+    }
+
     public static void forceGrab(Player player, ServerSubLevel serverSubLevel, BlockPos localGrabBlock) {
         if (!ServerGrabManager.canPlayerGrab(player)) return;
 
@@ -223,12 +293,13 @@ public class GrabActionHandler {
         float distance = (float) player.getEyePosition().distanceTo(new Vec3(globalGrabBlockPos.x, globalGrabBlockPos.y, globalGrabBlockPos.z));
 
         Vector3d crosshairTarget = JOMLConversion.toJOML(player.getEyePosition().add(player.getLookAngle().scale(Math.max(ServerConfig.INSTANCE.minDistance, distance))));
-        Quaterniond initialOrient = serverSubLevel.logicalPose().orientation();
+        Quaterniond initialOrient = new Quaterniond(serverSubLevel.logicalPose().orientation());
 
         GrabSession session = new GrabSession(serverSubLevel, distance, localGrabPosJoml, localCenterOfMass, crosshairTarget, initialOrient, pipeline);
 
         pipeline.wakeUp(serverSubLevel);
         GrabPhysicsController.rebuildConstraint(session);
+        GrabPhysicsController.setGraceTicks(player, 5);
 
         Services.NETWORK.sendStartGrabbingAnimation(player);
         Services.NETWORK.sendSyncGrabState(player,

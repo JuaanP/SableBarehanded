@@ -16,7 +16,7 @@ public class RotationInputHandler {
                 double vSens = ClientConfig.INSTANCE.verticalRotationSensitivity * 0.01;
 
                 double yaw   = -dx * hSens;
-                double pitch = dy * vSens;
+                double pitch = -dy * vSens;
 
                 if (ClientConfig.INSTANCE.invertHorizontalRotation) yaw = -yaw;
                 if (ClientConfig.INSTANCE.invertVerticalRotation)   pitch = -pitch;

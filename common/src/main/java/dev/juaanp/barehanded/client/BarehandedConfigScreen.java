@@ -64,8 +64,12 @@ public class BarehandedConfigScreen {
         addInt(grab, eb, "Block Limit", "Maximum number of connected blocks that can be grabbed at once. 0 = unlimited.", 0, 10000, ServerConfig.INSTANCE.blockLimit, SERVER_DEFAULTS.blockLimit, v -> ServerConfig.INSTANCE.blockLimit = v);
         addDouble(grab, eb, "Min Physics Mass", "Minimum mass required for an object to be grabbable (prevents grabbing tiny particles).", 0.0, 100.0, ServerConfig.INSTANCE.minPhysicsMass, SERVER_DEFAULTS.minPhysicsMass, v -> ServerConfig.INSTANCE.minPhysicsMass = v);
         addBoolean(grab, eb, "Creative Super Strength", "Creative players ignore weight limits and get boosted physics.", ServerConfig.INSTANCE.creativeSuperStrength, SERVER_DEFAULTS.creativeSuperStrength, v -> ServerConfig.INSTANCE.creativeSuperStrength = v);
+        addBoolean(grab, eb, "Spectator Super Strength", "Spectator players ignore weight limits and get boosted physics.", ServerConfig.INSTANCE.spectatorSuperStrength, SERVER_DEFAULTS.spectatorSuperStrength, v -> ServerConfig.INSTANCE.spectatorSuperStrength = v);
         addDouble(grab, eb, "Strength I Multiplier", "Force multiplier when the player has Strength I effect.", 1.0, 10000.0, ServerConfig.INSTANCE.strength1Multiplier, SERVER_DEFAULTS.strength1Multiplier, v -> ServerConfig.INSTANCE.strength1Multiplier = v);
         addDouble(grab, eb, "Strength II Multiplier", "Force multiplier when the player has Strength II (or higher) effect.", 1.0, 10000.0, ServerConfig.INSTANCE.strength2Multiplier, SERVER_DEFAULTS.strength2Multiplier, v -> ServerConfig.INSTANCE.strength2Multiplier = v);
+
+        addBoolean(grab, eb, "Prevent Prop-Surfing", "Prevents players from flying by standing on the object they are grabbing.", ServerConfig.INSTANCE.preventPropSurfing, SERVER_DEFAULTS.preventPropSurfing, v -> ServerConfig.INSTANCE.preventPropSurfing = v);
+        addBoolean(grab, eb, "Allow Spectator Grabbing", "Allows players in spectator mode to grab objects (ghost interaction).", ServerConfig.INSTANCE.allowSpectatorGrabbing, SERVER_DEFAULTS.allowSpectatorGrabbing, v -> ServerConfig.INSTANCE.allowSpectatorGrabbing = v);
 
         addBoolean(grab, eb, "Enable Distance Scroll", "Allows players to adjust the grab distance using the scroll wheel.", ServerConfig.INSTANCE.enableDistanceScroll, SERVER_DEFAULTS.enableDistanceScroll, v -> ServerConfig.INSTANCE.enableDistanceScroll = v);
         addDouble(grab, eb, "Scroll Min Distance", "Minimum distance allowed when scrolling.", 0.5, 5.0, ServerConfig.INSTANCE.scrollMinDistance, SERVER_DEFAULTS.scrollMinDistance, v -> ServerConfig.INSTANCE.scrollMinDistance = v);
@@ -80,18 +84,25 @@ public class BarehandedConfigScreen {
     private static void buildRotation(ConfigCategory server, ConfigEntryBuilder eb) {
         SubCategoryBuilder rotation = eb.startSubCategory(Component.literal("Rotation"));
         addBoolean(rotation, eb, "Enable Rotation", "Allows players to rotate grabbed objects using the mouse.", ServerConfig.INSTANCE.enableRotation, SERVER_DEFAULTS.enableRotation, v -> ServerConfig.INSTANCE.enableRotation = v);
+        addBoolean(rotation, eb, "Camera Locked Rotation X (Pitch)", "Grabbed object automatically tilts up and down with your camera.", ServerConfig.INSTANCE.cameraLockedRotationX, SERVER_DEFAULTS.cameraLockedRotationX, v -> ServerConfig.INSTANCE.cameraLockedRotationX = v);
+        addBoolean(rotation, eb, "Camera Locked Rotation Y (Yaw)", "Grabbed object automatically turns left and right with your camera.", ServerConfig.INSTANCE.cameraLockedRotationY, SERVER_DEFAULTS.cameraLockedRotationY, v -> ServerConfig.INSTANCE.cameraLockedRotationY = v);
         addDouble(rotation, eb, "Rotation Stabilization", "How rigidly the object holds its rotation when idle (0 = loose, 1 = rigid).", 0.0, 1.0, ServerConfig.INSTANCE.rotationStabilization, SERVER_DEFAULTS.rotationStabilization, v -> ServerConfig.INSTANCE.rotationStabilization = v);
         addDouble(rotation, eb, "Max Rotation Speed", "Maximum allowed rotation speed per tick (radians).", 0.0, 3.14, ServerConfig.INSTANCE.maxRotationSpeed, SERVER_DEFAULTS.maxRotationSpeed, v -> ServerConfig.INSTANCE.maxRotationSpeed = v);
         addBoolean(rotation, eb, "Prevent Fast Rotations", "Clamps rotation speed to prevent physics explosions from fast mouse flicks.", ServerConfig.INSTANCE.preventFastRotations, SERVER_DEFAULTS.preventFastRotations, v -> ServerConfig.INSTANCE.preventFastRotations = v);
         addDouble(rotation, eb, "Rotation Mass Damping Factor", "How much object mass slows down rotation input.", 0.0, 100.0, ServerConfig.INSTANCE.rotationMassDampingFactor, SERVER_DEFAULTS.rotationMassDampingFactor, v -> ServerConfig.INSTANCE.rotationMassDampingFactor = v);
         addInt(rotation, eb, "Rotation Ticks Window", "Ticks the rotation motor stays active after the last mouse input.", 1, 1200, ServerConfig.INSTANCE.rotationTicksWindow, SERVER_DEFAULTS.rotationTicksWindow, v -> ServerConfig.INSTANCE.rotationTicksWindow = v);
         addDouble(rotation, eb, "Rotation Rebuild Threshold", "Angle (radians) that triggers a constraint pivot rebuild to prevent twisting.", 0.01, 3.14, ServerConfig.INSTANCE.rotationRebuildThreshold, SERVER_DEFAULTS.rotationRebuildThreshold, v -> ServerConfig.INSTANCE.rotationRebuildThreshold = v);
+
+        addDouble(rotation, eb, "Angular Brake Threshold", "Angle (radians) where the angular brake activates.", 0.0, 3.14, ServerConfig.INSTANCE.angularBrakeThreshold, SERVER_DEFAULTS.angularBrakeThreshold, v -> ServerConfig.INSTANCE.angularBrakeThreshold = v);
+        addDouble(rotation, eb, "Angular Brake Multiplier", "Damping multiplier when angular brake is active.", 1.0, 100.0, ServerConfig.INSTANCE.angularBrakeMultiplier, SERVER_DEFAULTS.angularBrakeMultiplier, v -> ServerConfig.INSTANCE.angularBrakeMultiplier = v);
+
         server.addEntry(rotation.build());
     }
 
     private static void buildAssembling(ConfigCategory server, ConfigEntryBuilder eb) {
         SubCategoryBuilder assembly = eb.startSubCategory(Component.literal("Assembling"));
         addBoolean(assembly, eb, "Enable Assembly", "Allows players to pull and detach connected blocks from the world.", ServerConfig.INSTANCE.enableBarehandedAssembly, SERVER_DEFAULTS.enableBarehandedAssembly, v -> ServerConfig.INSTANCE.enableBarehandedAssembly = v);
+        addBoolean(assembly, eb, "Enable Rip-Off Blocks", "Allows tearing individual blocks off a grabbed sub-level using sneak.", ServerConfig.INSTANCE.enableRipOffBlocks, SERVER_DEFAULTS.enableRipOffBlocks, v -> ServerConfig.INSTANCE.enableRipOffBlocks = v);
         addDouble(assembly, eb, "Detach Speed Multiplier", "Multiplier for the time it takes to pull blocks out of the world.", 0.1, 1000.0, ServerConfig.INSTANCE.barehandedAssemblySpeedMultiplier, SERVER_DEFAULTS.barehandedAssemblySpeedMultiplier, v -> ServerConfig.INSTANCE.barehandedAssemblySpeedMultiplier = v);
         addDouble(assembly, eb, "Detach Max Distance (m)", "Maximum distance from the player to start pulling blocks.", 1.0, 1024.0, ServerConfig.INSTANCE.barehandedAssemblyMaxDistance, SERVER_DEFAULTS.barehandedAssemblyMaxDistance, v -> ServerConfig.INSTANCE.barehandedAssemblyMaxDistance = v);
         addDouble(assembly, eb, "Server Tolerance (m)", "Server-side grace distance added when validating assembly requests.", 0.0, 1024.0, ServerConfig.INSTANCE.assemblyServerDistanceTolerance, SERVER_DEFAULTS.assemblyServerDistanceTolerance, v -> ServerConfig.INSTANCE.assemblyServerDistanceTolerance = v);
@@ -207,14 +218,27 @@ public class BarehandedConfigScreen {
         addDouble(advanced, eb, "Speed Stiffness Factor", "Factor scaling spring stiffness with player speed. Keeps object close when running.", 0.0, 100000.0, ServerConfig.INSTANCE.speedStiffnessMultiplierFactor, SERVER_DEFAULTS.speedStiffnessMultiplierFactor, v -> ServerConfig.INSTANCE.speedStiffnessMultiplierFactor = v);
         addDouble(advanced, eb, "Max Speed Stiffness Mult", "Cap on the speed-based stiffness multiplier.", 1.0, 10000.0, ServerConfig.INSTANCE.maxSpeedStiffnessMultiplier, SERVER_DEFAULTS.maxSpeedStiffnessMultiplier, v -> ServerConfig.INSTANCE.maxSpeedStiffnessMultiplier = v);
         addDouble(advanced, eb, "Base Angular Force Factor", "Fraction of maxForce used as minimum angular force.", 0.0, 1.0, ServerConfig.INSTANCE.baseAngularForceFactor, SERVER_DEFAULTS.baseAngularForceFactor, v -> ServerConfig.INSTANCE.baseAngularForceFactor = v);
+
+        // --- Variables Agregadas Oficialmente ---
         addDouble(advanced, eb, "Stable Angular Force: Mass Base", "Constant term in the stable angular force formula.", 0.0, 1000000.0, ServerConfig.INSTANCE.stableAngularForceMassBase, SERVER_DEFAULTS.stableAngularForceMassBase, v -> ServerConfig.INSTANCE.stableAngularForceMassBase = v);
         addDouble(advanced, eb, "Stable Angular Force: Mass Factor", "Mass coefficient in the stable angular force formula.", 0.0, 100000.0, ServerConfig.INSTANCE.stableAngularForceMassFactor, SERVER_DEFAULTS.stableAngularForceMassFactor, v -> ServerConfig.INSTANCE.stableAngularForceMassFactor = v);
+        // ----------------------------------------
+
         addDouble(advanced, eb, "Rotating Angular Stiffness: Base", "Base angular stiffness multiplier while actively rotating.", 0.0, 1000.0, ServerConfig.INSTANCE.rotatingAngularStiffnessBase, SERVER_DEFAULTS.rotatingAngularStiffnessBase, v -> ServerConfig.INSTANCE.rotatingAngularStiffnessBase = v);
         addDouble(advanced, eb, "Rotating Angular Stiffness: Range", "Range component of the rotation stiffness multiplier.", 0.0, 5000.0, ServerConfig.INSTANCE.rotatingAngularStiffnessRange, SERVER_DEFAULTS.rotatingAngularStiffnessRange, v -> ServerConfig.INSTANCE.rotatingAngularStiffnessRange = v);
         addDouble(advanced, eb, "Sway Angular Stiffness: Base", "Base angular stiffness multiplier when idle (sway mode).", 0.0, 1000.0, ServerConfig.INSTANCE.swayAngularStiffnessBase, SERVER_DEFAULTS.swayAngularStiffnessBase, v -> ServerConfig.INSTANCE.swayAngularStiffnessBase = v);
         addDouble(advanced, eb, "Sway Angular Stiffness: Range", "Range component of the idle sway stiffness multiplier.", 0.0, 5000.0, ServerConfig.INSTANCE.swayAngularStiffnessRange, SERVER_DEFAULTS.swayAngularStiffnessRange, v -> ServerConfig.INSTANCE.swayAngularStiffnessRange = v);
         addDouble(advanced, eb, "Stabilization Exponent", "Exponent applied to stabilization factors for non-linear rigidity curves.", 0.1, 10.0, ServerConfig.INSTANCE.stabilizationExponent, SERVER_DEFAULTS.stabilizationExponent, v -> ServerConfig.INSTANCE.stabilizationExponent = v);
         addDouble(advanced, eb, "Creative Max Motor Force", "Maximum numeric force limit for physics motors in Creative mode to prevent engine overflow.", 1.0, 1e15, ServerConfig.INSTANCE.creativeMaxMotorForce, SERVER_DEFAULTS.creativeMaxMotorForce, v -> ServerConfig.INSTANCE.creativeMaxMotorForce = v);
+
+        addDouble(advanced, eb, "Heavy Object Mass Curve", "Multiplier for the logarithmic mass curve. Makes heavy objects feel heavier.", 0.0, 100.0, ServerConfig.INSTANCE.heavyObjectMassCurveMultiplier, SERVER_DEFAULTS.heavyObjectMassCurveMultiplier, v -> ServerConfig.INSTANCE.heavyObjectMassCurveMultiplier = v);
+        addDouble(advanced, eb, "Heavy Max Force Factor", "Allows motors to pull slightly harder on massive objects to prevent permanent stalling.", 0.0, 10.0, ServerConfig.INSTANCE.heavyObjectMaxForceFactor, SERVER_DEFAULTS.heavyObjectMaxForceFactor, v -> ServerConfig.INSTANCE.heavyObjectMaxForceFactor = v);
+        addDouble(advanced, eb, "Grab Elasticity Stiffness", "Reduces linear stiffness slightly to simulate an organic, elastic grab.", 0.0, 10.0, ServerConfig.INSTANCE.grabElasticityStiffnessFactor, SERVER_DEFAULTS.grabElasticityStiffnessFactor, v -> ServerConfig.INSTANCE.grabElasticityStiffnessFactor = v);
+        addDouble(advanced, eb, "Grab Elasticity Damping", "Reduces linear damping slightly to complement grab elasticity.", 0.0, 10.0, ServerConfig.INSTANCE.grabElasticityDampingFactor, SERVER_DEFAULTS.grabElasticityDampingFactor, v -> ServerConfig.INSTANCE.grabElasticityDampingFactor = v);
+        addDouble(advanced, eb, "Sway Stiffness Edge Factor", "Base sway multiplier when holding objects from edges (0 = Free Gravity Pivot).", 0.0, 10.0, ServerConfig.INSTANCE.swayStiffnessEdgeFactor, SERVER_DEFAULTS.swayStiffnessEdgeFactor, v -> ServerConfig.INSTANCE.swayStiffnessEdgeFactor = v);
+        addDouble(advanced, eb, "Sway Stiffness Edge Range", "Range sway multiplier when holding objects from edges.", 0.0, 10.0, ServerConfig.INSTANCE.swayStiffnessEdgeRangeFactor, SERVER_DEFAULTS.swayStiffnessEdgeRangeFactor, v -> ServerConfig.INSTANCE.swayStiffnessEdgeRangeFactor = v);
+        addDouble(advanced, eb, "Free Pivot Damping", "Friction applied when the object hangs freely to prevent endless swinging.", 0.0, 100.0, ServerConfig.INSTANCE.freePivotDampingMultiplier, SERVER_DEFAULTS.freePivotDampingMultiplier, v -> ServerConfig.INSTANCE.freePivotDampingMultiplier = v);
+
         server.addEntry(advanced.build());
     }
 

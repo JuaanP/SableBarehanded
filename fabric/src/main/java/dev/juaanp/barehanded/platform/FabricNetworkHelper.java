@@ -70,8 +70,13 @@ public class FabricNetworkHelper implements INetworkHelper {
     }
 
     @Override
-    public void sendDisassembleRequest() {
-        ClientPlayNetworking.send(new DisassembleRequestPacket());
+    public void sendDisassembleRequest(boolean isAltDown) {
+        ClientPlayNetworking.send(new DisassembleRequestPacket(isAltDown));
+    }
+
+    @Override
+    public void sendAltStateToServer(boolean isAltDown) {
+        ClientPlayNetworking.send(new AltStateC2SPacket(isAltDown));
     }
 
     @Override

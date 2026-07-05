@@ -13,8 +13,19 @@ public class ClientInputTracker {
     private static boolean placeToggleActive = false;
     private static boolean lastPlaceToggleDown = false;
 
-    public static void tickDebounce(boolean eitherDown, boolean bothDown) {
-        if (!eitherDown) {
+    public static boolean grabToggleActive = false;
+    private static boolean lastGrabKeyDown = false;
+
+    public static void tickDebounce(boolean eitherDown, boolean bothDown, boolean grabKeyPressed) {
+
+        if (grabKeyPressed && !lastGrabKeyDown) {
+            grabToggleActive = !grabToggleActive;
+        }
+        lastGrabKeyDown = grabKeyPressed;
+
+        boolean anyInputActive = eitherDown || grabToggleActive;
+
+        if (!anyInputActive) {
             keysReleasedTicks++;
         } else {
             keysReleasedTicks = 0;
@@ -24,10 +35,12 @@ public class ClientInputTracker {
             preventRegrabUntilRelease = false;
         }
 
-        if (wasHoldingGrabLastTick && !ClientGrabSession.isHoldingGrab && eitherDown) {
+        if (wasHoldingGrabLastTick && !ClientGrabSession.isHoldingGrab && anyInputActive) {
             preventRegrabUntilRelease = true;
             keysReleasedTicks = 0;
+            grabToggleActive = false;
         }
+
         wasHoldingGrabLastTick = ClientGrabSession.isHoldingGrab;
 
         tickPlaceToggle();

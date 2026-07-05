@@ -31,6 +31,7 @@ public class BarehandedFabric implements ModInitializer {
         PayloadTypeRegistry.playC2S().register(UpdateServerConfigPacket.TYPE, UpdateServerConfigPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(AssemblyStateC2SPacket.TYPE, AssemblyStateC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(AdjustDistancePacket.TYPE, AdjustDistancePacket.CODEC);
+        PayloadTypeRegistry.playC2S().register(AltStateC2SPacket.TYPE, AltStateC2SPacket.CODEC);
 
         PayloadTypeRegistry.playS2C().register(StartGrabbingAnimationPacket.TYPE, StartGrabbingAnimationPacket.CODEC);
         PayloadTypeRegistry.playS2C().register(StopGrabbingAnimationPacket.TYPE, StopGrabbingAnimationPacket.CODEC);
@@ -56,7 +57,7 @@ public class BarehandedFabric implements ModInitializer {
         });
 
         ServerPlayNetworking.registerGlobalReceiver(DisassembleRequestPacket.TYPE, (payload, context) -> {
-            context.server().execute(() -> ServerPayloadHandler.handleDisassembleRequest(context.player(), payload));
+            context.server().execute(() -> ServerPayloadHandler.handleDisassembleRequest(payload, context.player()));
         });
 
         ServerPlayNetworking.registerGlobalReceiver(PhysicsPlaceRequestPacket.TYPE, (payload, context) -> {
@@ -73,6 +74,10 @@ public class BarehandedFabric implements ModInitializer {
 
         ServerPlayNetworking.registerGlobalReceiver(AdjustDistancePacket.TYPE, (payload, context) -> {
             context.server().execute(() -> ServerPayloadHandler.handleAdjustDistance(context.player(), payload));
+        });
+
+        ServerPlayNetworking.registerGlobalReceiver(AltStateC2SPacket.TYPE, (payload, context) -> {
+            context.server().execute(() -> ServerPayloadHandler.handleAltState(payload, context.player()));
         });
 
         ServerTickEvents.END_SERVER_TICK.register(server -> {

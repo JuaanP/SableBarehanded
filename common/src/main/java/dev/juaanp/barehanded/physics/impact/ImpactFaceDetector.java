@@ -5,6 +5,7 @@ import dev.juaanp.barehanded.physics.DisassembleHandler;
 import dev.juaanp.barehanded.util.BlockReplacementHelper;
 import dev.ryanhcode.sable.Sable;
 import dev.ryanhcode.sable.companion.math.BoundingBox3dc;
+import dev.ryanhcode.sable.companion.math.BoundingBox3ic;
 import dev.ryanhcode.sable.sublevel.ServerSubLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

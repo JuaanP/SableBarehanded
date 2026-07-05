@@ -6,8 +6,10 @@ import dev.juaanp.barehanded.mixin.accesor.MultiPlayerGameModeAccessor;
 import dev.juaanp.barehanded.platform.Services;
 import dev.juaanp.barehanded.util.AssemblyBehaviorHelper;
 import dev.ryanhcode.sable.Sable;
+import dev.ryanhcode.sable.sublevel.SubLevel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -16,6 +18,7 @@ import org.joml.Vector3d;
 public class ClientAssemblyTracker {
     public static int assemblyChargeTicks = 0;
     public static BlockPos assemblyTargetPos = null;
+    public static SubLevel assemblySubLevel = null;
     public static int currentRequiredAssemblyTicks = 20;
     public static double initialAssemblyDistance = 0.0;
     public static boolean isPulling = false;
@@ -29,16 +32,26 @@ public class ClientAssemblyTracker {
     public static void reset() {
         assemblyChargeTicks = 0;
         assemblyTargetPos = null;
+        assemblySubLevel = null;
         initialAssemblyDistance = 0.0;
         isPulling = false;
         smoothPullIntensity = 0.0F;
         smoothPullIntensityInitialized = false;
     }
 
+    private static Vec3 getTargetGlobalCenter() {
+        if (assemblySubLevel != null && !assemblySubLevel.isRemoved()) {
+            Vector3d localCenter = new Vector3d(assemblyTargetPos.getX() + 0.5, assemblyTargetPos.getY() + 0.5, assemblyTargetPos.getZ() + 0.5);
+            Vector3d globalCenter = assemblySubLevel.logicalPose().transformPosition(localCenter);
+            return new Vec3(globalCenter.x, globalCenter.y, globalCenter.z);
+        }
+        return Vec3.atCenterOf(assemblyTargetPos);
+    }
+
     public static void tickAssemblyTether(Minecraft mc) {
         if (!isActive() || assemblyTargetPos == null || mc.player == null) return;
 
-        Vec3 targetCenter = Vec3.atCenterOf(assemblyTargetPos);
+        Vec3 targetCenter = getTargetGlobalCenter();
         Vec3 playerEye = mc.player.getEyePosition();
         double currentDist = playerEye.distanceTo(targetCenter);
         double maxDist = ServerConfig.INSTANCE.barehandedAssemblyMaxDistance;
@@ -73,7 +86,7 @@ public class ClientAssemblyTracker {
             return;
         }
 
-        Vec3 targetCenter = Vec3.atCenterOf(assemblyTargetPos);
+        Vec3 targetCenter = getTargetGlobalCenter();
         Vec3 playerEyePos = mc.player.getEyePosition();
         double currentDist = playerEyePos.distanceTo(targetCenter);
 
@@ -117,33 +130,47 @@ public class ClientAssemblyTracker {
         }
     }
 
-    public static boolean tryStartAssembly(Minecraft mc, BlockHitResult blockHit, boolean isSneaking) {
+    // CORRECCIÓN: Se añade 'boolean isAltDown' como cuarto parámetro para que coincida con el Orchestrator.
+    public static boolean tryStartAssembly(Minecraft mc, BlockHitResult blockHit, boolean isSneaking, boolean isAltDown) {
         if (!ServerConfig.INSTANCE.enableBarehandedAssembly || !isSneaking) return false;
 
         BlockPos currentPos = blockHit.getBlockPos();
-        Vec3 blockCenter = Vec3.atCenterOf(currentPos);
-        double distanceToHit = mc.player.getEyePosition().distanceTo(blockCenter);
+        Vector3d hitPos = new Vector3d(blockHit.getLocation().x, blockHit.getLocation().y, blockHit.getLocation().z);
+        SubLevel subLevel = Sable.HELPER.getContaining(mc.level, hitPos);
 
+        // Ya no necesitamos leer el KeyBinding aquí porque Orchestrator nos lo envía por parámetro
+        if (subLevel != null && (!isAltDown || !ServerConfig.INSTANCE.enableRipOffBlocks)) return false;
+
+        Level levelToUse = subLevel != null ? subLevel.getLevel() : mc.level;
+
+        Vec3 blockCenter;
+        if (subLevel != null) {
+            Vector3d localCenter = new Vector3d(currentPos.getX() + 0.5, currentPos.getY() + 0.5, currentPos.getZ() + 0.5);
+            Vector3d globalCenter = subLevel.logicalPose().transformPosition(localCenter);
+            blockCenter = new Vec3(globalCenter.x, globalCenter.y, globalCenter.z);
+        } else {
+            blockCenter = Vec3.atCenterOf(currentPos);
+        }
+
+        double distanceToHit = mc.player.getEyePosition().distanceTo(blockCenter);
         if (distanceToHit > ServerConfig.INSTANCE.barehandedAssemblyMaxDistance) return false;
 
-        BlockState state = mc.level.getBlockState(currentPos);
-        if (AssemblyBehaviorHelper.isIgnored(mc.level, currentPos, state)) return false;
+        BlockState state = levelToUse.getBlockState(currentPos);
+        if (AssemblyBehaviorHelper.isIgnored(levelToUse, currentPos, state)) return false;
 
         if (ClientConfig.INSTANCE.preventAssemblyWhenMining && mc.gameMode != null) {
             float miningProgress = ((MultiPlayerGameModeAccessor) mc.gameMode).getDestroyProgress();
             if (miningProgress > ClientConfig.INSTANCE.barehandedAssemblyMiningThreshold) return false;
         }
 
-        Vector3d hitPos = new Vector3d(blockHit.getLocation().x, blockHit.getLocation().y, blockHit.getLocation().z);
-        if (Sable.HELPER.getContaining(mc.level, hitPos) != null) return false;
-
+        assemblySubLevel = subLevel;
         assemblyTargetPos = currentPos;
         assemblyChargeTicks = 1;
         isPulling = false;
         initialAssemblyDistance = distanceToHit;
 
-        var blocksToAssemble = AssemblyBehaviorHelper.getConnectedBlocks(mc.level, currentPos);
-        currentRequiredAssemblyTicks = AssemblyBehaviorHelper.calculateAssemblyTicks(mc.player, mc.level, blocksToAssemble);
+        var blocksToAssemble = AssemblyBehaviorHelper.getConnectedBlocks(levelToUse, currentPos);
+        currentRequiredAssemblyTicks = AssemblyBehaviorHelper.calculateAssemblyTicks(mc.player, levelToUse, blocksToAssemble);
 
         if (mc.gameMode != null) mc.gameMode.stopDestroyBlock();
         return true;

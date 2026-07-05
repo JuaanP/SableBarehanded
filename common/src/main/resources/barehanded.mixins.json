@@ -14,14 +14,16 @@
     "MixinMouseHandler",
     "MixinPlayerModel",
     "MixinItemInHandRenderer",
-    "MixinKeyboardInput",
+    "MixinInput",
     "accesor.MultiPlayerGameModeAccessor",
     "MixinKeyboardHandler",
     "MixinMinecraft",
     "MixinLocalPlayer",
     "MixinLivingEntityRenderer",
     "MixinPlayerRenderer",
-    "MixinEntityRenderDispatcher"
+    "MixinEntityRenderDispatcher",
+    "MixinEntity",
+    "MixinLivingEntity"
   ],
   "server": [],
   "injectors": {

@@ -51,15 +51,31 @@ public class ImpactDisassembleHandler {
         calculatedVelocities.put(subLevelId, new Vector3d(currentVelocity));
 
         if (grab.impactTicks < 10) return;
-
         if (previousVelocity == null) return;
 
         if (!meetsImpactCriteria(previousVelocity, currentVelocity, subLevel)) return;
         if (!PlayerIntentValidator.wasIntentionalImpact(player, subLevel, previousVelocity)) return;
 
         ServerLevel level = (ServerLevel) player.level();
-        Vec3 approachDir = PlayerIntentValidator.getApproachDirection(previousVelocity);
 
+        // 1. SIEMPRE buscar sublevel cercano para fusionar (Prioridad de SubLevel)
+        ServerSubLevel targetShip = DisassembleHandler.findTargetSubLevel(level, subLevel);
+        if (targetShip != null) {
+            boolean success = DisassembleHandler.disassembleIntoSubLevel(level, subLevel, targetShip, player);
+            if (success) {
+                ServerGrabManager.stopGrabbing(player.getUUID());
+                cleanup(subLevel.getUniqueId());
+            }
+            return; // Prioridad de sublevel evaluada
+        }
+
+        // 2. Si NO hay sublevel cerca y se presionó el Modificador, no impactar en el mundo
+        if (grab.isAltDown) {
+            return;
+        }
+
+        // 3. Impacto normal contra el Mundo
+        Vec3 approachDir = PlayerIntentValidator.getApproachDirection(previousVelocity);
         Optional<ImpactResult> impact = ImpactFaceDetector.detectImpact(level, subLevel, approachDir);
         if (impact.isEmpty()) return;
 
@@ -67,7 +83,7 @@ public class ImpactDisassembleHandler {
 
         if (!DisassembleHandler.isAlignedToGrid(subLevel,
                 ServerConfig.INSTANCE.impactRotationTolerance,
-                ServerConfig.INSTANCE.impactPositionTolerance))  return;
+                ServerConfig.INSTANCE.impactPositionTolerance)) return;
 
         int limit = ServerConfig.INSTANCE.disassembleBlockLimit;
         if (limit > 0 && DisassembleHandler.getBlockCount(subLevel) > limit) {

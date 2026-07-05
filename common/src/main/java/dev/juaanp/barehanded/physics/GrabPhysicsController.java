@@ -15,12 +15,29 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
+import org.joml.AxisAngle4d;
 import org.joml.Quaterniond;
 import org.joml.Vector3d;
+import org.joml.Vector3dc;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class GrabPhysicsController {
+    private static final Map<UUID, Float> lastYawMap = new HashMap<>();
+    private static final Map<UUID, Float> lastPitchMap = new HashMap<>();
+    private static final Map<UUID, Integer> graceTicksMap = new HashMap<>();
+
+    public static void setGraceTicks(Player player, int ticks) {
+        graceTicksMap.put(player.getUUID(), ticks);
+    }
+
+    public static void cleanupPlayer(UUID playerId) {
+        lastYawMap.remove(playerId);
+        lastPitchMap.remove(playerId);
+        graceTicksMap.remove(playerId);
+    }
 
     public static void rebuildConstraint(GrabSession grab) {
         if (grab.constraintHandle != null) {
@@ -30,6 +47,57 @@ public class GrabPhysicsController {
                 null, grab.subLevel,
                 new FreeConstraintConfiguration(grab.anchorGlobalOrigin, grab.localPivot, grab.baseOrientation)
         );
+    }
+
+    private static void applyCameraLockedRotation(Player player, GrabSession grab) {
+        UUID playerId = player.getUUID();
+        float currentPitch = player.getXRot();
+        float currentYaw = player.getYRot();
+
+        if (!ServerConfig.INSTANCE.cameraLockedRotationX && !ServerConfig.INSTANCE.cameraLockedRotationY) {
+            lastYawMap.put(playerId, currentYaw);
+            lastPitchMap.put(playerId, currentPitch);
+            return;
+        }
+
+        if (!lastYawMap.containsKey(playerId) || !lastPitchMap.containsKey(playerId)) {
+            lastYawMap.put(playerId, currentYaw);
+            lastPitchMap.put(playerId, currentPitch);
+            return;
+        }
+
+        float lastPitch = lastPitchMap.get(playerId);
+        float lastYaw = lastYawMap.get(playerId);
+
+        float deltaPitch = currentPitch - lastPitch;
+        float deltaYaw = currentYaw - lastYaw;
+
+        while (deltaYaw > 180.0f) deltaYaw -= 360.0f;
+        while (deltaYaw < -180.0f) deltaYaw += 360.0f;
+
+        if (deltaPitch != 0.0f || deltaYaw != 0.0f) {
+            float effectivePitch = ServerConfig.INSTANCE.cameraLockedRotationX ? deltaPitch : 0.0f;
+            float effectiveYaw = ServerConfig.INSTANCE.cameraLockedRotationY ? deltaYaw : 0.0f;
+
+            if (effectivePitch != 0.0f || effectiveYaw != 0.0f) {
+                Quaterniond qOld = new Quaterniond()
+                        .rotateY(Math.toRadians(-lastYaw))
+                        .rotateX(Math.toRadians(-lastPitch));
+
+                float newPitch = lastPitch + effectivePitch;
+                float newYaw = lastYaw + effectiveYaw;
+
+                Quaterniond qNew = new Quaterniond()
+                        .rotateY(Math.toRadians(-newYaw))
+                        .rotateX(Math.toRadians(-newPitch));
+
+                Quaterniond qDelta = new Quaterniond(qNew).mul(new Quaterniond(qOld).invert());
+                grab.targetGlobalOrientation.premul(qDelta).normalize();
+            }
+        }
+
+        lastYawMap.put(playerId, currentYaw);
+        lastPitchMap.put(playerId, currentPitch);
     }
 
     public static void tickPlayer(Player player) {
@@ -47,7 +115,10 @@ public class GrabPhysicsController {
         }
 
         GrabSession grab = ServerGrabManager.getGrabSession(player);
-        if (grab == null) return;
+        if (grab == null) {
+            cleanupPlayer(playerId);
+            return;
+        }
 
         ServerSubLevelContainer container = (ServerSubLevelContainer) SubLevelContainer.getContainer(player.level());
 
@@ -70,10 +141,15 @@ public class GrabPhysicsController {
             ImpactDisassembleHandler.checkImpact(serverPlayer, grab.subLevel, grab);
         }
 
+        int grace = graceTicksMap.getOrDefault(playerId, 0);
+        if (grace > 0) {
+            graceTicksMap.put(playerId, grace - 1);
+        }
+
         player.yBodyRot = player.yHeadRot;
         player.yBodyRotO = player.yHeadRotO;
 
-        boolean isCreativeSuper = player.isCreative() && ServerConfig.INSTANCE.creativeSuperStrength;
+        boolean hasSuperStrength = GrabSession.hasSuperStrength(player);
 
         double strengthMultiplier = 1.0;
         if (player.hasEffect(MobEffects.DAMAGE_BOOST)) {
@@ -93,7 +169,6 @@ public class GrabPhysicsController {
 
         if (grab.distance != grab.targetDistance) {
             grab.distance = net.minecraft.util.Mth.lerp(0.15F, grab.distance, grab.targetDistance);
-
             if (Math.abs(grab.distance - grab.targetDistance) < 0.01F) {
                 grab.distance = grab.targetDistance;
             }
@@ -101,7 +176,10 @@ public class GrabPhysicsController {
 
         Vector3d currentCameraTarget = JOMLConversion.toJOML(player.getEyePosition().add(player.getLookAngle().scale(Math.max(ServerConfig.INSTANCE.minDistance, grab.distance))));
 
+        applyCameraLockedRotation(player, grab);
+
         boolean isGhostEverything = grab.isRotating ? ServerConfig.INSTANCE.ignoreCollisionsRotationEverything : ServerConfig.INSTANCE.ignoreCollisionsGrabEverything;
+        boolean isCameraLocked = ServerConfig.INSTANCE.cameraLockedRotationX || ServerConfig.INSTANCE.cameraLockedRotationY;
 
         boolean wasRotating = grab.isRotating;
         grab.isRotating = grab.rotationTicksLeft > 0;
@@ -111,13 +189,10 @@ public class GrabPhysicsController {
             grab.subLevel.latestLinearVelocity.set(0, 0, 0);
         }
 
+        // CRÍTICO: Al terminar rotación, resetear rotateAroundCenter a false
+        // Esto asegura que después de rotar, el objeto vuelve al modo normal (pivot sigue cámara)
         if (!grab.isRotating && wasRotating) {
-            if (grab.rotateAroundCenter) {
-                Vector3d vectorToCOM = new Vector3d(grab.localCenterOfMass).sub(grab.localPivot);
-                Vector3d originalCOM = new Vector3d(vectorToCOM).rotate(grab.baseOrientation);
-                Vector3d targetCOM = new Vector3d(vectorToCOM).rotate(grab.targetGlobalOrientation);
-                grab.accumulatedPivotOffset.add(new Vector3d(originalCOM).sub(targetCOM));
-            }
+            grab.rotateAroundCenter = false;
 
             Vector3d currentActualPivotPos = grab.subLevel.logicalPose().transformPosition(new Vector3d(grab.localPivot));
             grab.anchorGlobalOrigin.set(currentActualPivotPos);
@@ -127,26 +202,32 @@ public class GrabPhysicsController {
         }
 
         Quaterniond relativeRot = new Quaterniond(grab.baseOrientation).invert().mul(grab.targetGlobalOrientation);
+        double rebuildThreshold = isCameraLocked ? (Math.PI * 0.45) : ServerConfig.INSTANCE.rotationRebuildThreshold;
 
-        if (grab.constraintHandle != null && relativeRot.angle() > ServerConfig.INSTANCE.rotationRebuildThreshold) {
-            if (grab.rotateAroundCenter) {
-                Vector3d vectorToCOM = new Vector3d(grab.localCenterOfMass).sub(grab.localPivot);
-                Vector3d originalCOM = new Vector3d(vectorToCOM).rotate(grab.baseOrientation);
-                Vector3d targetCOM = new Vector3d(vectorToCOM).rotate(grab.targetGlobalOrientation);
-                grab.accumulatedPivotOffset.add(new Vector3d(originalCOM).sub(targetCOM));
-            }
-
-            grab.baseOrientation.set(grab.targetGlobalOrientation);
+        if (grab.constraintHandle != null && relativeRot.angle() > rebuildThreshold) {
+            Vector3d currentActualPivotPos = grab.subLevel.logicalPose().transformPosition(new Vector3d(grab.localPivot));
+            grab.anchorGlobalOrigin.set(currentActualPivotPos);
+            grab.baseOrientation.set(grab.subLevel.logicalPose().orientation());
             rebuildConstraint(grab);
-            relativeRot.identity();
+
+            relativeRot = new Quaterniond(grab.baseOrientation).invert().mul(grab.targetGlobalOrientation);
         }
 
         if (isGhostEverything) {
-            Vector3d pivotReference = grab.rotateAroundCenter ? grab.localCenterOfMass : grab.subLevel.logicalPose().rotationPoint();
-            Vector3d localOffsetToGrab = new Vector3d(grab.localPivot).sub(pivotReference);
-            Vector3d rotatedOffset = new Vector3d(localOffsetToGrab).rotate(grab.targetGlobalOrientation);
+            Vector3d targetPos = new Vector3d(currentCameraTarget);
 
-            Vector3d targetPos = new Vector3d(currentCameraTarget).add(grab.accumulatedPivotOffset).sub(rotatedOffset);
+            // Si está rotando sobre COM, el COM debe estar en la cámara
+            if (grab.isRotating && grab.rotateAroundCenter) {
+                Vector3d vectorFromCOMToPivot = new Vector3d(grab.localPivot).sub(grab.localCenterOfMass);
+                Vector3d rotatedOffset = new Vector3d(vectorFromCOMToPivot).rotate(grab.targetGlobalOrientation);
+                targetPos.sub(rotatedOffset);
+            } else {
+                // Modo normal: el pivot está en la cámara
+                Vector3d rotPoint = grab.subLevel.logicalPose().rotationPoint();
+                Vector3d vectorFromRotToPivot = new Vector3d(grab.localPivot).sub(rotPoint);
+                Vector3d rotatedOffset = new Vector3d(vectorFromRotToPivot).rotate(grab.targetGlobalOrientation);
+                targetPos.sub(rotatedOffset);
+            }
 
             grab.pipeline.teleport(grab.subLevel, targetPos, grab.targetGlobalOrientation);
             grab.subLevel.latestLinearVelocity.set(0, 0, 0);
@@ -157,22 +238,66 @@ public class GrabPhysicsController {
             rebuildConstraint(grab);
         }
 
-        Vector3d targetAnchor = new Vector3d(currentCameraTarget).add(grab.accumulatedPivotOffset);
+        // CÁLCULO DINÁMICO DE TARGET ANCHOR
+        Vector3d targetAnchor = new Vector3d(currentCameraTarget);
 
-        if (grab.rotateAroundCenter) {
-            Vector3d vectorToCOM = new Vector3d(grab.localCenterOfMass).sub(grab.localPivot);
-            Vector3d originalCOM = new Vector3d(vectorToCOM).rotate(grab.baseOrientation);
-            Vector3d targetCOM = new Vector3d(vectorToCOM).rotate(grab.targetGlobalOrientation);
-            targetAnchor.add(new Vector3d(originalCOM).sub(targetCOM));
+        // Solo durante rotación activa sobre COM: compensar para que el COM siga la cámara
+        if (grab.isRotating && grab.rotateAroundCenter) {
+            Vector3d vectorFromCOMToPivot = new Vector3d(grab.localPivot).sub(grab.localCenterOfMass);
+            Vector3d rotatedOffset = new Vector3d(vectorFromCOMToPivot).rotate(grab.targetGlobalOrientation);
+            targetAnchor.add(rotatedOffset);
         }
+        // Si NO está rotando, targetAnchor = currentCameraTarget (el pivot sigue la cámara normalmente)
 
         Vector3d currentActualGrabBlockPos = grab.subLevel.logicalPose().transformPosition(new Vector3d(grab.localPivot));
+
+        if (ServerConfig.INSTANCE.preventPropSurfing) {
+            Vector3dc com = grab.subLevel.getMassTracker().getCenterOfMass();
+            if (com != null) {
+                Vector3d globalCom = grab.subLevel.logicalPose().transformPosition(new Vector3d(com));
+                double dx = globalCom.x - player.getX();
+                double dz = globalCom.z - player.getZ();
+                double horizontalDistSqr = dx * dx + dz * dz;
+
+                if (horizontalDistSqr > 0.04) {
+                    Vec3 look = player.getLookAngle();
+                    double lookLen = Math.sqrt(look.x * look.x + look.z * look.z);
+                    double grabLen = Math.sqrt(horizontalDistSqr);
+
+                    if (lookLen > 0.01 && grabLen > 0.01) {
+                        double dotXZ = ((dx / grabLen) * (look.x / lookLen)) + ((dz / grabLen) * (look.z / lookLen));
+
+                        if (dotXZ < 0.0) {
+                            ServerGrabManager.stopGrabbing(playerId);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
         boolean suspendPhysics = false;
         ServerSubLevel standingSubLevel = (ServerSubLevel) Sable.HELPER.getTrackingSubLevel(player);
 
-        if (standingSubLevel != null && standingSubLevel.equals(grab.subLevel)) {
-            grab.suspendTicksLeft = ServerConfig.INSTANCE.standingOnGrabSuspendTicks;
-            suspendPhysics = true;
+        if (standingSubLevel != null) {
+            if (standingSubLevel.equals(grab.subLevel)) {
+                grab.suspendTicksLeft = ServerConfig.INSTANCE.standingOnGrabSuspendTicks;
+                suspendPhysics = true;
+            } else {
+                dev.ryanhcode.sable.companion.math.BoundingBox3dc boxA = standingSubLevel.boundingBox();
+                dev.ryanhcode.sable.companion.math.BoundingBox3dc boxB = grab.subLevel.boundingBox();
+
+                if (boxA != null && boxB != null) {
+                    double margin = 0.5;
+                    if (boxA.minX() <= boxB.maxX() + margin && boxA.maxX() >= boxB.minX() - margin &&
+                            boxA.minY() <= boxB.maxY() + margin && boxA.maxY() >= boxB.minY() - margin &&
+                            boxA.minZ() <= boxB.maxZ() + margin && boxA.maxZ() >= boxB.minZ() - margin) {
+
+                        grab.suspendTicksLeft = ServerConfig.INSTANCE.standingOnGrabSuspendTicks;
+                        suspendPhysics = true;
+                    }
+                }
+            }
         } else if (grab.suspendTicksLeft > 0) {
             grab.suspendTicksLeft--;
             suspendPhysics = true;
@@ -189,17 +314,21 @@ public class GrabPhysicsController {
         }
 
         double tension = currentActualGrabBlockPos.distance(currentCameraTarget);
-        double suspendThresh = isCreativeSuper ? ServerConfig.INSTANCE.creativeTensionSuspendThreshold : ServerConfig.INSTANCE.tensionSuspendThreshold;
-        double breakThresh = isCreativeSuper ? ServerConfig.INSTANCE.creativeTensionBreakThreshold : ServerConfig.INSTANCE.tensionBreakThreshold;
+        double suspendThresh = hasSuperStrength ? ServerConfig.INSTANCE.creativeTensionSuspendThreshold : ServerConfig.INSTANCE.tensionSuspendThreshold;
+        double breakThresh = hasSuperStrength ? ServerConfig.INSTANCE.creativeTensionBreakThreshold : ServerConfig.INSTANCE.tensionBreakThreshold;
 
         GrabTetherSystem.applyPhysicalTether(player, grab, tension, actualMaxForce);
 
-        if (tension > suspendThresh) {
-            if (tension > breakThresh) {
-                ServerGrabManager.stopGrabbing(playerId);
-                return;
-            }
+        if (grab.suspendTicksLeft > 0) {
             suspendPhysics = true;
+        } else if (tension > suspendThresh) {
+            if (grace == 0) {
+                if (tension > breakThresh) {
+                    ServerGrabManager.stopGrabbing(playerId);
+                    return;
+                }
+                suspendPhysics = true;
+            }
         }
 
         byte currentMask = 0;
@@ -227,12 +356,24 @@ public class GrabPhysicsController {
         }
 
         if (grab.constraintHandle != null && !isGhostEverything) {
-            Vector3d eulers = new Vector3d();
-            relativeRot.getEulerAnglesXYZ(eulers);
+            Quaterniond safeRelativeRot = new Quaterniond(relativeRot);
+            if (safeRelativeRot.w < 0.0) {
+                safeRelativeRot.x = -safeRelativeRot.x;
+                safeRelativeRot.y = -safeRelativeRot.y;
+                safeRelativeRot.z = -safeRelativeRot.z;
+                safeRelativeRot.w = -safeRelativeRot.w;
+            }
+
+            AxisAngle4d axisAngle = new AxisAngle4d(safeRelativeRot);
+            double errorAngle = axisAngle.angle;
+
+            double errorX = Double.isNaN(axisAngle.x) ? 0.0 : axisAngle.x * errorAngle;
+            double errorY = Double.isNaN(axisAngle.y) ? 0.0 : axisAngle.y * errorAngle;
+            double errorZ = Double.isNaN(axisAngle.z) ? 0.0 : axisAngle.z * errorAngle;
 
             double exponent = ServerConfig.INSTANCE.stabilizationExponent;
-            double grabStable = isCreativeSuper ? 1.0 : Math.pow(ServerConfig.INSTANCE.grabStabilization, exponent);
-            double rotStable = isCreativeSuper ? 1.0 : Math.pow(ServerConfig.INSTANCE.rotationStabilization, exponent);
+            double grabStable = hasSuperStrength ? 1.0 : Math.pow(ServerConfig.INSTANCE.grabStabilization, exponent);
+            double rotStable = hasSuperStrength ? 1.0 : Math.pow(ServerConfig.INSTANCE.rotationStabilization, exponent);
             double mass = grab.subLevel.getMassTracker().getMass();
 
             double horizontalSpeed = Math.sqrt(pVel.x * pVel.x + pVel.z * pVel.z);
@@ -241,42 +382,60 @@ public class GrabPhysicsController {
             double speedMultiplier = 1.0 + (effectiveSpeed * ServerConfig.INSTANCE.speedStiffnessMultiplierFactor);
             speedMultiplier = Math.min(speedMultiplier, ServerConfig.INSTANCE.maxSpeedStiffnessMultiplier);
 
-            double baseStiffness = isCreativeSuper ? ServerConfig.INSTANCE.stiffness * ServerConfig.INSTANCE.creativeStrengthMultiplier : ServerConfig.INSTANCE.stiffness;
-            double linearDamping = isCreativeSuper ? ServerConfig.INSTANCE.damping * ServerConfig.INSTANCE.creativeStrengthMultiplier : ServerConfig.INSTANCE.damping;
-            double angularDamping = isCreativeSuper ? ServerConfig.INSTANCE.angularDamping * ServerConfig.INSTANCE.creativeStrengthMultiplier : ServerConfig.INSTANCE.angularDamping;
+            double baseStiffness = hasSuperStrength ? ServerConfig.INSTANCE.stiffness * ServerConfig.INSTANCE.creativeStrengthMultiplier : ServerConfig.INSTANCE.stiffness;
+            double linearDamping = hasSuperStrength ? ServerConfig.INSTANCE.damping * ServerConfig.INSTANCE.creativeStrengthMultiplier : ServerConfig.INSTANCE.damping;
+            double angularDamping = hasSuperStrength ? ServerConfig.INSTANCE.angularDamping * ServerConfig.INSTANCE.creativeStrengthMultiplier : ServerConfig.INSTANCE.angularDamping;
 
+            double massCurve = Math.log1p(mass) * ServerConfig.INSTANCE.heavyObjectMassCurveMultiplier;
             double baseAngularForce = actualMaxForce * ServerConfig.INSTANCE.baseAngularForceFactor;
-            double stableAngularForce = actualMaxForce * (ServerConfig.INSTANCE.stableAngularForceMassBase + mass * ServerConfig.INSTANCE.stableAngularForceMassFactor);
+            double stableAngularForce = actualMaxForce * (ServerConfig.INSTANCE.stableAngularForceMassBase + massCurve * ServerConfig.INSTANCE.stableAngularForceMassFactor);
 
             boolean disableMotors = suspendPhysics;
 
-            double linearMaxForce = disableMotors ? 0.0 : (isCreativeSuper ? ServerConfig.INSTANCE.creativeMaxMotorForce : actualMaxForce);
+            double linearMaxForce = disableMotors ? 0.0 : (hasSuperStrength ? ServerConfig.INSTANCE.creativeMaxMotorForce : actualMaxForce * (1.0 + massCurve * ServerConfig.INSTANCE.heavyObjectMaxForceFactor));
 
             Vector3d globalOffset = new Vector3d(targetAnchor).sub(grab.anchorGlobalOrigin);
             Vector3d localOffset = new Vector3d(globalOffset).rotate(new Quaterniond(grab.baseOrientation).invert());
 
-            double currentLinearStiffness = baseStiffness * speedMultiplier;
-            double currentLinearDamping = linearDamping * speedMultiplier;
+            double currentLinearStiffness = disableMotors ? 0.0 : (baseStiffness * speedMultiplier) * (hasSuperStrength ? 1.0 : ServerConfig.INSTANCE.grabElasticityStiffnessFactor);
+            double currentLinearDamping = disableMotors ? 0.0 : (linearDamping * speedMultiplier) * (hasSuperStrength ? 1.0 : ServerConfig.INSTANCE.grabElasticityDampingFactor);
 
             grab.constraintHandle.setMotor(ConstraintJointAxis.LINEAR_X, localOffset.x, currentLinearStiffness, currentLinearDamping, true, linearMaxForce);
             grab.constraintHandle.setMotor(ConstraintJointAxis.LINEAR_Y, localOffset.y, currentLinearStiffness, currentLinearDamping, true, linearMaxForce);
             grab.constraintHandle.setMotor(ConstraintJointAxis.LINEAR_Z, localOffset.z, currentLinearStiffness, currentLinearDamping, true, linearMaxForce);
 
-            if (grab.isRotating) {
+            if (grab.isRotating || isCameraLocked) {
                 double angularStiffness = baseStiffness * (ServerConfig.INSTANCE.rotatingAngularStiffnessBase + (ServerConfig.INSTANCE.rotatingAngularStiffnessRange * rotStable));
-                double angularMaxForce = disableMotors ? 0.0 : (isCreativeSuper ? ServerConfig.INSTANCE.creativeMaxMotorForce : (baseAngularForce + ((stableAngularForce - baseAngularForce) * rotStable)));
+                double angularMaxForce = disableMotors ? 0.0 : (hasSuperStrength ? ServerConfig.INSTANCE.creativeMaxMotorForce : (baseAngularForce + ((stableAngularForce - baseAngularForce) * rotStable)));
+                double currentAngularDamping = angularDamping;
 
-                grab.constraintHandle.setMotor(ConstraintJointAxis.ANGULAR_X, eulers.x, angularStiffness, angularDamping, true, angularMaxForce);
-                grab.constraintHandle.setMotor(ConstraintJointAxis.ANGULAR_Y, eulers.y, angularStiffness, angularDamping, true, angularMaxForce);
-                grab.constraintHandle.setMotor(ConstraintJointAxis.ANGULAR_Z, eulers.z, angularStiffness, angularDamping, true, angularMaxForce);
-
-            } else {
-                double swayStiffness = baseStiffness * (ServerConfig.INSTANCE.swayAngularStiffnessBase + (ServerConfig.INSTANCE.swayAngularStiffnessRange * grabStable));
-                double angularMaxForce = disableMotors ? 0.0 : (isCreativeSuper ? ServerConfig.INSTANCE.creativeMaxMotorForce : (baseAngularForce + ((stableAngularForce - baseAngularForce) * grabStable)));
-
-                for (ConstraintJointAxis axis : ConstraintJointAxis.ANGULAR) {
-                    grab.constraintHandle.setMotor(axis, 0.0, swayStiffness, angularDamping, true, angularMaxForce);
+                if (isCameraLocked && !disableMotors) {
+                    angularStiffness *= 3.0;
+                    angularMaxForce *= 3.0;
                 }
+
+                double errorMagnitude = Math.sqrt(errorX * errorX + errorY * errorY + errorZ * errorZ);
+                if (errorMagnitude < ServerConfig.INSTANCE.angularBrakeThreshold) {
+                    currentAngularDamping *= ServerConfig.INSTANCE.angularBrakeMultiplier;
+                }
+
+                grab.constraintHandle.setMotor(ConstraintJointAxis.ANGULAR_X, errorX, angularStiffness, currentAngularDamping, true, angularMaxForce);
+                grab.constraintHandle.setMotor(ConstraintJointAxis.ANGULAR_Y, errorY, angularStiffness, currentAngularDamping, true, angularMaxForce);
+                grab.constraintHandle.setMotor(ConstraintJointAxis.ANGULAR_Z, errorZ, angularStiffness, currentAngularDamping, true, angularMaxForce);
+            } else {
+                // Cuando NO está rotando, usa damping muy alto para frenar oscilaciones
+                double freeDamping = angularDamping * ServerConfig.INSTANCE.freePivotDampingMultiplier;
+                double swayStiffness = baseStiffness * (ServerConfig.INSTANCE.swayAngularStiffnessBase * ServerConfig.INSTANCE.swayStiffnessEdgeFactor + (ServerConfig.INSTANCE.swayAngularStiffnessRange * grabStable * ServerConfig.INSTANCE.swayStiffnessEdgeRangeFactor));
+                double angularMaxForce = disableMotors ? 0.0 : (hasSuperStrength ? ServerConfig.INSTANCE.creativeMaxMotorForce : (baseAngularForce + ((stableAngularForce - baseAngularForce) * grabStable)));
+
+                double errorMagnitude = Math.sqrt(errorX * errorX + errorY * errorY + errorZ * errorZ);
+                if (errorMagnitude < ServerConfig.INSTANCE.angularBrakeThreshold) {
+                    freeDamping *= ServerConfig.INSTANCE.angularBrakeMultiplier;
+                }
+
+                grab.constraintHandle.setMotor(ConstraintJointAxis.ANGULAR_X, errorX, swayStiffness, freeDamping, true, angularMaxForce);
+                grab.constraintHandle.setMotor(ConstraintJointAxis.ANGULAR_Y, errorY, swayStiffness, freeDamping, true, angularMaxForce);
+                grab.constraintHandle.setMotor(ConstraintJointAxis.ANGULAR_Z, errorZ, swayStiffness, freeDamping, true, angularMaxForce);
             }
 
             GrabEncumbranceSystem.applyMovementPenalty(player, grab, tension, actualMaxForce);
@@ -290,7 +449,7 @@ public class GrabPhysicsController {
 
     public static double getGrabReach(Player player) {
         double normalReach = player.getAttribute(Attributes.BLOCK_INTERACTION_RANGE).getValue() + ServerConfig.INSTANCE.grabReachBonus;
-        if (player.isCreative() && ServerConfig.INSTANCE.creativeSuperStrength) {
+        if (GrabSession.hasSuperStrength(player)) {
             return Math.max(CREATIVE_REACH, normalReach);
         }
         return normalReach;

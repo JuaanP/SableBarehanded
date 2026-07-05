@@ -52,8 +52,13 @@ public class NeoForgeNetworkHelper implements INetworkHelper {
     }
 
     @Override
-    public void sendDisassembleRequest() {
-        PacketDistributor.sendToServer(new DisassembleRequestPacket());
+    public void sendDisassembleRequest(boolean isAltDown) {
+        PacketDistributor.sendToServer(new DisassembleRequestPacket(isAltDown));
+    }
+
+    @Override
+    public void sendAltStateToServer(boolean isAltDown) {
+        PacketDistributor.sendToServer(new AltStateC2SPacket(isAltDown));
     }
 
     @Override

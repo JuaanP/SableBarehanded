@@ -43,16 +43,6 @@ public class ClientGrabSession {
         ClientGrabSession.localGrabPivot = localPivot;
         grabRestDistance = distance;
         currentTetherStrain = 0.0;
-
-        long window = mc.getWindow().getWindow();
-        boolean isLeftPhysicallyDown = org.lwjgl.glfw.GLFW.glfwGetMouseButton(window, org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT) == org.lwjgl.glfw.GLFW.GLFW_PRESS;
-        boolean isRightPhysicallyDown = org.lwjgl.glfw.GLFW.glfwGetMouseButton(window, org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT) == org.lwjgl.glfw.GLFW.GLFW_PRESS;
-
-        if (!isLeftPhysicallyDown && !isRightPhysicallyDown) {
-            dev.juaanp.barehanded.platform.Services.NETWORK.sendStopGrabbingRequest();
-            isHoldingGrab = false;
-            pendingStopGrab = true;
-        }
     }
 
     public static void reset() {

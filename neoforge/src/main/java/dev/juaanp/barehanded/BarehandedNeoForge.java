@@ -91,8 +91,21 @@ public class BarehandedNeoForge {
         registrar.playToServer(RotateGrabPacket.TYPE, RotateGrabPacket.CODEC, (payload, context) ->
                 context.enqueueWork(() -> ServerPayloadHandler.handleRotateGrab((ServerPlayer) context.player(), payload)));
 
-        registrar.playToServer(DisassembleRequestPacket.TYPE, DisassembleRequestPacket.CODEC, (payload, context) ->
-                context.enqueueWork(() -> ServerPayloadHandler.handleDisassembleRequest((ServerPlayer) context.player(), payload)));
+        registrar.playBidirectional(
+                DisassembleRequestPacket.TYPE,
+                DisassembleRequestPacket.CODEC,
+                (payload, context) -> {
+                    context.enqueueWork(() -> ServerPayloadHandler.handleDisassembleRequest(payload, (ServerPlayer) context.player()));
+                }
+        );
+
+        registrar.playBidirectional(
+                AltStateC2SPacket.TYPE,
+                AltStateC2SPacket.CODEC,
+                (payload, context) -> {
+                    context.enqueueWork(() -> ServerPayloadHandler.handleAltState(payload, (ServerPlayer) context.player()));
+                }
+        );
 
         registrar.playToServer(PhysicsPlaceRequestPacket.TYPE, PhysicsPlaceRequestPacket.CODEC, (payload, context) ->
                 context.enqueueWork(() -> ServerPayloadHandler.handlePhysicsPlaceRequest((ServerPlayer) context.player(), payload)));

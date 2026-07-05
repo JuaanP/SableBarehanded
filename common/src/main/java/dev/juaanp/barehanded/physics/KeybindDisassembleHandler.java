@@ -9,7 +9,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class KeybindDisassembleHandler {
-    public static void attemptDisassemble(ServerPlayer player, ServerSubLevel subLevel) {
+    public static void attemptDisassemble(ServerPlayer player, ServerSubLevel subLevel, boolean isAltDown) {
         if (!ServerConfig.INSTANCE.enableKeybindDisassemble) return;
 
         int limit = ServerConfig.INSTANCE.disassembleBlockLimit;
@@ -22,13 +22,35 @@ public class KeybindDisassembleHandler {
             return;
         }
 
+        ServerLevel level = (ServerLevel) player.level();
+
+        // 1. SIEMPRE intentar buscar un sublevel cercano para fusionar (Prioridad de SubLevel)
+        ServerSubLevel targetShip = DisassembleHandler.findTargetSubLevel(level, subLevel);
+
+        if (targetShip != null) {
+            boolean success = DisassembleHandler.disassembleIntoSubLevel(level, subLevel, targetShip, player);
+            if (success) {
+                ServerGrabManager.stopGrabbing(player.getUUID());
+            }
+            // Si hay un sublevel cerca, siempre intentamos el merge. Retornamos.
+            return;
+        }
+
+        // 2. Si NO hay sublevel cerca y se presionó el Modificador, fallar intencionalmente.
+        if (isAltDown) {
+            if (ServerConfig.INSTANCE.showDisassembleMessages) {
+                player.displayClientMessage(Component.literal("Merge Failed: No nearby SubLevel detected.").withStyle(ChatFormatting.RED), true);
+            }
+            return;
+        }
+
+        // 3. Sin Modificador y sin sublevel cerca -> Disassemble normal en el mundo (bloques)
         if (!DisassembleHandler.isAlignedToGrid(subLevel,
                 ServerConfig.INSTANCE.keybindRotationTolerance,
                 ServerConfig.INSTANCE.keybindPositionTolerance)) {
             return;
         }
 
-        ServerLevel level = (ServerLevel) player.level();
         DisassembleHandler.PlacementResult placement = DisassembleHandler.computePlacementAtCurrentPosition(subLevel);
         BlockState placedBlockState = DisassembleHandler.getFirstBlockState(subLevel);
 

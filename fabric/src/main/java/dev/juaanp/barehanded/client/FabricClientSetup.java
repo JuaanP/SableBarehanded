@@ -21,6 +21,9 @@ public class FabricClientSetup implements ClientModInitializer {
         KeyBindingHelper.registerKeyBinding(KeyBindings.PIVOT_KEY);
         KeyBindingHelper.registerKeyBinding(KeyBindings.DISASSEMBLE_KEY);
         KeyBindingHelper.registerKeyBinding(KeyBindings.PLACE_TOGGLE_KEY);
+        KeyBindingHelper.registerKeyBinding(KeyBindings.GRAB_KEY);
+        KeyBindingHelper.registerKeyBinding(KeyBindings.PULL_KEY);
+        KeyBindingHelper.registerKeyBinding(KeyBindings.PUSH_KEY);
 
         ClientPlayNetworking.registerGlobalReceiver(StartGrabbingAnimationPacket.TYPE, (payload, context) -> {
             context.client().execute(() -> ClientPayloadHandler.handleStartGrabbingAnimation(payload));

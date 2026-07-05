@@ -15,16 +15,20 @@ public class ServerConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final File FILE = Paths.get("config", Constants.MOD_ID + "-server.json").toFile();
 
-    public int configVersion = 7;
+    public int configVersion = 8;
 
     public double maxForce = 120.0;
     public double minDistance = 1.5;
     public double grabReachBonus = 0.0;
-    public double grabStabilization = 0.01;
+    public double grabStabilization = 0.05;
     public boolean creativeSuperStrength = true;
+    public boolean spectatorSuperStrength = true;
     public double strength1Multiplier = 2.0;
     public double strength2Multiplier = 4.0;
 
+    public boolean preventPropSurfing = true;
+    public boolean allowSpectatorGrabbing = false;
+    public boolean enableRipOffBlocks = true;
     public boolean preventGravityInSubLevels = true;
     public boolean allowGrabbingSpawners = false;
 
@@ -34,12 +38,29 @@ public class ServerConfig {
     public double scrollMaxDistance = 256.0;
 
     public boolean enableRotation = true;
-    public double rotationStabilization = 0.2;
-    public double maxRotationSpeed = 0.2;
+    public boolean cameraLockedRotationX = false;
+    public boolean cameraLockedRotationY = false;
     public boolean preventFastRotations = true;
-    public double rotationMassDampingFactor = 0.02;
-    public int rotationTicksWindow = 5;
-    public double rotationRebuildThreshold = 0.25;
+
+    // --- ROTACIÓN ---
+    public double maxRotationSpeed = 0.08;
+    public double rotationMassDampingFactor = 0.05;
+    public int rotationTicksWindow = 8;
+    public double rotationRebuildThreshold = 0.3;
+
+    // --- FUERZAS ANGULARES ---
+    public double angularDamping = 180.0;
+    public double rotatingAngularStiffnessBase = 0.8;
+    public double rotatingAngularStiffnessRange = 1.2;
+    public double swayAngularStiffnessBase = 0.05;
+    public double swayAngularStiffnessRange = 2.0;
+    public double stabilizationExponent = 2.0;
+    public double rotationStabilization = 0.3;
+
+    // --- NUEVOS PARÁMETROS DE CONTROL ---
+    public double angularBrakeThreshold = 0.15;
+    public double angularBrakeMultiplier = 8.0;
+    public double freePivotDampingMultiplier = 3.0;
 
     public boolean enableBarehandedAssembly = true;
     public double barehandedAssemblySpeedMultiplier = 1.0;
@@ -54,7 +75,6 @@ public class ServerConfig {
     public double assemblyMaxStretchBuffer = 2.0;
 
     public boolean enablePhysicsBlockPlacement = true;
-
     public int blockLimit = 0;
 
     public boolean enableImpactDisassemble = true;
@@ -72,12 +92,12 @@ public class ServerConfig {
     public boolean showDisassembleMessages = true;
     public double keybindRotationTolerance = 45.0;
     public double keybindPositionTolerance = 0.5;
+
     public boolean ignoreCollisionsGrabEverything = false;
     public boolean ignoreCollisionsGrabEntities = false;
     public boolean ignoreCollisionsGrabOtherPlayers = false;
     public boolean ignoreCollisionsGrabSelf = false;
     public double selfCollisionIgnoreDistanceSq = 4.0;
-
     public int disassembleBlockLimit = 6;
 
     public boolean ignoreCollisionsRotationEverything = false;
@@ -99,18 +119,21 @@ public class ServerConfig {
 
     public double stiffness = 800.0;
     public double damping = 45.0;
-    public double angularDamping = 60.0;
     public double creativeStrengthMultiplier = 10.0;
     public double speedStiffnessMultiplierFactor = 2.5;
     public double maxSpeedStiffnessMultiplier = 3.5;
-    public double baseAngularForceFactor = 0.15;
+
+    // Aquí estaba el error. Agregada la variable faltante:
+    public double baseAngularForceFactor = 0.02;
     public double stableAngularForceMassBase = 10.0;
     public double stableAngularForceMassFactor = 0.5;
-    public double rotatingAngularStiffnessBase = 1.5;
-    public double rotatingAngularStiffnessRange = 4.5;
-    public double swayAngularStiffnessBase = 0.6;
-    public double swayAngularStiffnessRange = 5.4;
-    public double stabilizationExponent = 3.0;
+
+    public double heavyObjectMassCurveMultiplier = 1.5;
+    public double heavyObjectMaxForceFactor = 0.4;
+    public double grabElasticityStiffnessFactor = 0.65;
+    public double grabElasticityDampingFactor = 0.85;
+    public double swayStiffnessEdgeFactor = 0.35;
+    public double swayStiffnessEdgeRangeFactor = 0.45;
 
     public double baseMovementPenalty = 0.0;
     public double weightPenaltyMultiplier = 0.02;
@@ -127,6 +150,7 @@ public class ServerConfig {
     public double jumpPreventionThreshold = 0.7;
     public double sneakPreventionThreshold = 0.3;
     public double maxCameraPenalty = 0.6;
+
     public boolean enablePhysicalTether = true;
     public double armStretchTolerance = 0.3;
     public double tetherStiffnessBase = 0.15;

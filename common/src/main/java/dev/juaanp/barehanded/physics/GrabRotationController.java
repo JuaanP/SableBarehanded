@@ -4,12 +4,10 @@ import dev.juaanp.barehanded.config.ServerConfig;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import org.joml.AxisAngle4d;
 import org.joml.Quaterniond;
 import org.joml.Vector3d;
 
 public class GrabRotationController {
-
     public static void applyRotation(Player player, double yaw, double pitch, boolean clientPrefersCenter) {
         if (!ServerConfig.INSTANCE.enableRotation) return;
 
@@ -28,42 +26,32 @@ public class GrabRotationController {
 
         grab.rotationTicksLeft = ServerConfig.INSTANCE.rotationTicksWindow;
 
-        boolean isCreativeSuper = player.isCreative() && ServerConfig.INSTANCE.creativeSuperStrength;
-        double mass = grab.subLevel.getMassTracker().getMass();
-        double massFactor = isCreativeSuper ? 1.0 : (1.0 / (1.0 + mass * ServerConfig.INSTANCE.rotationMassDampingFactor));
+        boolean hasSuperStrength = GrabSession.hasSuperStrength(player);
 
-        double yawDelta = yaw * massFactor;
-        double pitchDelta = pitch * massFactor;
+        double mass = grab.subLevel.getMassTracker().getMass();
+        double massFactor = hasSuperStrength ? 1.0 : (1.0 / (1.0 + mass * ServerConfig.INSTANCE.rotationMassDampingFactor));
+
+        double smoothingFactor = 0.7;  // 70% de la entrada actual, 30% de inercia
+        double yawDelta = yaw * massFactor * smoothingFactor;
+        double pitchDelta = pitch * massFactor * smoothingFactor;
 
         if (ServerConfig.INSTANCE.preventFastRotations) {
             yawDelta = Mth.clamp(yawDelta, -ServerConfig.INSTANCE.maxRotationSpeed, ServerConfig.INSTANCE.maxRotationSpeed);
             pitchDelta = Mth.clamp(pitchDelta, -ServerConfig.INSTANCE.maxRotationSpeed, ServerConfig.INSTANCE.maxRotationSpeed);
         }
 
-        final Vec3 look = player.getLookAngle();
-        final Vec3 worldUp = new Vec3(0.0, 1.0, 0.0);
+        Vec3 forward = player.getLookAngle();
+        Vector3d forwardVec = new Vector3d(forward.x, forward.y, forward.z).normalize();
 
-        Vec3 right = look.cross(worldUp);
-        double rLen = right.length();
-        if (rLen < PhysicsConstants.VECTOR_EPSILON) {
-            double yr = Math.toRadians(player.getYRot());
-            right = new Vec3(Math.cos(yr), 0.0, Math.sin(yr));
-        } else {
-            right = right.scale(1.0 / rLen);
-        }
+        Vec3 right = player.calculateViewVector(0.0f, player.getYRot() - 90.0f);
+        Vector3d rightAxis = new Vector3d(right.x, right.y, right.z).normalize();
 
-        final Vec3 camUp = right.cross(look).normalize();
+        Vector3d upAxis = new Vector3d(rightAxis).cross(forwardVec).normalize();
 
-        final double rx = right.x * pitchDelta + camUp.x * yawDelta;
-        final double ry = right.y * pitchDelta + camUp.y * yawDelta;
-        final double rz = right.z * pitchDelta + camUp.z * yawDelta;
-        final double angle = Math.sqrt(rx * rx + ry * ry + rz * rz);
+        Quaterniond deltaRot = new Quaterniond()
+                .rotateAxis(-yawDelta, upAxis.x, upAxis.y, upAxis.z)
+                .rotateAxis(pitchDelta, rightAxis.x, rightAxis.y, rightAxis.z);
 
-        if (angle > PhysicsConstants.ANGLE_EPSILON) {
-            final double inv = 1.0 / angle;
-            grab.targetGlobalOrientation
-                    .premul(new Quaterniond(new AxisAngle4d(angle, rx * inv, ry * inv, rz * inv)))
-                    .normalize();
-        }
+        grab.targetGlobalOrientation.premul(deltaRot).normalize();
     }
 }

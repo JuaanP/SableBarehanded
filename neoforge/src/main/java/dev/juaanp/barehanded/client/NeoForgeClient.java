@@ -25,6 +25,9 @@ public class NeoForgeClient {
         event.register(KeyBindings.PIVOT_KEY);
         event.register(KeyBindings.DISASSEMBLE_KEY);
         event.register(KeyBindings.PLACE_TOGGLE_KEY);
+        event.register(KeyBindings.GRAB_KEY);
+        event.register(KeyBindings.PULL_KEY);
+        event.register(KeyBindings.PUSH_KEY);
     }
 
     @SubscribeEvent
