@@ -16,6 +16,8 @@ public class ClientInputTracker {
     public static boolean grabToggleActive = false;
     private static boolean lastGrabKeyDown = false;
 
+    public static boolean suppressMiningUntilRelease = false;
+
     public static void tickDebounce(boolean eitherDown, boolean bothDown, boolean grabKeyPressed) {
 
         if (grabKeyPressed && !lastGrabKeyDown) {

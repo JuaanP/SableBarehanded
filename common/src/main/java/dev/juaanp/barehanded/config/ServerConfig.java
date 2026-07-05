@@ -8,14 +8,17 @@ import com.mojang.logging.LogUtils;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 public class ServerConfig {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final File FILE = Paths.get("config", Constants.MOD_ID + "-server.json").toFile();
 
-    public int configVersion = 8;
+    public int configVersion = 13;
 
     public double maxForce = 120.0;
     public double minDistance = 1.5;
@@ -156,10 +159,10 @@ public class ServerConfig {
     public double tetherHardEscapeBuffer = 2.0;
 
     public boolean enableExhaustion = true;
-    public double exhaustionIdleRate = 0.02;
-    public double exhaustionMovementRate = 0.08;
-    public double exhaustionTensionRate = 0.04;
-    public double exhaustionForceRate = 0.06;
+    public double exhaustionIdleRate = 0.04;
+    public double exhaustionMovementRate = 0.1;
+    public double exhaustionTensionRate = 0.1;
+    public double exhaustionForceRate = 0.1;
     public double exhaustionPassiveThreshold = 20.0;
     public double exhaustionSupportHeightThreshold = 0.8;
     public double exhaustionLowSupportMultiplier = 0.5;
@@ -177,23 +180,26 @@ public class ServerConfig {
     public static ServerConfig INSTANCE = new ServerConfig();
 
     public static void load() {
+        Path path = FILE.toPath();
+        Path backupPath = path.resolveSibling(FILE.getName() + ".backup");
+
         try {
-            if (FILE.exists()) {
+            if (Files.exists(path)) {
+                ServerConfig loaded;
                 try (FileReader reader = new FileReader(FILE)) {
-                    ServerConfig loaded = GSON.fromJson(reader, ServerConfig.class);
-                    if (loaded != null) {
-                        if (loaded.configVersion < INSTANCE.configVersion) {
-                            LOGGER.warn("Sable Barehanded server config outdated (v{} -> v{}). Backing up and resetting to new defaults...",
-                                    loaded.configVersion, INSTANCE.configVersion);
+                    loaded = GSON.fromJson(reader, ServerConfig.class);
+                }
 
-                            File backupFile = new File(FILE.getParentFile(), FILE.getName() + ".v" + loaded.configVersion + ".backup");
-                            if (backupFile.exists()) backupFile.delete();
-                            FILE.renameTo(backupFile);
+                if (loaded != null) {
+                    if (loaded.configVersion < INSTANCE.configVersion) {
+                        LOGGER.warn("Sable Barehanded server config outdated (v{} -> v{}). Backing up to {}.backup and resetting to new defaults...",
+                                loaded.configVersion, INSTANCE.configVersion, FILE.getName());
 
-                            save();
-                        } else {
-                            INSTANCE = loaded;
-                        }
+                        Files.move(path, backupPath, StandardCopyOption.REPLACE_EXISTING);
+
+                        save();
+                    } else {
+                        INSTANCE = loaded;
                     }
                 }
             } else {

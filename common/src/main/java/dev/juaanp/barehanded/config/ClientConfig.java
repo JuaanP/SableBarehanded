@@ -8,14 +8,17 @@ import com.mojang.logging.LogUtils;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 public class ClientConfig {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final File FILE = Paths.get("config", Constants.MOD_ID + "-client.json").toFile();
 
-    public int configVersion = 8;
+    public int configVersion = 13;
 
     public double verticalRotationSensitivity = 0.5;
     public double horizontalRotationSensitivity = 0.5;
@@ -57,23 +60,25 @@ public class ClientConfig {
     public static ClientConfig INSTANCE = new ClientConfig();
 
     public static void load() {
+        Path path = FILE.toPath();
+        Path backupPath = path.resolveSibling(FILE.getName() + ".backup");
+
         try {
-            if (FILE.exists()) {
+            if (Files.exists(path)) {
+                ClientConfig loaded;
                 try (FileReader reader = new FileReader(FILE)) {
-                    ClientConfig loaded = GSON.fromJson(reader, ClientConfig.class);
-                    if (loaded != null) {
-                        if (loaded.configVersion < INSTANCE.configVersion) {
-                            LOGGER.warn("Sable Barehanded client config outdated (v{} -> v{}). Backing up and resetting to new defaults...",
-                                    loaded.configVersion, INSTANCE.configVersion);
+                    loaded = GSON.fromJson(reader, ClientConfig.class);
+                }
 
-                            File backupFile = new File(FILE.getParentFile(), FILE.getName() + ".v" + loaded.configVersion + ".backup");
-                            if (backupFile.exists()) backupFile.delete();
-                            FILE.renameTo(backupFile);
+                if (loaded != null) {
+                    if (loaded.configVersion < INSTANCE.configVersion) {
+                        LOGGER.warn("Sable Barehanded client config outdated (v{} -> v{}). Backing up to {}.backup and resetting to new defaults...",
+                                loaded.configVersion, INSTANCE.configVersion, FILE.getName());
 
-                            save();
-                        } else {
-                            INSTANCE = loaded;
-                        }
+                        Files.move(path, backupPath, StandardCopyOption.REPLACE_EXISTING);
+                        save();
+                    } else {
+                        INSTANCE = loaded;
                     }
                 }
             } else {

@@ -44,6 +44,7 @@ public class ClientTickOrchestrator {
             if (ClientGrabSession.isHoldingGrab) Services.NETWORK.sendStopGrabbingRequest();
             ClientGrabSession.forceResetAndNotify();
             ClientAssemblyTracker.reset();
+            ClientInputTracker.suppressMiningUntilRelease = false;
             lastLevel = null;
             lastPlayer = null;
             return;
@@ -102,6 +103,23 @@ public class ClientTickOrchestrator {
         boolean useDown = isActionDown(mc.options.keyUse);
         boolean bothDown = attackDown && useDown;
         boolean eitherDown = attackDown || useDown;
+
+        boolean isGrabbingOrAssembling = ClientAssemblyTracker.isActive() || ClientGrabSession.isHoldingGrab || ClientGrabSession.isWaitingForGrabSync;
+
+        if (isGrabbingOrAssembling && attackDown) {
+            ClientInputTracker.suppressMiningUntilRelease = true;
+        }
+
+        if (!attackDown) {
+            ClientInputTracker.suppressMiningUntilRelease = false;
+        }
+
+        if (ClientInputTracker.suppressMiningUntilRelease) {
+            mc.options.keyAttack.setDown(false);
+            if (mc.gameMode != null) {
+                mc.gameMode.stopDestroyBlock();
+            }
+        }
 
         boolean grabKeyPressed = isActionDown(KeyBindings.GRAB_KEY);
         boolean isSneaking = mc.player.isShiftKeyDown();
