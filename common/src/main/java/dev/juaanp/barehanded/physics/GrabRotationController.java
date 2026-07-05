@@ -38,8 +38,12 @@ public class GrabRotationController {
         double pitchDelta = pitch * massFactor;
 
         if (ServerConfig.INSTANCE.preventFastRotations) {
-            yawDelta = Mth.clamp(yawDelta, -ServerConfig.INSTANCE.maxRotationSpeed, ServerConfig.INSTANCE.maxRotationSpeed);
-            pitchDelta = Mth.clamp(pitchDelta, -ServerConfig.INSTANCE.maxRotationSpeed, ServerConfig.INSTANCE.maxRotationSpeed);
+            double magnitude = Math.sqrt(yawDelta * yawDelta + pitchDelta * pitchDelta);
+            if (magnitude > ServerConfig.INSTANCE.maxRotationSpeed) {
+                double scale = ServerConfig.INSTANCE.maxRotationSpeed / magnitude;
+                yawDelta *= scale;
+                pitchDelta *= scale;
+            }
         }
 
         final Vec3 look = player.getLookAngle();

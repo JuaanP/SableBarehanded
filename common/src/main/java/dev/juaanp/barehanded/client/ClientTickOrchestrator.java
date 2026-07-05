@@ -45,6 +45,7 @@ public class ClientTickOrchestrator {
             ClientGrabSession.forceResetAndNotify();
             ClientAssemblyTracker.reset();
             ClientInputTracker.suppressMiningUntilRelease = false;
+            ClientInputTracker.suppressUseUntilRelease = false;
             lastLevel = null;
             lastPlayer = null;
             return;
@@ -56,6 +57,8 @@ public class ClientTickOrchestrator {
             if (ClientGrabSession.isHoldingGrab) Services.NETWORK.sendStopGrabbingRequest();
             ClientGrabSession.forceResetAndNotify();
             ClientAssemblyTracker.reset();
+            ClientInputTracker.suppressMiningUntilRelease = false;
+            ClientInputTracker.suppressUseUntilRelease = false;
             lastLevel = mc.level;
             lastPlayer = mc.player;
         }
@@ -94,6 +97,8 @@ public class ClientTickOrchestrator {
                 ClientGrabSession.forceResetAndNotify();
             }
             ClientAssemblyTracker.reset();
+            ClientInputTracker.suppressMiningUntilRelease = false;
+            ClientInputTracker.suppressUseUntilRelease = false;
             return;
         }
 
@@ -110,8 +115,16 @@ public class ClientTickOrchestrator {
             ClientInputTracker.suppressMiningUntilRelease = true;
         }
 
+        if (isGrabbingOrAssembling && useDown) {
+            ClientInputTracker.suppressUseUntilRelease = true;
+        }
+
         if (!attackDown) {
             ClientInputTracker.suppressMiningUntilRelease = false;
+        }
+
+        if (!useDown) {
+            ClientInputTracker.suppressUseUntilRelease = false;
         }
 
         if (ClientInputTracker.suppressMiningUntilRelease) {
@@ -119,6 +132,10 @@ public class ClientTickOrchestrator {
             if (mc.gameMode != null) {
                 mc.gameMode.stopDestroyBlock();
             }
+        }
+
+        if (ClientInputTracker.suppressUseUntilRelease) {
+            mc.options.keyUse.setDown(false);
         }
 
         boolean grabKeyPressed = isActionDown(KeyBindings.GRAB_KEY);

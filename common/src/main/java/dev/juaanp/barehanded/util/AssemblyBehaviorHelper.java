@@ -31,12 +31,32 @@ public class AssemblyBehaviorHelper {
     public static boolean isIgnored(Level level, BlockPos pos, BlockState state) {
         if (state.isAir()) return true;
 
+        if (ServerConfig.INSTANCE.useWhitelistMode) {
+            if (!state.is(Constants.Tags.GRABBABLE)) {
+                return true;
+            }
+            if (state.getDestroySpeed(level, pos) < 0.0F && !ServerConfig.INSTANCE.allowGrabbingUnbreakableBlocks) {
+                return true;
+            }
+            if (!state.getFluidState().isEmpty() && !state.isSolidRender(level, pos)) return true;
+            return false;
+        }
+
         if (state.is(Blocks.SPAWNER) && ServerConfig.INSTANCE.allowGrabbingSpawners) {
             return false;
         }
 
-        if (state.getDestroySpeed(level, pos) < 0.0F) return true;
+        if (state.getDestroySpeed(level, pos) < 0.0F) {
+            if (ServerConfig.INSTANCE.allowGrabbingUnbreakableBlocks) {
+                if (state.is(Constants.Tags.UNGRABBABLE)) return true;
+                if (!state.getFluidState().isEmpty() && !state.isSolidRender(level, pos)) return true;
+                return false;
+            }
+            return true;
+        }
+
         if (!state.getFluidState().isEmpty() && !state.isSolidRender(level, pos)) return true;
+
         if (state.is(Constants.Tags.UNGRABBABLE)) return true;
 
         return false;
@@ -107,7 +127,8 @@ public class AssemblyBehaviorHelper {
                 if (assembly.contains(adj)) continue;
 
                 BlockState adjState = level.getBlockState(adj);
-                if (adjState.isAir() || adjState.getDestroySpeed(level, adj) < 0.0F || !adjState.getFluidState().isEmpty() || adjState.is(Constants.Tags.UNGRABBABLE)) continue;
+
+                if (isIgnored(level, adj, adjState)) continue;
 
                 if (adjState.getBlock() instanceof net.minecraft.world.level.block.FallingBlock) continue;
 

@@ -78,6 +78,9 @@ public class BarehandedConfigScreen {
 
         addBoolean(grab, eb, "Prevent Gravity In Sub-Levels", "Stops blocks like sand or gravel from falling down while they are part of a grabbed structure.", ServerConfig.INSTANCE.preventGravityInSubLevels, SERVER_DEFAULTS.preventGravityInSubLevels, v -> ServerConfig.INSTANCE.preventGravityInSubLevels = v);
         addBoolean(grab, eb, "Allow Grabbing Spawners", "Overrides all restrictions to explicitly allow grabbing Monster Spawners.", ServerConfig.INSTANCE.allowGrabbingSpawners, SERVER_DEFAULTS.allowGrabbingSpawners, v -> ServerConfig.INSTANCE.allowGrabbingSpawners = v);
+        addBoolean(grab, eb, "Use Whitelist Mode", "If true, ONLY blocks in the #barehanded:grabbable tag can be grabbed. If false, all blocks except those in #barehanded:ungrabbable can be grabbed.", ServerConfig.INSTANCE.useWhitelistMode, SERVER_DEFAULTS.useWhitelistMode, v -> ServerConfig.INSTANCE.useWhitelistMode = v);
+        addBoolean(grab, eb, "Allow Grabbing Unbreakable Blocks", "Allows grabbing blocks with destroySpeed < 0 (bedrock, barriers, etc). In whitelist mode, these blocks must also be in #barehanded:grabbable.", ServerConfig.INSTANCE.allowGrabbingUnbreakableBlocks, SERVER_DEFAULTS.allowGrabbingUnbreakableBlocks, v -> ServerConfig.INSTANCE.allowGrabbingUnbreakableBlocks = v);
+
         server.addEntry(grab.build());
     }
 

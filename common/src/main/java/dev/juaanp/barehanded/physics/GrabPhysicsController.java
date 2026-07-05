@@ -207,17 +207,28 @@ public class GrabPhysicsController {
 
         Quaterniond relativeRot = new Quaterniond(grab.baseOrientation).invert().mul(grab.targetGlobalOrientation);
 
-        if (grab.constraintHandle != null && relativeRot.angle() > ServerConfig.INSTANCE.rotationRebuildThreshold) {
+        if (grab.isRotating) {
             if (grab.rotateAroundCenter) {
                 Vector3d vectorToCOM = new Vector3d(grab.localCenterOfMass).sub(grab.localPivot);
                 Vector3d originalCOM = new Vector3d(vectorToCOM).rotate(grab.baseOrientation);
                 Vector3d targetCOM = new Vector3d(vectorToCOM).rotate(grab.targetGlobalOrientation);
                 grab.accumulatedPivotOffset.add(new Vector3d(originalCOM).sub(targetCOM));
             }
-
             grab.baseOrientation.set(grab.targetGlobalOrientation);
             rebuildConstraint(grab);
             relativeRot.identity();
+        } else {
+            if (grab.constraintHandle != null && relativeRot.angle() > ServerConfig.INSTANCE.rotationRebuildThreshold) {
+                if (grab.rotateAroundCenter) {
+                    Vector3d vectorToCOM = new Vector3d(grab.localCenterOfMass).sub(grab.localPivot);
+                    Vector3d originalCOM = new Vector3d(vectorToCOM).rotate(grab.baseOrientation);
+                    Vector3d targetCOM = new Vector3d(vectorToCOM).rotate(grab.targetGlobalOrientation);
+                    grab.accumulatedPivotOffset.add(new Vector3d(originalCOM).sub(targetCOM));
+                }
+                grab.baseOrientation.set(grab.subLevel.logicalPose().orientation());
+                rebuildConstraint(grab);
+                relativeRot = new Quaterniond(grab.baseOrientation).invert().mul(grab.targetGlobalOrientation);
+            }
         }
 
         if (isGhostEverything) {
@@ -398,11 +409,14 @@ public class GrabPhysicsController {
                     angularMaxForce *= 3.0;
                 }
 
-                grab.constraintHandle.setMotor(ConstraintJointAxis.ANGULAR_X, eulers.x, angularStiffness, currentAngularDamping, true, angularMaxForce);
-                grab.constraintHandle.setMotor(ConstraintJointAxis.ANGULAR_Y, eulers.y, angularStiffness, currentAngularDamping, true, angularMaxForce);
-                grab.constraintHandle.setMotor(ConstraintJointAxis.ANGULAR_Z, eulers.z, angularStiffness, currentAngularDamping, true, angularMaxForce);
+                for (ConstraintJointAxis angularAxis : ConstraintJointAxis.ANGULAR) {
+                    grab.constraintHandle.setMotor(angularAxis, 0.0, angularStiffness, currentAngularDamping, false, angularMaxForce);
+                }
 
             } else {
+                eulers = new Vector3d();
+                relativeRot.getEulerAnglesXYZ(eulers);
+
                 double freeDamping = disableMotors ? 0.0 : angularDamping * ServerConfig.INSTANCE.freePivotDampingMultiplier;
                 double swayStiffness = disableMotors ? 0.0 : baseStiffness * (ServerConfig.INSTANCE.swayAngularStiffnessBase * ServerConfig.INSTANCE.swayStiffnessEdgeFactor + (ServerConfig.INSTANCE.swayAngularStiffnessRange * grabStable * ServerConfig.INSTANCE.swayStiffnessEdgeRangeFactor));
                 double angularMaxForce = disableMotors ? 0.0 : (hasSuperStrength ? ServerConfig.INSTANCE.creativeMaxMotorForce : (baseAngularForce + ((stableAngularForce - baseAngularForce) * grabStable)));
@@ -412,9 +426,9 @@ public class GrabPhysicsController {
                     freeDamping *= ServerConfig.INSTANCE.angularBrakeMultiplier;
                 }
 
-                for (ConstraintJointAxis angularAxis : ConstraintJointAxis.ANGULAR) {
-                    grab.constraintHandle.setMotor(angularAxis, 0.0, swayStiffness, freeDamping, true, angularMaxForce);
-                }
+                grab.constraintHandle.setMotor(ConstraintJointAxis.ANGULAR_X, eulers.x, swayStiffness, freeDamping, true, angularMaxForce);
+                grab.constraintHandle.setMotor(ConstraintJointAxis.ANGULAR_Y, eulers.y, swayStiffness, freeDamping, true, angularMaxForce);
+                grab.constraintHandle.setMotor(ConstraintJointAxis.ANGULAR_Z, eulers.z, swayStiffness, freeDamping, true, angularMaxForce);
             }
 
             GrabEncumbranceSystem.applyMovementPenalty(player, grab, tension, actualMaxForce);

@@ -18,10 +18,10 @@ public class ClientConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final File FILE = Paths.get("config", Constants.MOD_ID + "-client.json").toFile();
 
-    public int configVersion = 13;
+    public int configVersion = 8;
 
-    public double verticalRotationSensitivity = 0.5;
-    public double horizontalRotationSensitivity = 0.5;
+    public double verticalRotationSensitivity = 0.1;
+    public double horizontalRotationSensitivity = 0.1;
     public double scrollDistanceSensitivity = 0.5;
     public boolean invertVerticalRotation = false;
     public boolean invertHorizontalRotation = false;

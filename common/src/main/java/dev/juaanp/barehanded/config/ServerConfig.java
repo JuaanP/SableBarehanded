@@ -18,7 +18,7 @@ public class ServerConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final File FILE = Paths.get("config", Constants.MOD_ID + "-server.json").toFile();
 
-    public int configVersion = 13;
+    public int configVersion = 8;
 
     public double maxForce = 120.0;
     public double minDistance = 1.5;
@@ -34,6 +34,8 @@ public class ServerConfig {
     public boolean enableRipOffBlocks = true;
     public boolean preventGravityInSubLevels = true;
     public boolean allowGrabbingSpawners = false;
+    public boolean useWhitelistMode = false;
+    public boolean allowGrabbingUnbreakableBlocks = false;
 
     public boolean enableDistanceScroll = true;
     public boolean dynamicScrollMaxDistance = true;
