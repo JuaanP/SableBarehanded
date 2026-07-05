@@ -17,6 +17,8 @@ public class FabricClientSetup implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        ClientConfig.load();
+
         KeyBindingHelper.registerKeyBinding(KeyBindings.ROTATE_KEY);
         KeyBindingHelper.registerKeyBinding(KeyBindings.PIVOT_KEY);
         KeyBindingHelper.registerKeyBinding(KeyBindings.DISASSEMBLE_KEY);

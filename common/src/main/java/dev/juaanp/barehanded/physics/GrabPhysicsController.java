@@ -189,8 +189,6 @@ public class GrabPhysicsController {
             grab.subLevel.latestLinearVelocity.set(0, 0, 0);
         }
 
-        // CRÍTICO: Al terminar rotación, resetear rotateAroundCenter a false
-        // Esto asegura que después de rotar, el objeto vuelve al modo normal (pivot sigue cámara)
         if (!grab.isRotating && wasRotating) {
             grab.rotateAroundCenter = false;
 
@@ -216,13 +214,11 @@ public class GrabPhysicsController {
         if (isGhostEverything) {
             Vector3d targetPos = new Vector3d(currentCameraTarget);
 
-            // Si está rotando sobre COM, el COM debe estar en la cámara
             if (grab.isRotating && grab.rotateAroundCenter) {
                 Vector3d vectorFromCOMToPivot = new Vector3d(grab.localPivot).sub(grab.localCenterOfMass);
                 Vector3d rotatedOffset = new Vector3d(vectorFromCOMToPivot).rotate(grab.targetGlobalOrientation);
                 targetPos.sub(rotatedOffset);
             } else {
-                // Modo normal: el pivot está en la cámara
                 Vector3d rotPoint = grab.subLevel.logicalPose().rotationPoint();
                 Vector3d vectorFromRotToPivot = new Vector3d(grab.localPivot).sub(rotPoint);
                 Vector3d rotatedOffset = new Vector3d(vectorFromRotToPivot).rotate(grab.targetGlobalOrientation);
@@ -238,16 +234,13 @@ public class GrabPhysicsController {
             rebuildConstraint(grab);
         }
 
-        // CÁLCULO DINÁMICO DE TARGET ANCHOR
         Vector3d targetAnchor = new Vector3d(currentCameraTarget);
 
-        // Solo durante rotación activa sobre COM: compensar para que el COM siga la cámara
         if (grab.isRotating && grab.rotateAroundCenter) {
             Vector3d vectorFromCOMToPivot = new Vector3d(grab.localPivot).sub(grab.localCenterOfMass);
             Vector3d rotatedOffset = new Vector3d(vectorFromCOMToPivot).rotate(grab.targetGlobalOrientation);
             targetAnchor.add(rotatedOffset);
         }
-        // Si NO está rotando, targetAnchor = currentCameraTarget (el pivot sigue la cámara normalmente)
 
         Vector3d currentActualGrabBlockPos = grab.subLevel.logicalPose().transformPosition(new Vector3d(grab.localPivot));
 

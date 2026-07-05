@@ -16,6 +16,7 @@ import net.neoforged.neoforge.client.event.RenderGuiEvent;
 public class NeoForgeClient {
 
     public static void init(net.neoforged.bus.api.IEventBus modEventBus, net.neoforged.fml.ModContainer modContainer) {
+        ClientConfig.load();
         modContainer.registerExtensionPoint(net.neoforged.neoforge.client.gui.IConfigScreenFactory.class, (client, parent) -> dev.juaanp.barehanded.client.BarehandedConfigScreen.create(parent));
         modEventBus.addListener(NeoForgeClient::registerKeyMappings);
     }

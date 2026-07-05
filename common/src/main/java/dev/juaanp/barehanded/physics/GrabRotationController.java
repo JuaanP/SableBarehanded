@@ -31,7 +31,7 @@ public class GrabRotationController {
         double mass = grab.subLevel.getMassTracker().getMass();
         double massFactor = hasSuperStrength ? 1.0 : (1.0 / (1.0 + mass * ServerConfig.INSTANCE.rotationMassDampingFactor));
 
-        double smoothingFactor = 0.7;  // 70% de la entrada actual, 30% de inercia
+        double smoothingFactor = 0.7;
         double yawDelta = yaw * massFactor * smoothingFactor;
         double pitchDelta = pitch * massFactor * smoothingFactor;
 
