@@ -128,7 +128,7 @@ public class DisassembleHandler {
 
         if (!hasSupport) {
             if (ServerConfig.INSTANCE.showDisassembleMessages) {
-                player.displayClientMessage(net.minecraft.network.chat.Component.literal("Merge Failed: Must be attached to the ship.").withStyle(net.minecraft.ChatFormatting.RED), true);
+                player.displayClientMessage(net.minecraft.network.chat.Component.literal("Merge Failed: No support detected.").withStyle(net.minecraft.ChatFormatting.RED), true);
             }
             return false;
         }

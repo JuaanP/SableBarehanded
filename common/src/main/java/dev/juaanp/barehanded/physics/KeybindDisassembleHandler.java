@@ -36,7 +36,7 @@ public class KeybindDisassembleHandler {
 
         if (isAltDown) {
             if (ServerConfig.INSTANCE.showDisassembleMessages) {
-                player.displayClientMessage(Component.literal("Merge Failed: No nearby SubLevel detected.").withStyle(ChatFormatting.RED), true);
+                player.displayClientMessage(Component.literal("Merge Failed: No support detected").withStyle(ChatFormatting.RED), true);
             }
             return;
         }

@@ -349,20 +349,10 @@ public class GrabPhysicsController {
         }
 
         if (grab.constraintHandle != null && !isGhostEverything) {
-            Quaterniond safeRelativeRot = new Quaterniond(relativeRot);
-            if (safeRelativeRot.w < 0.0) {
-                safeRelativeRot.x = -safeRelativeRot.x;
-                safeRelativeRot.y = -safeRelativeRot.y;
-                safeRelativeRot.z = -safeRelativeRot.z;
-                safeRelativeRot.w = -safeRelativeRot.w;
+            if (grab.isRotating) {
+                grab.baseOrientation.set(grab.targetGlobalOrientation);
+                rebuildConstraint(grab);
             }
-
-            AxisAngle4d axisAngle = new AxisAngle4d(safeRelativeRot);
-            double errorAngle = axisAngle.angle;
-
-            double errorX = Double.isNaN(axisAngle.x) ? 0.0 : axisAngle.x * errorAngle;
-            double errorY = Double.isNaN(axisAngle.y) ? 0.0 : axisAngle.y * errorAngle;
-            double errorZ = Double.isNaN(axisAngle.z) ? 0.0 : axisAngle.z * errorAngle;
 
             double exponent = ServerConfig.INSTANCE.stabilizationExponent;
             double grabStable = hasSuperStrength ? 1.0 : Math.pow(ServerConfig.INSTANCE.grabStabilization, exponent);
@@ -384,7 +374,6 @@ public class GrabPhysicsController {
             double stableAngularForce = actualMaxForce * (ServerConfig.INSTANCE.stableAngularForceMassBase + massCurve * ServerConfig.INSTANCE.stableAngularForceMassFactor);
 
             boolean disableMotors = suspendPhysics;
-
             double linearMaxForce = disableMotors ? 0.0 : (hasSuperStrength ? ServerConfig.INSTANCE.creativeMaxMotorForce : actualMaxForce * (1.0 + massCurve * ServerConfig.INSTANCE.heavyObjectMaxForceFactor));
 
             Vector3d globalOffset = new Vector3d(targetAnchor).sub(grab.anchorGlobalOrigin);
@@ -397,37 +386,23 @@ public class GrabPhysicsController {
             grab.constraintHandle.setMotor(ConstraintJointAxis.LINEAR_Y, localOffset.y, currentLinearStiffness, currentLinearDamping, true, linearMaxForce);
             grab.constraintHandle.setMotor(ConstraintJointAxis.LINEAR_Z, localOffset.z, currentLinearStiffness, currentLinearDamping, true, linearMaxForce);
 
+            double currentAngularDamping = disableMotors ? 0.0 : angularDamping;
+
             if (grab.isRotating || isCameraLocked) {
-                double angularStiffness = baseStiffness * (ServerConfig.INSTANCE.rotatingAngularStiffnessBase + (ServerConfig.INSTANCE.rotatingAngularStiffnessRange * rotStable));
-                double angularMaxForce = disableMotors ? 0.0 : (hasSuperStrength ? ServerConfig.INSTANCE.creativeMaxMotorForce : (baseAngularForce + ((stableAngularForce - baseAngularForce) * rotStable)));
-                double currentAngularDamping = angularDamping;
+                double angularStiffness = disableMotors ? 0.0 : baseStiffness * (ServerConfig.INSTANCE.rotatingAngularStiffnessBase + (ServerConfig.INSTANCE.rotatingAngularStiffnessRange * rotStable));
 
-                if (isCameraLocked && !disableMotors) {
-                    angularStiffness *= 3.0;
-                    angularMaxForce *= 3.0;
+                if (isCameraLocked && !disableMotors) angularStiffness *= 3.0;
+
+                for (ConstraintJointAxis angularAxis : ConstraintJointAxis.ANGULAR) {
+                    grab.constraintHandle.setMotor(angularAxis, 0.0, angularStiffness, currentAngularDamping, false, 0.0);
                 }
-
-                double errorMagnitude = Math.sqrt(errorX * errorX + errorY * errorY + errorZ * errorZ);
-                if (errorMagnitude < ServerConfig.INSTANCE.angularBrakeThreshold) {
-                    currentAngularDamping *= ServerConfig.INSTANCE.angularBrakeMultiplier;
-                }
-
-                grab.constraintHandle.setMotor(ConstraintJointAxis.ANGULAR_X, errorX, angularStiffness, currentAngularDamping, true, angularMaxForce);
-                grab.constraintHandle.setMotor(ConstraintJointAxis.ANGULAR_Y, errorY, angularStiffness, currentAngularDamping, true, angularMaxForce);
-                grab.constraintHandle.setMotor(ConstraintJointAxis.ANGULAR_Z, errorZ, angularStiffness, currentAngularDamping, true, angularMaxForce);
             } else {
-                double freeDamping = angularDamping * ServerConfig.INSTANCE.freePivotDampingMultiplier;
-                double swayStiffness = baseStiffness * (ServerConfig.INSTANCE.swayAngularStiffnessBase * ServerConfig.INSTANCE.swayStiffnessEdgeFactor + (ServerConfig.INSTANCE.swayAngularStiffnessRange * grabStable * ServerConfig.INSTANCE.swayStiffnessEdgeRangeFactor));
-                double angularMaxForce = disableMotors ? 0.0 : (hasSuperStrength ? ServerConfig.INSTANCE.creativeMaxMotorForce : (baseAngularForce + ((stableAngularForce - baseAngularForce) * grabStable)));
+                double freeDamping = disableMotors ? 0.0 : angularDamping * ServerConfig.INSTANCE.freePivotDampingMultiplier;
+                double swayStiffness = disableMotors ? 0.0 : baseStiffness * (ServerConfig.INSTANCE.swayAngularStiffnessBase * ServerConfig.INSTANCE.swayStiffnessEdgeFactor + (ServerConfig.INSTANCE.swayAngularStiffnessRange * grabStable * ServerConfig.INSTANCE.swayStiffnessEdgeRangeFactor));
 
-                double errorMagnitude = Math.sqrt(errorX * errorX + errorY * errorY + errorZ * errorZ);
-                if (errorMagnitude < ServerConfig.INSTANCE.angularBrakeThreshold) {
-                    freeDamping *= ServerConfig.INSTANCE.angularBrakeMultiplier;
+                for (ConstraintJointAxis angularAxis : ConstraintJointAxis.ANGULAR) {
+                    grab.constraintHandle.setMotor(angularAxis, 0.0, swayStiffness, freeDamping, false, 0.0);
                 }
-
-                grab.constraintHandle.setMotor(ConstraintJointAxis.ANGULAR_X, errorX, swayStiffness, freeDamping, true, angularMaxForce);
-                grab.constraintHandle.setMotor(ConstraintJointAxis.ANGULAR_Y, errorY, swayStiffness, freeDamping, true, angularMaxForce);
-                grab.constraintHandle.setMotor(ConstraintJointAxis.ANGULAR_Z, errorZ, swayStiffness, freeDamping, true, angularMaxForce);
             }
 
             GrabEncumbranceSystem.applyMovementPenalty(player, grab, tension, actualMaxForce);

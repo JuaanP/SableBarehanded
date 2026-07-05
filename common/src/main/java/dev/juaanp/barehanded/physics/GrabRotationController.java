@@ -19,15 +19,17 @@ public class GrabRotationController {
         if (grab.rotationTicksLeft == 0) {
             grab.baseOrientation.set(grab.subLevel.logicalPose().orientation());
             grab.targetGlobalOrientation.set(grab.baseOrientation);
-            Vector3d currentActualPivotPos = grab.subLevel.logicalPose().transformPosition(new Vector3d(grab.localPivot));
-            grab.anchorGlobalOrigin.set(currentActualPivotPos);
+
+            Vector3d localAnchor = clientPrefersCenter ? grab.localCenterOfMass : grab.localPivot;
+            Vector3d currentActualAnchorPos = grab.subLevel.logicalPose().transformPosition(new Vector3d(localAnchor));
+            grab.anchorGlobalOrigin.set(currentActualAnchorPos);
+
             GrabPhysicsController.rebuildConstraint(grab);
         }
 
         grab.rotationTicksLeft = ServerConfig.INSTANCE.rotationTicksWindow;
 
         boolean hasSuperStrength = GrabSession.hasSuperStrength(player);
-
         double mass = grab.subLevel.getMassTracker().getMass();
         double massFactor = hasSuperStrength ? 1.0 : (1.0 / (1.0 + mass * ServerConfig.INSTANCE.rotationMassDampingFactor));
 
@@ -40,18 +42,20 @@ public class GrabRotationController {
             pitchDelta = Mth.clamp(pitchDelta, -ServerConfig.INSTANCE.maxRotationSpeed, ServerConfig.INSTANCE.maxRotationSpeed);
         }
 
-        Vec3 forward = player.getLookAngle();
-        Vector3d forwardVec = new Vector3d(forward.x, forward.y, forward.z).normalize();
+        Vec3 look = player.getLookAngle();
+        Vector3d forward = new Vector3d(look.x, look.y, look.z).normalize();
+        Vector3d worldUp = new Vector3d(0.0, 1.0, 0.0);
 
-        Vec3 right = player.calculateViewVector(0.0f, player.getYRot() - 90.0f);
-        Vector3d rightAxis = new Vector3d(right.x, right.y, right.z).normalize();
+        Vector3d rightAxis = new Vector3d(forward).cross(worldUp).normalize();
+        if (rightAxis.lengthSquared() < 0.001) rightAxis.set(1.0, 0.0, 0.0);
 
-        Vector3d upAxis = new Vector3d(rightAxis).cross(forwardVec).normalize();
+        Vector3d upAxis = new Vector3d(rightAxis).cross(forward).normalize();
 
-        Quaterniond deltaRot = new Quaterniond()
-                .rotateAxis(-yawDelta, upAxis.x, upAxis.y, upAxis.z)
-                .rotateAxis(pitchDelta, rightAxis.x, rightAxis.y, rightAxis.z);
+        Quaterniond pitchQuat = new Quaterniond().rotateAxis(pitchDelta, rightAxis);
+        Quaterniond yawQuat = new Quaterniond().rotateAxis(-yawDelta, upAxis);
 
-        grab.targetGlobalOrientation.premul(deltaRot).normalize();
+        grab.targetGlobalOrientation.premul(pitchQuat);
+        grab.targetGlobalOrientation.premul(yawQuat);
+        grab.targetGlobalOrientation.normalize();
     }
 }
