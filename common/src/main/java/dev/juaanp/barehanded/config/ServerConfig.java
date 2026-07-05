@@ -183,10 +183,13 @@ public class ServerConfig {
                     ServerConfig loaded = GSON.fromJson(reader, ServerConfig.class);
                     if (loaded != null) {
                         if (loaded.configVersion < INSTANCE.configVersion) {
-                            LOGGER.warn("Sable Barehanded server config outdated (v{} -> v{}). Migrating...",
+                            LOGGER.warn("Sable Barehanded server config outdated (v{} -> v{}). Backing up and resetting to new defaults...",
                                     loaded.configVersion, INSTANCE.configVersion);
-                            loaded.configVersion = INSTANCE.configVersion;
-                            INSTANCE = loaded;
+
+                            File backupFile = new File(FILE.getParentFile(), FILE.getName() + ".v" + loaded.configVersion + ".backup");
+                            if (backupFile.exists()) backupFile.delete();
+                            FILE.renameTo(backupFile);
+
                             save();
                         } else {
                             INSTANCE = loaded;
