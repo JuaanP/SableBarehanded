@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+
+## [1.6.0]
+
+### Added
+- **Assembling/Disassembling onto sub-levels:**  You can now merge/detach a grabbed sub-level directly into another existing sub-level.
+- **Grab Keybind:** Added a dedicated keybind (default G) to toggle grabbing sub-levels without needing to hold both mouse buttons.
+- **Distance Adjust Keybind:** Added new keybinds (default - and =) to push or pull grabbed objects using the keyboard, as an alternative to the mouse scroll wheel.
+- **Camera-Locked Rotation:** Added new configuration options to automatically rotate the grabbed object synchronously with the player's camera pitch and/or yaw.
+- **Grabbable Tag and Whitelist Mode:** Added the #barehanded:grabbable block tag and a "Whitelist Mode" config option. When enabled, only explicitly tagged blocks can be grabbed.
+- **Spectator Grabbing:** Added a configuration option to allow players in Spectator mode to grab and interact with sub-levels.
+- **Grab Unbreakable Blocks Config:** Added an explicit configuration option to allow grabbing unbreakable blocks (like Bedrock, Barriers, or Command Blocks).
+- **Config Auto-Backups:** The mod now automatically creates .backup files of your outdated configuration files before migrating them to new versions, ensuring you never lose your custom settings during an update.
+
+### Changed
+- **Physics & Elasticity:** Grab physics have been refined. Added new parameters for "Grab Elasticity", heavy object mass curves, and sway edge factors to make handling heavy objects feel more realistic.
+- **Scroll Speed:** Distance adjustment speed is now dynamically reduced based on the object's mass and the player's current encumbrance, making heavy objects feel harder to pull close.
+- **Input Interception:** Changed how vanilla inputs (mining, using) are suppressed while grabbing to prevent accidental block interactions and continuous punching loops much more reliably.
+
+### Fixed & Compatibility
+- **Controller Support:** Fixed an issue where using a controller would cause the grab to drop due to input state overrides. The mod now correctly reads analog triggers without breaking the controller's internal state.
+- **Prop-Surfing:** Added more physics checks and tethering to prevent players from flying or infinitely accelerating while standing on or interacting with sub-levels.
+
 ## [1.5.2]
 
 ### Added

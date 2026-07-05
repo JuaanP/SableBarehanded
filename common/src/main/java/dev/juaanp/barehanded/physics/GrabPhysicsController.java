@@ -79,19 +79,23 @@ public class GrabPhysicsController {
             float effectiveYaw = ServerConfig.INSTANCE.cameraLockedRotationY ? deltaYaw : 0.0f;
 
             if (effectivePitch != 0.0f || effectiveYaw != 0.0f) {
-                Quaterniond qOld = new Quaterniond()
-                        .rotateY(Math.toRadians(-lastYaw))
-                        .rotateX(Math.toRadians(-lastPitch));
+                double yawDelta = Math.toRadians(-effectiveYaw);
+                double pitchDelta = Math.toRadians(effectivePitch); // CORREGIDO: era -effectivePitch
 
-                float newPitch = lastPitch + effectivePitch;
-                float newYaw = lastYaw + effectiveYaw;
+                Vec3 forward = player.getLookAngle();
+                Vector3d forwardVec = new Vector3d(forward.x, forward.y, forward.z).normalize();
 
-                Quaterniond qNew = new Quaterniond()
-                        .rotateY(Math.toRadians(-newYaw))
-                        .rotateX(Math.toRadians(-newPitch));
+                Vector3d worldUp = new Vector3d(0.0, 1.0, 0.0);
 
-                Quaterniond qDelta = new Quaterniond(qNew).mul(new Quaterniond(qOld).invert());
-                grab.targetGlobalOrientation.premul(qDelta).normalize();
+                Vec3 right = player.calculateViewVector(0.0f, player.getYRot() - 90.0f);
+                Vector3d rightAxis = new Vector3d(right.x, right.y, right.z).normalize();
+
+                Quaterniond pitchQuat = new Quaterniond().rotateAxis(pitchDelta, rightAxis);
+                Quaterniond yawQuat = new Quaterniond().rotateAxis(yawDelta, worldUp);
+
+                grab.targetGlobalOrientation.premul(pitchQuat);
+                grab.targetGlobalOrientation.premul(yawQuat);
+                grab.targetGlobalOrientation.normalize();
             }
         }
 
@@ -223,13 +227,14 @@ public class GrabPhysicsController {
 
         Quaterniond relativeRot = new Quaterniond(grab.baseOrientation).invert().mul(grab.targetGlobalOrientation);
 
-        if (grab.isRotating) {
-            if (grab.rotateAroundCenter) {
+        if (grab.isRotating || isCameraLocked) {
+            if (grab.isRotating && grab.rotateAroundCenter) {
                 Vector3d vectorToCOM = new Vector3d(grab.localCenterOfMass).sub(grab.localPivot);
                 Vector3d originalCOM = new Vector3d(vectorToCOM).rotate(grab.baseOrientation);
                 Vector3d targetCOM = new Vector3d(vectorToCOM).rotate(grab.targetGlobalOrientation);
                 grab.accumulatedPivotOffset.add(new Vector3d(originalCOM).sub(targetCOM));
             }
+
             grab.baseOrientation.set(grab.targetGlobalOrientation);
             rebuildConstraint(grab);
             relativeRot.identity();
