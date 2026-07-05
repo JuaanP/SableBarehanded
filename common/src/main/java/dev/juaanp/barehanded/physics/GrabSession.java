@@ -12,16 +12,15 @@ public class GrabSession {
     public float targetDistance;
     public final PhysicsPipeline pipeline;
     public PhysicsConstraintHandle constraintHandle;
+
     public final Vector3d localPivot;
     public final Vector3d localCenterOfMass;
 
     public boolean isRotating = false;
     public int rotationTicksLeft = 0;
-
     public boolean rotateAroundCenter = false;
 
     public int suspendTicksLeft = 0;
-
     public boolean isAltDown = false;
 
     public byte lastCollisionMask = -1;
@@ -30,6 +29,8 @@ public class GrabSession {
     public final Vector3d anchorGlobalOrigin = new Vector3d();
     public final Quaterniond baseOrientation = new Quaterniond();
     public final Quaterniond targetGlobalOrientation = new Quaterniond();
+
+    public final Vector3d accumulatedPivotOffset = new Vector3d();
 
     public int impactTicks = 0;
 
