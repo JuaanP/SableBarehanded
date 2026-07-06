@@ -69,6 +69,7 @@ public class BarehandedConfigScreen {
         addDouble(grab, eb, "Strength II Multiplier", "Force multiplier when the player has Strength II (or higher) effect.", 1.0, 10000.0, ServerConfig.INSTANCE.strength2Multiplier, SERVER_DEFAULTS.strength2Multiplier, v -> ServerConfig.INSTANCE.strength2Multiplier = v);
 
         addBoolean(grab, eb, "Prevent Prop-Surfing", "Prevents players from flying by standing on the object they are grabbing.", ServerConfig.INSTANCE.preventPropSurfing, SERVER_DEFAULTS.preventPropSurfing, v -> ServerConfig.INSTANCE.preventPropSurfing = v);
+        addBoolean(grab, eb, "Prevent Grabbing While Passenger", "Prevents players from grabbing sub-levels while seated on entities or other sub-levels.", ServerConfig.INSTANCE.preventGrabbingWhilePassenger, SERVER_DEFAULTS.preventGrabbingWhilePassenger, v -> ServerConfig.INSTANCE.preventGrabbingWhilePassenger = v);
         addBoolean(grab, eb, "Allow Spectator Grabbing", "Allows players in spectator mode to grab objects (ghost interaction).", ServerConfig.INSTANCE.allowSpectatorGrabbing, SERVER_DEFAULTS.allowSpectatorGrabbing, v -> ServerConfig.INSTANCE.allowSpectatorGrabbing = v);
 
         addBoolean(grab, eb, "Enable Distance Scroll", "Allows players to adjust the grab distance using the scroll wheel.", ServerConfig.INSTANCE.enableDistanceScroll, SERVER_DEFAULTS.enableDistanceScroll, v -> ServerConfig.INSTANCE.enableDistanceScroll = v);

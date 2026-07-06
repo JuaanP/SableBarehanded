@@ -34,14 +34,18 @@ public class GrabSession {
 
     public int impactTicks = 0;
 
+    public final boolean containsSurfMechanicalBlocks;
+
     public GrabSession(ServerSubLevel subLevel, float distance, Vector3d localPivot, Vector3d localCenterOfMass,
-                       Vector3d initialTarget, Quaterniond initialOrient, PhysicsPipeline pipeline) {
+                       Vector3d initialTarget, Quaterniond initialOrient, PhysicsPipeline pipeline,
+                       boolean containsSurfMechanicalBlocks) {
         this.subLevel = subLevel;
         this.distance = distance;
         this.targetDistance = distance;
         this.localPivot = localPivot;
         this.localCenterOfMass = localCenterOfMass;
         this.pipeline = pipeline;
+        this.containsSurfMechanicalBlocks = containsSurfMechanicalBlocks;
 
         this.anchorGlobalOrigin.set(initialTarget);
         this.baseOrientation.set(initialOrient);

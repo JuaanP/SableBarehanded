@@ -40,7 +40,14 @@ public class ServerGrabManager {
 
     public static boolean canPlayerGrab(Player player) {
         if (player.isSpectator() && !ServerConfig.INSTANCE.allowSpectatorGrabbing) return false;
-        return !ACTIVE_GRABS.containsKey(player.getUUID());
+        if (ACTIVE_GRABS.containsKey(player.getUUID())) return false;
+
+        if (ServerConfig.INSTANCE.preventGrabbingWhilePassenger &&
+                player.isPassenger() && player.getVehicle() != null) {
+            return false;
+        }
+
+        return true;
     }
 
     public static boolean isHoldingSubLevel(Player player, ServerSubLevel subLevel) {

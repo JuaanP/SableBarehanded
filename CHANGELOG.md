@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.6.1]
+
+### Fixed
+- **Grab:** Fixed a bug where players could not grab sub-levels resting on top of other sub-levels.
+- **Prop-Surfing:** Added detection for mechanical bearing blocks to prevent players from flying by grabbing linked bearing parts while standing on the base.
 
 ## [1.6.0]
 

@@ -18,7 +18,7 @@ public class ServerConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final File FILE = Paths.get("config", Constants.MOD_ID + "-server.json").toFile();
 
-    public int configVersion = 9;
+    public int configVersion = 10;
 
     public double maxForce = 90.0;
     public double minDistance = 1.5;
@@ -30,12 +30,23 @@ public class ServerConfig {
     public double strength2Multiplier = 4.0;
 
     public boolean preventPropSurfing = true;
+    public boolean preventGrabbingWhilePassenger = false;
     public boolean allowSpectatorGrabbing = false;
     public boolean enableRipOffBlocks = true;
     public boolean preventGravityInSubLevels = true;
     public boolean allowGrabbingSpawners = false;
     public boolean useWhitelistMode = false;
     public boolean allowGrabbingUnbreakableBlocks = false;
+
+    public String[] surfMechanicalBlocks = new String[]{
+            "simulated:swivel_bearing",
+            "simulated:swivel_bearing_link_block",
+            "simulated:linear_bearing",
+            "simulated:linear_bearing_link_block",
+            "create:mechanical_bearing",
+            "create:clockwork_bearing",
+            "create:rope_pulley"
+    };
 
     public boolean enableDistanceScroll = true;
     public boolean dynamicScrollMaxDistance = true;

@@ -80,7 +80,7 @@ public class GrabPhysicsController {
 
             if (effectivePitch != 0.0f || effectiveYaw != 0.0f) {
                 double yawDelta = Math.toRadians(-effectiveYaw);
-                double pitchDelta = Math.toRadians(effectivePitch); // CORREGIDO: era -effectivePitch
+                double pitchDelta = Math.toRadians(effectivePitch);
 
                 Vec3 forward = player.getLookAngle();
                 Vector3d forwardVec = new Vector3d(forward.x, forward.y, forward.z).normalize();
@@ -305,30 +305,22 @@ public class GrabPhysicsController {
         }
 
         boolean suspendPhysics = false;
-        ServerSubLevel standingSubLevel = (ServerSubLevel) Sable.HELPER.getTrackingSubLevel(player);
 
-        if (standingSubLevel != null) {
-            if (standingSubLevel.equals(grab.subLevel)) {
-                grab.suspendTicksLeft = ServerConfig.INSTANCE.standingOnGrabSuspendTicks;
-                suspendPhysics = true;
-            } else {
-                dev.ryanhcode.sable.companion.math.BoundingBox3dc boxA = standingSubLevel.boundingBox();
-                dev.ryanhcode.sable.companion.math.BoundingBox3dc boxB = grab.subLevel.boundingBox();
+        if (ServerConfig.INSTANCE.preventPropSurfing) {
+            ServerSubLevel standingSubLevel = (ServerSubLevel) Sable.HELPER.getTrackingSubLevel(player);
 
-                if (boxA != null && boxB != null) {
-                    double margin = 0.5;
-                    if (boxA.minX() <= boxB.maxX() + margin && boxA.maxX() >= boxB.minX() - margin &&
-                            boxA.minY() <= boxB.maxY() + margin && boxA.maxY() >= boxB.minY() - margin &&
-                            boxA.minZ() <= boxB.maxZ() + margin && boxA.maxZ() >= boxB.minZ() - margin) {
-
-                        grab.suspendTicksLeft = ServerConfig.INSTANCE.standingOnGrabSuspendTicks;
-                        suspendPhysics = true;
-                    }
+            if (standingSubLevel != null) {
+                if (standingSubLevel.equals(grab.subLevel)) {
+                    grab.suspendTicksLeft = ServerConfig.INSTANCE.standingOnGrabSuspendTicks;
+                    suspendPhysics = true;
+                } else if (grab.containsSurfMechanicalBlocks) {
+                    grab.suspendTicksLeft = ServerConfig.INSTANCE.standingOnGrabSuspendTicks;
+                    suspendPhysics = true;
                 }
+            } else if (grab.suspendTicksLeft > 0) {
+                grab.suspendTicksLeft--;
+                suspendPhysics = true;
             }
-        } else if (grab.suspendTicksLeft > 0) {
-            grab.suspendTicksLeft--;
-            suspendPhysics = true;
         }
 
         double eyeDistSq = player.getEyePosition().distanceToSqr(new Vec3(currentActualGrabBlockPos.x, currentActualGrabBlockPos.y, currentActualGrabBlockPos.z));

@@ -4,6 +4,7 @@ import dev.juaanp.barehanded.api.BarehandedEvents;
 import dev.juaanp.barehanded.config.ServerConfig;
 import dev.juaanp.barehanded.platform.Services;
 import dev.juaanp.barehanded.util.AssemblyBehaviorHelper;
+import dev.juaanp.barehanded.util.GrabSessionHelper;
 import dev.ryanhcode.sable.Sable;
 import dev.ryanhcode.sable.api.SubLevelAssemblyHelper;
 import dev.ryanhcode.sable.api.sublevel.ServerSubLevelContainer;
@@ -100,11 +101,16 @@ public class GrabActionHandler {
         Vector3d crosshairTarget = JOMLConversion.toJOML(player.getEyePosition().add(player.getLookAngle().scale(Math.max(ServerConfig.INSTANCE.minDistance, distance))));
         Quaterniond initialOrient = new Quaterniond(serverSubLevel.logicalPose().orientation());
 
-        GrabSession session = new GrabSession(serverSubLevel, distance, localGrabPosJoml, localCenterOfMass, crosshairTarget, initialOrient, pipeline);
+        boolean hasSurf = GrabSessionHelper.containsSurfMechanicalBlocks(serverSubLevel);
+
+        GrabSession session = new GrabSession(
+                serverSubLevel, distance, localGrabPosJoml, localCenterOfMass,
+                crosshairTarget, initialOrient, pipeline, hasSurf
+        );
 
         pipeline.wakeUp(serverSubLevel);
         GrabPhysicsController.rebuildConstraint(session);
-        GrabPhysicsController.setGraceTicks(player, 5); // Inmunidad de tensión sin suspender físicas
+        GrabPhysicsController.setGraceTicks(player, 5);
 
         Services.NETWORK.sendStartGrabbingAnimation(player);
         Services.NETWORK.sendSyncGrabState(player,
@@ -295,7 +301,12 @@ public class GrabActionHandler {
         Vector3d crosshairTarget = JOMLConversion.toJOML(player.getEyePosition().add(player.getLookAngle().scale(Math.max(ServerConfig.INSTANCE.minDistance, distance))));
         Quaterniond initialOrient = new Quaterniond(serverSubLevel.logicalPose().orientation());
 
-        GrabSession session = new GrabSession(serverSubLevel, distance, localGrabPosJoml, localCenterOfMass, crosshairTarget, initialOrient, pipeline);
+        boolean hasSurf = GrabSessionHelper.containsSurfMechanicalBlocks(serverSubLevel);
+
+        GrabSession session = new GrabSession(
+                serverSubLevel, distance, localGrabPosJoml, localCenterOfMass,
+                crosshairTarget, initialOrient, pipeline, hasSurf
+        );
 
         pipeline.wakeUp(serverSubLevel);
         GrabPhysicsController.rebuildConstraint(session);
