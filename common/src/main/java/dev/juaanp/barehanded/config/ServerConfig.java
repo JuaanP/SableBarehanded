@@ -18,7 +18,7 @@ public class ServerConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final File FILE = Paths.get("config", Constants.MOD_ID + "-server.json").toFile();
 
-    public int configVersion = 10;
+    public int configVersion = 11;
 
     public double maxForce = 90.0;
     public double minDistance = 1.5;
@@ -206,12 +206,20 @@ public class ServerConfig {
 
                 if (loaded != null) {
                     if (loaded.configVersion < INSTANCE.configVersion) {
-                        LOGGER.warn("Sable Barehanded server config outdated (v{} -> v{}). Backing up to {}.backup and resetting to new defaults...",
-                                loaded.configVersion, INSTANCE.configVersion, FILE.getName());
+                        if (loaded.configVersion == 10) {
+                            loaded.cameraLockedRotationY = true;
+                            loaded.configVersion = INSTANCE.configVersion;
+                            INSTANCE = loaded;
+                            save();
+                            LOGGER.info("Sable Barehanded server config migrated v10 -> v{}", INSTANCE.configVersion);
+                        } else {
+                            LOGGER.warn("Sable Barehanded server config outdated (v{} -> v{}). Backing up to {}.backup and resetting to new defaults...",
+                                    loaded.configVersion, INSTANCE.configVersion, FILE.getName());
 
-                        Files.move(path, backupPath, StandardCopyOption.REPLACE_EXISTING);
+                            Files.move(path, backupPath, StandardCopyOption.REPLACE_EXISTING);
 
-                        save();
+                            save();
+                        }
                     } else {
                         INSTANCE = loaded;
                     }

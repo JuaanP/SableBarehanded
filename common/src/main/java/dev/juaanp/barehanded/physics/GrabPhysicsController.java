@@ -185,16 +185,18 @@ public class GrabPhysicsController {
 
         Vector3d currentCameraTarget = JOMLConversion.toJOML(player.getEyePosition().add(player.getLookAngle().scale(Math.max(ServerConfig.INSTANCE.minDistance, grab.distance))));
 
-        boolean isGhostEverything = grab.isRotating ? ServerConfig.INSTANCE.ignoreCollisionsRotationEverything : ServerConfig.INSTANCE.ignoreCollisionsGrabEverything;
-        boolean isPlayerRelativeRotation = !grab.isRotating;
-        boolean isCameraLocked = isPlayerRelativeRotation || ServerConfig.INSTANCE.cameraLockedRotationX;
-
         boolean wasRotating = grab.isRotating;
         grab.isRotating = grab.rotationTicksLeft > 0;
         grab.rotationTicksLeft = Math.max(0, grab.rotationTicksLeft - 1);
 
-        if (isPlayerRelativeRotation) {
-            applyPlayerRelativeRotation(player, grab);
+        boolean isGhostEverything = grab.isRotating ? ServerConfig.INSTANCE.ignoreCollisionsRotationEverything : ServerConfig.INSTANCE.ignoreCollisionsGrabEverything;
+        boolean isPlayerRelativeRotation = !grab.isRotating && ServerConfig.INSTANCE.cameraLockedRotationY;
+        boolean isCameraLocked = isPlayerRelativeRotation || ServerConfig.INSTANCE.cameraLockedRotationX;
+
+        if (!grab.isRotating) {
+            if (isPlayerRelativeRotation) {
+                applyPlayerRelativeRotation(player, grab);
+            }
             applyCameraLockedRotation(player, grab);
         }
 
@@ -234,7 +236,7 @@ public class GrabPhysicsController {
             rebuildConstraint(grab);
             relativeRot.identity();
 
-            if (isPlayerRelativeRotation && !isGhostEverything) {
+            if (isCameraLocked && !isGhostEverything) {
                 Vector3d currentPos = new Vector3d(grab.subLevel.logicalPose().position());
                 grab.pipeline.teleport(grab.subLevel, currentPos, new Quaterniond(grab.targetGlobalOrientation));
                 grab.subLevel.latestAngularVelocity.set(0, 0, 0);
