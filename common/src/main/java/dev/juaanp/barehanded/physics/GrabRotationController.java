@@ -23,6 +23,7 @@ public class GrabRotationController {
         if (grab.rotationTicksLeft == 0) {
             grab.baseOrientation.set(grab.subLevel.logicalPose().orientation());
             grab.targetGlobalOrientation.set(grab.baseOrientation);
+            grab.syncRelativeOrientationFromTarget(player);
             Vector3d currentActualPivotPos = grab.subLevel.logicalPose().transformPosition(new Vector3d(grab.localPivot));
             grab.anchorGlobalOrigin.set(currentActualPivotPos);
             GrabPhysicsController.rebuildConstraint(grab);

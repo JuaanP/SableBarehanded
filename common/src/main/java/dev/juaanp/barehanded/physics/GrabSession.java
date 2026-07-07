@@ -29,6 +29,7 @@ public class GrabSession {
     public final Vector3d anchorGlobalOrigin = new Vector3d();
     public final Quaterniond baseOrientation = new Quaterniond();
     public final Quaterniond targetGlobalOrientation = new Quaterniond();
+    public final Quaterniond relativeOrientation = new Quaterniond();
 
     public final Vector3d accumulatedPivotOffset = new Vector3d();
 
@@ -50,6 +51,16 @@ public class GrabSession {
         this.anchorGlobalOrigin.set(initialTarget);
         this.baseOrientation.set(initialOrient);
         this.targetGlobalOrientation.set(initialOrient);
+    }
+
+    public void initializePlayerRelativeOrientation(net.minecraft.world.entity.player.Player player, Quaterniond worldOrientation) {
+        Quaterniond playerYaw = GrabPhysicsController.getPlayerYawQuaternion(player);
+        relativeOrientation.set(playerYaw.invert(new Quaterniond()).mul(worldOrientation));
+    }
+
+    public void syncRelativeOrientationFromTarget(net.minecraft.world.entity.player.Player player) {
+        Quaterniond playerYaw = GrabPhysicsController.getPlayerYawQuaternion(player);
+        relativeOrientation.set(playerYaw.invert(new Quaterniond()).mul(targetGlobalOrientation));
     }
 
     public static boolean hasSuperStrength(net.minecraft.world.entity.player.Player player) {

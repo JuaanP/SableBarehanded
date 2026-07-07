@@ -56,7 +56,7 @@ public class ServerConfig {
 
     public boolean enableRotation = true;
     public boolean cameraLockedRotationX = false;
-    public boolean cameraLockedRotationY = false;
+    public boolean cameraLockedRotationY = true;
     public boolean preventFastRotations = true;
 
     public double maxRotationSpeed = 0.08;
