@@ -22,7 +22,7 @@ public class MixinPlayerRenderer {
     private void barehanded$gatekeepRightHand(PoseStack poseStack, MultiBufferSource buffer, int combinedLight, AbstractClientPlayer player, CallbackInfo ci) {
         if (barehanded$shouldBlock(player)) {
             poseStack.pushPose();
-            poseStack.scale(0.001F, 0.001F, 0.001F); // Encogemos el brazo sin cancelar la función
+            poseStack.scale(0.001F, 0.001F, 0.001F);
         }
     }
 

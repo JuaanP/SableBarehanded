@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.6.2]
+
+### Fixed
+- **Multiblock Ripping:** Fixed a bug where double chests and other multiblocks would break in half when ripped off from a sub-level.
+- **Ungrabbable Config Logic:** Fixed bug where `allowGrabbingSpawners` and `allowGrabbingUnbreakableBlocks` were not properly denying interactions when set to false.
+- **Tag Priorities:** Fixed `grabbable` and `ungrabbable` block tags not being respected under certain configurations. The `grabbable` tag now has absolute priority over all configuration rules.
+
 ## [1.6.1]
 
 ### Fixed

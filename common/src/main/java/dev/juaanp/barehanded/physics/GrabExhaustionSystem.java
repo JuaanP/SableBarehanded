@@ -13,21 +13,21 @@ public class GrabExhaustionSystem {
 
         double mass = grab.subLevel.getMassTracker().getMass();
         double objectWeight = mass * ServerConfig.INSTANCE.physicsGravity;
-
         double freeWeightN = ServerConfig.INSTANCE.exhaustionPassiveThreshold;
         double effectiveWeight = Math.max(0.0, objectWeight - freeWeightN);
+
         double weightRatio = Mth.clamp(effectiveWeight / Math.max(1.0, actualMaxForce - freeWeightN), 0.0, 1.0);
 
         double supportFactor = suspendPhysics ? 0.0 : 1.0;
         Vector3d currentActualGrabBlockPos = grab.subLevel.logicalPose().transformPosition(new Vector3d(grab.localPivot));
         Vec3 blockPos = new Vec3(currentActualGrabBlockPos.x, currentActualGrabBlockPos.y, currentActualGrabBlockPos.z);
+
         double relativeHeight = blockPos.y - player.getY();
         if (relativeHeight < ServerConfig.INSTANCE.exhaustionSupportHeightThreshold && supportFactor > 0) {
             supportFactor *= ServerConfig.INSTANCE.exhaustionLowSupportMultiplier;
         }
 
         double baseEffort = weightRatio * supportFactor;
-
         double blockSpeed = grab.subLevel.latestLinearVelocity.length();
         double kineticRatio = Mth.clamp(blockSpeed / ServerConfig.INSTANCE.exhaustionKineticReferenceSpeed, 0.0, 1.0);
         double kineticEffort = kineticRatio * weightRatio;
@@ -45,16 +45,13 @@ public class GrabExhaustionSystem {
             double dX = player.getX() - player.xo;
             double dY = player.getY() - player.yo;
             double dZ = player.getZ() - player.zo;
-
             double horizontalSpeed = Math.sqrt(dX * dX + dZ * dZ);
             double verticalSpeed = Math.max(0.0, dY);
-
             double weightedSpeed = horizontalSpeed + (verticalSpeed * ServerConfig.INSTANCE.exhaustionVerticalWeightFactor);
 
             double idleEffort = ServerConfig.INSTANCE.exhaustionIdleRate * baseEffort;
             double moveEffort = ServerConfig.INSTANCE.exhaustionMovementRate * exertionRatio * (weightedSpeed * 20.0);
             double forceEffort = ServerConfig.INSTANCE.exhaustionForceRate * (kineticEffort + tensionEffort);
-
             float totalExhaustion = (float) (idleEffort + moveEffort + forceEffort);
 
             if (totalExhaustion > 0.0f) {

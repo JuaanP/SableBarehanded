@@ -2,11 +2,11 @@ package dev.juaanp.barehanded.client;
 
 import dev.juaanp.barehanded.config.ServerConfig;
 import dev.juaanp.barehanded.platform.Services;
+import dev.juaanp.barehanded.util.EncumbranceHelper;
 import dev.ryanhcode.sable.api.sublevel.SubLevelContainer;
 import dev.ryanhcode.sable.sublevel.SubLevel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3d;
@@ -118,19 +118,7 @@ public class ClientGrabSession {
         if (!ServerConfig.INSTANCE.enableEncumbrance || !isHoldingGrab) return 0.0;
         if (player.isCreative() || player.isSpectator()) return 0.0;
 
-        if (grabbedMass <= 0.0) return 0.0;
-
-        double strengthMultiplier = 1.0;
-        if (player.hasEffect(MobEffects.DAMAGE_BOOST)) {
-            int amplifier = player.getEffect(MobEffects.DAMAGE_BOOST).getAmplifier();
-            strengthMultiplier = amplifier == 0 ? ServerConfig.INSTANCE.strength1Multiplier : ServerConfig.INSTANCE.strength2Multiplier;
-        }
-
-        double maxCapacity = ServerConfig.INSTANCE.maxForce * strengthMultiplier;
-        double objectWeight = grabbedMass * ServerConfig.INSTANCE.physicsGravity;
-        double rawRatio = objectWeight / maxCapacity;
-
-        return Math.min(Math.pow(rawRatio, 2.0), 1.0);
+        return EncumbranceHelper.getEncumbranceRatio(grabbedMass, player);
     }
 
     public static double getEffectiveEncumbranceRatio(Player player) {

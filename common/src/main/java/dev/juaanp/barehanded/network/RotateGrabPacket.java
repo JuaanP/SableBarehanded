@@ -6,7 +6,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 
-public record RotateGrabPacket(double deltaX, double deltaY, boolean rotateAroundCenter) implements CustomPacketPayload { // <-- AÑADIDO
+public record RotateGrabPacket(double deltaX, double deltaY, boolean rotateAroundCenter) implements CustomPacketPayload {
 
     public static final Type<RotateGrabPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "rotate_grab"));
 

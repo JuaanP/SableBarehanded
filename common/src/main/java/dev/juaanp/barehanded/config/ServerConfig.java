@@ -18,7 +18,7 @@ public class ServerConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final File FILE = Paths.get("config", Constants.MOD_ID + "-server.json").toFile();
 
-    public int configVersion = 10;
+    public int configVersion = 11;
 
     public double maxForce = 90.0;
     public double minDistance = 1.5;
@@ -26,8 +26,7 @@ public class ServerConfig {
     public double grabStabilization = 0.05;
     public boolean creativeSuperStrength = true;
     public boolean spectatorSuperStrength = true;
-    public double strength1Multiplier = 2.0;
-    public double strength2Multiplier = 4.0;
+    public double strengthLevelMultiplier = 1.5;
 
     public boolean preventPropSurfing = true;
     public boolean preventGrabbingWhilePassenger = false;
@@ -58,6 +57,7 @@ public class ServerConfig {
     public boolean cameraLockedRotationX = false;
     public boolean cameraLockedRotationY = false;
     public boolean preventFastRotations = true;
+    public double minAngularForceForSmallObjects = 5.0;
 
     public double maxRotationSpeed = 0.08;
     public double rotationMassDampingFactor = 0.05;

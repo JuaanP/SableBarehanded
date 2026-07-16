@@ -7,8 +7,8 @@ import dev.juaanp.barehanded.config.ClientConfig;
 public class MovementInputHandler {
 
     public static boolean shouldPreventMovement() {
-        return ClientGrabSession.isHoldingGrab && 
-               KeyBindings.ROTATE_KEY.isDown() && 
+        return ClientGrabSession.isHoldingGrab &&
+               KeyBindings.ROTATE_KEY.isDown() &&
                ClientConfig.INSTANCE.preventMovementWhileRotating;
     }
 }

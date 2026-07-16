@@ -1,6 +1,7 @@
 package dev.juaanp.barehanded.physics;
 
 import dev.juaanp.barehanded.config.ServerConfig;
+import dev.juaanp.barehanded.util.EncumbranceHelper;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -17,9 +18,8 @@ public class GrabEncumbranceSystem {
         }
 
         double mass = grab.subLevel.getMassTracker().getMass();
-        double objectWeight = mass * ServerConfig.INSTANCE.physicsGravity;
-        double weightRatio = Mth.clamp(objectWeight / actualMaxForce, 0.0, 1.0);
 
+        double weightRatio = EncumbranceHelper.getEncumbranceRatio(mass, player);
         double weightPenalty = weightRatio * ServerConfig.INSTANCE.weightPenaltyMultiplier;
 
         double tensionPenalty = 0.0;
@@ -40,7 +40,6 @@ public class GrabEncumbranceSystem {
         AttributeInstance moveSpeed = player.getAttribute(Attributes.MOVEMENT_SPEED);
         if (moveSpeed != null) {
             moveSpeed.removeModifier(ServerGrabManager.getMovementPenaltyId());
-
             if (totalPenalty > 0.01) {
                 AttributeModifier penaltyModifier = new AttributeModifier(
                         ServerGrabManager.getMovementPenaltyId(),

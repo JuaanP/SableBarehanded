@@ -107,15 +107,7 @@ public class GrabPhysicsController {
         UUID playerId = player.getUUID();
         if (player.level().isClientSide()) return;
 
-        Vec3 vel = player.getDeltaMovement();
-        if (Math.abs(vel.x) > ServerConfig.INSTANCE.maxPlayerVelocityXZ || vel.y > ServerConfig.INSTANCE.maxPlayerVelocityYUp || vel.y < ServerConfig.INSTANCE.maxPlayerVelocityYDown || Math.abs(vel.z) > ServerConfig.INSTANCE.maxPlayerVelocityXZ) {
-            player.setDeltaMovement(
-                    Mth.clamp(vel.x, -ServerConfig.INSTANCE.maxPlayerVelocityXZ, ServerConfig.INSTANCE.maxPlayerVelocityXZ),
-                    Mth.clamp(vel.y, ServerConfig.INSTANCE.maxPlayerVelocityYDown, ServerConfig.INSTANCE.maxPlayerVelocityYUp),
-                    Mth.clamp(vel.z, -ServerConfig.INSTANCE.maxPlayerVelocityXZ, ServerConfig.INSTANCE.maxPlayerVelocityXZ)
-            );
-            player.hurtMarked = true;
-        }
+        clampPlayerVelocity(player);
 
         GrabSession grab = ServerGrabManager.getGrabSession(player);
         if (grab == null) {
@@ -154,44 +146,10 @@ public class GrabPhysicsController {
 
         boolean hasSuperStrength = GrabSession.hasSuperStrength(player);
 
-        double strengthMultiplier = 1.0;
-        if (player.hasEffect(MobEffects.DAMAGE_BOOST)) {
-            int amplifier = player.getEffect(MobEffects.DAMAGE_BOOST).getAmplifier();
-            if (amplifier == 0) strengthMultiplier = ServerConfig.INSTANCE.strength1Multiplier;
-            else if (amplifier >= 1) strengthMultiplier = ServerConfig.INSTANCE.strength2Multiplier;
-        }
+        double strengthMultiplier = calculateStrengthMultiplier(player);
         double actualMaxForce = ServerConfig.INSTANCE.maxForce * strengthMultiplier;
 
-        double maxScroll = getMaxScrollDistance(player);
-        if (grab.targetDistance > maxScroll) {
-            grab.targetDistance = (float) maxScroll;
-        }
-        if (grab.targetDistance < ServerConfig.INSTANCE.scrollMinDistance) {
-            grab.targetDistance = (float) ServerConfig.INSTANCE.scrollMinDistance;
-        }
-
-        if (grab.distance != grab.targetDistance) {
-            double baseLerpSpeed = 0.15F;
-            double lerpSpeed = baseLerpSpeed;
-
-            if (!hasSuperStrength && ServerConfig.INSTANCE.enableEncumbrance && ServerConfig.INSTANCE.scrollSpeedReduction > 0.0) {
-                double mass = grab.subLevel.getMassTracker().getMass();
-                double maxCapacity = ServerConfig.INSTANCE.maxForce * strengthMultiplier;
-                double objectWeight = mass * ServerConfig.INSTANCE.physicsGravity;
-                double rawRatio = maxCapacity > 0 ? objectWeight / maxCapacity : 0.0;
-                double encumbrance = Math.min(Math.pow(rawRatio, 2.0), 1.0);
-
-                double speedReduction = 1.0 - (encumbrance * ServerConfig.INSTANCE.scrollSpeedReduction);
-                lerpSpeed = baseLerpSpeed * speedReduction;
-
-                lerpSpeed = Math.max(0.02, lerpSpeed);
-            }
-
-            grab.distance = net.minecraft.util.Mth.lerp((float) lerpSpeed, grab.distance, grab.targetDistance);
-            if (Math.abs(grab.distance - grab.targetDistance) < 0.01F) {
-                grab.distance = grab.targetDistance;
-            }
-        }
+        updateTargetDistance(player, grab, hasSuperStrength, strengthMultiplier);
 
         Vector3d currentCameraTarget = JOMLConversion.toJOML(player.getEyePosition().add(player.getLookAngle().scale(Math.max(ServerConfig.INSTANCE.minDistance, grab.distance))));
 
@@ -351,17 +309,7 @@ public class GrabPhysicsController {
             }
         }
 
-        byte currentMask = 0;
-        if (isGhostEverything) currentMask |= 1;
-        if (grab.isRotating ? ServerConfig.INSTANCE.ignoreCollisionsRotationSelf : ServerConfig.INSTANCE.ignoreCollisionsGrabSelf) currentMask |= 2;
-        if (grab.isRotating ? ServerConfig.INSTANCE.ignoreCollisionsRotationOtherPlayers : ServerConfig.INSTANCE.ignoreCollisionsGrabOtherPlayers) currentMask |= 4;
-        if (grab.isRotating ? ServerConfig.INSTANCE.ignoreCollisionsRotationEntities : ServerConfig.INSTANCE.ignoreCollisionsGrabEntities) currentMask |= 8;
-
-        if (!grab.hasSyncedGhostState || grab.lastCollisionMask != currentMask) {
-            grab.lastCollisionMask = currentMask;
-            grab.hasSyncedGhostState = true;
-            Services.NETWORK.sendGhostStateSync(grab.subLevel, playerId, currentMask);
-        }
+        syncGhostState(playerId, grab, isGhostEverything);
 
         Vec3 pVel = player.getDeltaMovement();
         double playerSpeed = pVel.length();
@@ -397,6 +345,7 @@ public class GrabPhysicsController {
             double massCurve = Math.log1p(mass) * ServerConfig.INSTANCE.heavyObjectMassCurveMultiplier;
             double baseAngularForce = actualMaxForce * ServerConfig.INSTANCE.baseAngularForceFactor;
             double stableAngularForce = actualMaxForce * (ServerConfig.INSTANCE.stableAngularForceMassBase + massCurve * ServerConfig.INSTANCE.stableAngularForceMassFactor);
+            double effectiveAngularForce = Math.max(stableAngularForce, ServerConfig.INSTANCE.minAngularForceForSmallObjects);
 
             boolean disableMotors = suspendPhysics;
 
@@ -414,8 +363,7 @@ public class GrabPhysicsController {
 
             if (grab.isRotating || isCameraLocked) {
                 double angularStiffness = disableMotors ? 0.0 : baseStiffness * (ServerConfig.INSTANCE.rotatingAngularStiffnessBase + (ServerConfig.INSTANCE.rotatingAngularStiffnessRange * rotStable));
-                double angularMaxForce = disableMotors ? 0.0 : (hasSuperStrength ? ServerConfig.INSTANCE.creativeMaxMotorForce : (baseAngularForce + ((stableAngularForce - baseAngularForce) * rotStable)));
-                double currentAngularDamping = disableMotors ? 0.0 : angularDamping;
+                double angularMaxForce = disableMotors ? 0.0 : (hasSuperStrength ? ServerConfig.INSTANCE.creativeMaxMotorForce : (baseAngularForce + ((effectiveAngularForce - baseAngularForce) * rotStable)));                double currentAngularDamping = disableMotors ? 0.0 : angularDamping;
 
                 if (isCameraLocked && !disableMotors) {
                     angularStiffness *= 3.0;
@@ -432,8 +380,7 @@ public class GrabPhysicsController {
 
                 double freeDamping = disableMotors ? 0.0 : angularDamping * ServerConfig.INSTANCE.freePivotDampingMultiplier;
                 double swayStiffness = disableMotors ? 0.0 : baseStiffness * (ServerConfig.INSTANCE.swayAngularStiffnessBase * ServerConfig.INSTANCE.swayStiffnessEdgeFactor + (ServerConfig.INSTANCE.swayAngularStiffnessRange * grabStable * ServerConfig.INSTANCE.swayStiffnessEdgeRangeFactor));
-                double angularMaxForce = disableMotors ? 0.0 : (hasSuperStrength ? ServerConfig.INSTANCE.creativeMaxMotorForce : (baseAngularForce + ((stableAngularForce - baseAngularForce) * grabStable)));
-
+                double angularMaxForce = disableMotors ? 0.0 : (hasSuperStrength ? ServerConfig.INSTANCE.creativeMaxMotorForce : (baseAngularForce + ((effectiveAngularForce - baseAngularForce) * rotStable)));
                 double errorMagnitude = Math.sqrt(eulers.x * eulers.x + eulers.y * eulers.y + eulers.z * eulers.z);
                 if (errorMagnitude < ServerConfig.INSTANCE.angularBrakeThreshold) {
                     freeDamping *= ServerConfig.INSTANCE.angularBrakeMultiplier;
@@ -466,5 +413,71 @@ public class GrabPhysicsController {
             return getGrabReach(player);
         }
         return ServerConfig.INSTANCE.scrollMaxDistance;
+    }
+
+    private static void clampPlayerVelocity(Player player) {
+        Vec3 vel = player.getDeltaMovement();
+        if (Math.abs(vel.x) > ServerConfig.INSTANCE.maxPlayerVelocityXZ || vel.y > ServerConfig.INSTANCE.maxPlayerVelocityYUp || vel.y < ServerConfig.INSTANCE.maxPlayerVelocityYDown || Math.abs(vel.z) > ServerConfig.INSTANCE.maxPlayerVelocityXZ) {
+            player.setDeltaMovement(
+                    Mth.clamp(vel.x, -ServerConfig.INSTANCE.maxPlayerVelocityXZ, ServerConfig.INSTANCE.maxPlayerVelocityXZ),
+                    Mth.clamp(vel.y, ServerConfig.INSTANCE.maxPlayerVelocityYDown, ServerConfig.INSTANCE.maxPlayerVelocityYUp),
+                    Mth.clamp(vel.z, -ServerConfig.INSTANCE.maxPlayerVelocityXZ, ServerConfig.INSTANCE.maxPlayerVelocityXZ)
+            );
+            player.hurtMarked = true;
+        }
+    }
+
+    private static double calculateStrengthMultiplier(Player player) {
+        if (player.hasEffect(MobEffects.DAMAGE_BOOST)) {
+            int amplifier = player.getEffect(MobEffects.DAMAGE_BOOST).getAmplifier();
+            return 1.0 + ((amplifier + 1) * ServerConfig.INSTANCE.strengthLevelMultiplier);
+        }
+        return 1.0;
+    }
+
+    private static void updateTargetDistance(Player player, GrabSession grab, boolean hasSuperStrength, double strengthMultiplier) {
+        double maxScroll = getMaxScrollDistance(player);
+        if (grab.targetDistance > maxScroll) {
+            grab.targetDistance = (float) maxScroll;
+        }
+        if (grab.targetDistance < ServerConfig.INSTANCE.scrollMinDistance) {
+            grab.targetDistance = (float) ServerConfig.INSTANCE.scrollMinDistance;
+        }
+
+        if (grab.distance != grab.targetDistance) {
+            double baseLerpSpeed = 0.15F;
+            double lerpSpeed = baseLerpSpeed;
+
+            if (!hasSuperStrength && ServerConfig.INSTANCE.enableEncumbrance && ServerConfig.INSTANCE.scrollSpeedReduction > 0.0) {
+                double mass = grab.subLevel.getMassTracker().getMass();
+                double maxCapacity = ServerConfig.INSTANCE.maxForce * strengthMultiplier;
+                double objectWeight = mass * ServerConfig.INSTANCE.physicsGravity;
+                double rawRatio = maxCapacity > 0 ? objectWeight / maxCapacity : 0.0;
+                double encumbrance = Math.min(Math.pow(rawRatio, 2.0), 1.0);
+
+                double speedReduction = 1.0 - (encumbrance * ServerConfig.INSTANCE.scrollSpeedReduction);
+                lerpSpeed = baseLerpSpeed * speedReduction;
+                lerpSpeed = Math.max(0.02, lerpSpeed);
+            }
+
+            grab.distance = net.minecraft.util.Mth.lerp((float) lerpSpeed, grab.distance, grab.targetDistance);
+            if (Math.abs(grab.distance - grab.targetDistance) < 0.01F) {
+                grab.distance = grab.targetDistance;
+            }
+        }
+    }
+
+    private static void syncGhostState(UUID playerId, GrabSession grab, boolean isGhostEverything) {
+        byte currentMask = 0;
+        if (isGhostEverything) currentMask |= 1;
+        if (grab.isRotating ? ServerConfig.INSTANCE.ignoreCollisionsRotationSelf : ServerConfig.INSTANCE.ignoreCollisionsGrabSelf) currentMask |= 2;
+        if (grab.isRotating ? ServerConfig.INSTANCE.ignoreCollisionsRotationOtherPlayers : ServerConfig.INSTANCE.ignoreCollisionsGrabOtherPlayers) currentMask |= 4;
+        if (grab.isRotating ? ServerConfig.INSTANCE.ignoreCollisionsRotationEntities : ServerConfig.INSTANCE.ignoreCollisionsGrabEntities) currentMask |= 8;
+
+        if (!grab.hasSyncedGhostState || grab.lastCollisionMask != currentMask) {
+            grab.lastCollisionMask = currentMask;
+            grab.hasSyncedGhostState = true;
+            Services.NETWORK.sendGhostStateSync(grab.subLevel, playerId, currentMask);
+        }
     }
 }

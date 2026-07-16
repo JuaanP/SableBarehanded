@@ -123,7 +123,7 @@ public class ServerPayloadHandler {
                     Services.NETWORK.broadcastSyncConfig(player.server, packet.json());
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                dev.juaanp.barehanded.Constants.LOG.error("Failed to update server config", e);
             }
         }
     }

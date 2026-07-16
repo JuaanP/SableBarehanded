@@ -3,7 +3,6 @@ package dev.juaanp.barehanded.util;
 import dev.juaanp.barehanded.Constants;
 import dev.juaanp.barehanded.config.ServerConfig;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -31,33 +30,40 @@ public class AssemblyBehaviorHelper {
     public static boolean isIgnored(Level level, BlockPos pos, BlockState state) {
         if (state.isAir()) return true;
 
+        // 1. Override Tag (Highest Priority)
+        if (state.is(Constants.Tags.GRABBABLE)) return false;
+
+        // 2. Whitelist Mode
         if (ServerConfig.INSTANCE.useWhitelistMode) {
-            if (!state.is(Constants.Tags.GRABBABLE)) {
+            return true; // If we reach here in whitelist mode, it didn't have the GRABBABLE tag.
+        }
+
+        // BLACKLIST MODE (Default)
+        
+        // 3. Spawners Config Override
+        // This overrides the ungrabbable tag because spawner is in the default tag.
+        if (state.is(Blocks.SPAWNER)) {
+            return !ServerConfig.INSTANCE.allowGrabbingSpawners;
+        }
+
+        // 4. Unbreakable Blocks Config Override
+        // This overrides the ungrabbable tag because bedrock is in the default tag.
+        if (state.getDestroySpeed(level, pos) < 0.0F) {
+            if (!ServerConfig.INSTANCE.allowGrabbingUnbreakableBlocks) {
                 return true;
             }
-            if (state.getDestroySpeed(level, pos) < 0.0F && !ServerConfig.INSTANCE.allowGrabbingUnbreakableBlocks) {
-                return true;
-            }
+            // If allowed, ensure it's not a weird non-solid fluid
             if (!state.getFluidState().isEmpty() && !state.isSolidRender(level, pos)) return true;
             return false;
         }
 
-        if (state.is(Blocks.SPAWNER) && ServerConfig.INSTANCE.allowGrabbingSpawners) {
-            return false;
-        }
+        // 5. Ungrabbable Tag
+        if (state.is(Constants.Tags.UNGRABBABLE)) return true;
 
-        if (state.getDestroySpeed(level, pos) < 0.0F) {
-            if (ServerConfig.INSTANCE.allowGrabbingUnbreakableBlocks) {
-                if (state.is(Constants.Tags.UNGRABBABLE)) return true;
-                if (!state.getFluidState().isEmpty() && !state.isSolidRender(level, pos)) return true;
-                return false;
-            }
+        // 6. Fluids
+        if (!state.getFluidState().isEmpty() && !state.isSolidRender(level, pos)) {
             return true;
         }
-
-        if (!state.getFluidState().isEmpty() && !state.isSolidRender(level, pos)) return true;
-
-        if (state.is(Constants.Tags.UNGRABBABLE)) return true;
 
         return false;
     }
@@ -93,7 +99,7 @@ public class AssemblyBehaviorHelper {
             }
         }
 
-        Set<BlockPos> assembly = new HashSet<>(blocks);
+        Set<BlockPos> assembly = new java.util.LinkedHashSet<>(blocks);
         Queue<BlockPos> queue = new LinkedList<>(blocks);
 
         LevelReader simulatedLevel = (LevelReader) Proxy.newProxyInstance(
@@ -166,12 +172,7 @@ public class AssemblyBehaviorHelper {
             }
         }
 
-        double strengthMulti = 1.0;
-        var strengthEffect = player.getEffect(MobEffects.DAMAGE_BOOST);
-        if (strengthEffect != null) {
-            int amp = strengthEffect.getAmplifier();
-            strengthMulti = amp == 0 ? ServerConfig.INSTANCE.strength1Multiplier : ServerConfig.INSTANCE.strength2Multiplier;
-        }
+        double strengthMulti = EncumbranceHelper.getStrengthMultiplier(player);
 
         return (int) Math.max(1, (totalTicks / strengthMulti) / ServerConfig.INSTANCE.barehandedAssemblySpeedMultiplier);
     }

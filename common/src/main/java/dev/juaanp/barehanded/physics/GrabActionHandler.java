@@ -236,27 +236,87 @@ public class GrabActionHandler {
             return;
         }
 
-        subLevelLevel.setBlock(localPos, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 3);
+        List<BlockPos> localBlocksToRip = AssemblyBehaviorHelper.getConnectedBlocks(subLevelLevel, localPos);
+
+        if (localBlocksToRip.size() >= DisassembleHandler.getBlockCount(serverSubLevel)) {
+            forceGrab(player, serverSubLevel, localPos);
+            return;
+        }
+
+        List<BlockState> statesToRip = new java.util.ArrayList<>();
+        List<net.minecraft.nbt.CompoundTag> blockEntities = new java.util.ArrayList<>();
+        for (BlockPos ripPos : localBlocksToRip) {
+            statesToRip.add(subLevelLevel.getBlockState(ripPos));
+            net.minecraft.world.level.block.entity.BlockEntity be = subLevelLevel.getBlockEntity(ripPos);
+            if (be != null) {
+                blockEntities.add(be.saveWithFullMetadata(player.level().registryAccess()));
+                subLevelLevel.removeBlockEntity(ripPos);
+            } else {
+                blockEntities.add(null);
+            }
+        }
+
+        for (BlockPos ripPos : localBlocksToRip) {
+            subLevelLevel.setBlock(ripPos, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 3);
+        }
+
         player.level().playSound(null, player.blockPosition(), stateToRip.getSoundType().getBreakSound(), SoundSource.BLOCKS, 1.0f, 1.0f);
 
-        Vector3d localCenter = new Vector3d(localPos.getX() + 0.5, localPos.getY() + 0.5, localPos.getZ() + 0.5);
-        Vector3d globalCenter = serverSubLevel.logicalPose().transformPosition(localCenter);
-        Quaterniond originalRot = new Quaterniond(serverSubLevel.logicalPose().orientation());
+        int mainIndex = localBlocksToRip.indexOf(localPos);
+        if (mainIndex == -1) mainIndex = 0;
 
-        BlockPos globalBlockPos = BlockPos.containing(globalCenter.x, globalCenter.y, globalCenter.z);
+        BlockPos mainLocalPos = localBlocksToRip.get(mainIndex);
+        Vector3d localCenter = new Vector3d(mainLocalPos.getX() + 0.5, mainLocalPos.getY() + 0.5, mainLocalPos.getZ() + 0.5);
+        Vector3d globalCenter = serverSubLevel.logicalPose().transformPosition(localCenter);
+        BlockPos mainGlobalPos = BlockPos.containing(globalCenter.x, globalCenter.y, globalCenter.z);
+
+        List<BlockPos> globalBlocksToRip = new java.util.ArrayList<>();
+        for (BlockPos ripPos : localBlocksToRip) {
+            int offsetX = ripPos.getX() - mainLocalPos.getX();
+            int offsetY = ripPos.getY() - mainLocalPos.getY();
+            int offsetZ = ripPos.getZ() - mainLocalPos.getZ();
+            globalBlocksToRip.add(mainGlobalPos.offset(offsetX, offsetY, offsetZ));
+        }
 
         ServerLevel worldLevel = (ServerLevel) player.level();
-        BlockState originalWorldState = worldLevel.getBlockState(globalBlockPos);
 
-        if (originalWorldState.canBeReplaced()) {
-            worldLevel.setBlock(globalBlockPos, stateToRip, 3);
-            SubLevel newSubLevel = SubLevelAssemblyHelper.assembleBlocks(worldLevel, globalBlockPos, List.of(globalBlockPos), BoundingBox3i.from(List.of(globalBlockPos)));
+        boolean canPlaceAll = true;
+        for (BlockPos globalPos : globalBlocksToRip) {
+            if (!worldLevel.getBlockState(globalPos).canBeReplaced()) {
+                canPlaceAll = false;
+                break;
+            }
+        }
+
+        if (canPlaceAll) {
+            for (int i = 0; i < localBlocksToRip.size(); i++) {
+                worldLevel.setBlock(globalBlocksToRip.get(i), statesToRip.get(i), 2);
+            }
+            for (int i = 0; i < localBlocksToRip.size(); i++) {
+                net.minecraft.nbt.CompoundTag tag = blockEntities.get(i);
+                if (tag != null) {
+                    net.minecraft.world.level.block.entity.BlockEntity be = net.minecraft.world.level.block.entity.BlockEntity.loadStatic(
+                            globalBlocksToRip.get(i), statesToRip.get(i), tag, worldLevel.registryAccess()
+                    );
+                    if (be != null) {
+                        worldLevel.setBlockEntity(be);
+                    }
+                }
+            }
+
+            SubLevel newSubLevel = SubLevelAssemblyHelper.assembleBlocks(
+                    worldLevel,
+                    mainGlobalPos,
+                    globalBlocksToRip,
+                    BoundingBox3i.from(globalBlocksToRip)
+            );
+
             if (newSubLevel instanceof ServerSubLevel newServerSubLevel) {
-
-                BlockPos newLocalPos = DisassembleHandler.getFirstSolidBlockPos(newServerSubLevel);
-                if (newLocalPos == null) newLocalPos = newServerSubLevel.getPlot().getCenterBlock();
+                BlockPos newLocalPos = newServerSubLevel.getPlot().getCenterBlock();
 
                 Vector3d newLocalCenter = new Vector3d(newLocalPos.getX() + 0.5, newLocalPos.getY() + 0.5, newLocalPos.getZ() + 0.5);
+
+                Quaterniond originalRot = new Quaterniond(serverSubLevel.logicalPose().orientation());
 
                 Vector3d rotPoint = newServerSubLevel.logicalPose().rotationPoint();
                 Vector3d offsetFromRot = new Vector3d(newLocalCenter).sub(rotPoint);
@@ -276,7 +336,7 @@ public class GrabActionHandler {
                 return;
             }
         } else {
-            net.minecraft.world.level.block.Block.dropResources(stateToRip, worldLevel, globalBlockPos);
+            net.minecraft.world.level.block.Block.dropResources(stateToRip, worldLevel, mainGlobalPos);
         }
         Services.NETWORK.sendStopGrabbingAnimation(player);
     }
