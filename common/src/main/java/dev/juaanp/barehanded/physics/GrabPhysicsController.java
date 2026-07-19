@@ -48,12 +48,21 @@ public class GrabPhysicsController {
         );
     }
 
+    public static Quaterniond getPlayerYawQuaternion(Player player) {
+        return new Quaterniond().rotateY(Math.toRadians(-player.getYRot()));
+    }
+
+    private static void applyPlayerRelativeRotation(Player player, GrabSession grab) {
+        Quaterniond playerYaw = getPlayerYawQuaternion(player);
+        grab.targetGlobalOrientation.set(playerYaw.mul(grab.relativeOrientation, new Quaterniond()));
+    }
+
     private static void applyCameraLockedRotation(Player player, GrabSession grab) {
         UUID playerId = player.getUUID();
         float currentPitch = player.getXRot();
         float currentYaw = player.getYRot();
 
-        if (!ServerConfig.INSTANCE.cameraLockedRotationX && !ServerConfig.INSTANCE.cameraLockedRotationY) {
+        if (!ServerConfig.INSTANCE.cameraLockedRotationX) {
             lastYawMap.put(playerId, currentYaw);
             lastPitchMap.put(playerId, currentPitch);
             return;
@@ -69,34 +78,15 @@ public class GrabPhysicsController {
         float lastYaw = lastYawMap.get(playerId);
 
         float deltaPitch = currentPitch - lastPitch;
-        float deltaYaw = currentYaw - lastYaw;
 
-        while (deltaYaw > 180.0f) deltaYaw -= 360.0f;
-        while (deltaYaw < -180.0f) deltaYaw += 360.0f;
+        if (deltaPitch != 0.0f) {
+            double pitchDelta = Math.toRadians(deltaPitch);
 
-        if (deltaPitch != 0.0f || deltaYaw != 0.0f) {
-            float effectivePitch = ServerConfig.INSTANCE.cameraLockedRotationX ? deltaPitch : 0.0f;
-            float effectiveYaw = ServerConfig.INSTANCE.cameraLockedRotationY ? deltaYaw : 0.0f;
+            Vec3 right = player.calculateViewVector(0.0f, player.getYRot() - 90.0f);
+            Vector3d rightAxis = new Vector3d(right.x, right.y, right.z).normalize();
 
-            if (effectivePitch != 0.0f || effectiveYaw != 0.0f) {
-                double yawDelta = Math.toRadians(-effectiveYaw);
-                double pitchDelta = Math.toRadians(effectivePitch);
-
-                Vec3 forward = player.getLookAngle();
-                Vector3d forwardVec = new Vector3d(forward.x, forward.y, forward.z).normalize();
-
-                Vector3d worldUp = new Vector3d(0.0, 1.0, 0.0);
-
-                Vec3 right = player.calculateViewVector(0.0f, player.getYRot() - 90.0f);
-                Vector3d rightAxis = new Vector3d(right.x, right.y, right.z).normalize();
-
-                Quaterniond pitchQuat = new Quaterniond().rotateAxis(pitchDelta, rightAxis);
-                Quaterniond yawQuat = new Quaterniond().rotateAxis(yawDelta, worldUp);
-
-                grab.targetGlobalOrientation.premul(pitchQuat);
-                grab.targetGlobalOrientation.premul(yawQuat);
-                grab.targetGlobalOrientation.normalize();
-            }
+            grab.targetGlobalOrientation.premul(new Quaterniond().rotateAxis(pitchDelta, rightAxis));
+            grab.targetGlobalOrientation.normalize();
         }
 
         lastYawMap.put(playerId, currentYaw);
@@ -153,14 +143,20 @@ public class GrabPhysicsController {
 
         Vector3d currentCameraTarget = JOMLConversion.toJOML(player.getEyePosition().add(player.getLookAngle().scale(Math.max(ServerConfig.INSTANCE.minDistance, grab.distance))));
 
-        applyCameraLockedRotation(player, grab);
-
-        boolean isGhostEverything = grab.isRotating ? ServerConfig.INSTANCE.ignoreCollisionsRotationEverything : ServerConfig.INSTANCE.ignoreCollisionsGrabEverything;
-        boolean isCameraLocked = ServerConfig.INSTANCE.cameraLockedRotationX || ServerConfig.INSTANCE.cameraLockedRotationY;
-
         boolean wasRotating = grab.isRotating;
         grab.isRotating = grab.rotationTicksLeft > 0;
         grab.rotationTicksLeft = Math.max(0, grab.rotationTicksLeft - 1);
+
+        boolean isGhostEverything = grab.isRotating ? ServerConfig.INSTANCE.ignoreCollisionsRotationEverything : ServerConfig.INSTANCE.ignoreCollisionsGrabEverything;
+        boolean isPlayerRelativeRotation = !grab.isRotating && ServerConfig.INSTANCE.cameraLockedRotationY;
+        boolean isCameraLocked = isPlayerRelativeRotation || ServerConfig.INSTANCE.cameraLockedRotationX;
+
+        if (!grab.isRotating) {
+            if (isPlayerRelativeRotation) {
+                applyPlayerRelativeRotation(player, grab);
+            }
+            applyCameraLockedRotation(player, grab);
+        }
 
         if (grab.isRotating && !isGhostEverything) {
             grab.subLevel.latestLinearVelocity.set(0, 0, 0);
@@ -180,6 +176,7 @@ public class GrabPhysicsController {
             grab.anchorGlobalOrigin.set(currentActualPivotPos);
             grab.baseOrientation.set(grab.subLevel.logicalPose().orientation());
             grab.targetGlobalOrientation.set(grab.baseOrientation);
+            grab.syncRelativeOrientationFromTarget(player);
             if (grab.constraintHandle != null) rebuildConstraint(grab);
         }
 
@@ -196,6 +193,12 @@ public class GrabPhysicsController {
             grab.baseOrientation.set(grab.targetGlobalOrientation);
             rebuildConstraint(grab);
             relativeRot.identity();
+
+            if (isCameraLocked && !isGhostEverything) {
+                Vector3d currentPos = new Vector3d(grab.subLevel.logicalPose().position());
+                grab.pipeline.teleport(grab.subLevel, currentPos, new Quaterniond(grab.targetGlobalOrientation));
+                grab.subLevel.latestAngularVelocity.set(0, 0, 0);
+            }
         } else {
             if (grab.constraintHandle != null && relativeRot.angle() > ServerConfig.INSTANCE.rotationRebuildThreshold) {
                 if (grab.rotateAroundCenter) {

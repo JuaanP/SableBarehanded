@@ -55,7 +55,7 @@ public class ServerConfig {
 
     public boolean enableRotation = true;
     public boolean cameraLockedRotationX = false;
-    public boolean cameraLockedRotationY = false;
+    public boolean cameraLockedRotationY = true;
     public boolean preventFastRotations = true;
     public double minAngularForceForSmallObjects = 5.0;
 
@@ -206,12 +206,20 @@ public class ServerConfig {
 
                 if (loaded != null) {
                     if (loaded.configVersion < INSTANCE.configVersion) {
-                        LOGGER.warn("Sable Barehanded server config outdated (v{} -> v{}). Backing up to {}.backup and resetting to new defaults...",
-                                loaded.configVersion, INSTANCE.configVersion, FILE.getName());
+                        if (loaded.configVersion == 10) {
+                            loaded.cameraLockedRotationY = true;
+                            loaded.configVersion = INSTANCE.configVersion;
+                            INSTANCE = loaded;
+                            save();
+                            LOGGER.info("Sable Barehanded server config migrated v10 -> v{}", INSTANCE.configVersion);
+                        } else {
+                            LOGGER.warn("Sable Barehanded server config outdated (v{} -> v{}). Backing up to {}.backup and resetting to new defaults...",
+                                    loaded.configVersion, INSTANCE.configVersion, FILE.getName());
 
-                        Files.move(path, backupPath, StandardCopyOption.REPLACE_EXISTING);
+                            Files.move(path, backupPath, StandardCopyOption.REPLACE_EXISTING);
 
-                        save();
+                            save();
+                        }
                     } else {
                         INSTANCE = loaded;
                     }

@@ -107,6 +107,7 @@ public class GrabActionHandler {
                 serverSubLevel, distance, localGrabPosJoml, localCenterOfMass,
                 crosshairTarget, initialOrient, pipeline, hasSurf
         );
+        session.initializePlayerRelativeOrientation(player, initialOrient);
 
         pipeline.wakeUp(serverSubLevel);
         GrabPhysicsController.rebuildConstraint(session);
@@ -367,6 +368,7 @@ public class GrabActionHandler {
                 serverSubLevel, distance, localGrabPosJoml, localCenterOfMass,
                 crosshairTarget, initialOrient, pipeline, hasSurf
         );
+        session.initializePlayerRelativeOrientation(player, initialOrient);
 
         pipeline.wakeUp(serverSubLevel);
         GrabPhysicsController.rebuildConstraint(session);
