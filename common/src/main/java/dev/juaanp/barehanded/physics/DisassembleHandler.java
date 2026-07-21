@@ -1,5 +1,6 @@
 package dev.juaanp.barehanded.physics;
 
+import dev.juaanp.barehanded.compat.RagdollCompatService;
 import dev.juaanp.barehanded.config.ServerConfig;
 import dev.juaanp.barehanded.util.BlockReplacementHelper;
 import dev.ryanhcode.sable.api.SubLevelAssemblyHelper;
@@ -57,6 +58,17 @@ public class DisassembleHandler {
     }
 
     public static boolean disassembleIntoSubLevel(ServerLevel worldLevel, ServerSubLevel source, ServerSubLevel target, ServerPlayer player) {
+
+        var ragdollCompat = RagdollCompatService.get();
+        if (ragdollCompat != null && ragdollCompat.isAnyRagdollSubLevel(source) || ragdollCompat.isAnyRagdollSubLevel(target)) {
+            if (ServerConfig.INSTANCE.showDisassembleMessages) {
+                player.displayClientMessage(
+                        net.minecraft.network.chat.Component.literal("Cannot merge with ragdolls")
+                                .withStyle(net.minecraft.ChatFormatting.RED), true);
+            }
+            return false;
+        }
+
         BlockPos sourceAnchor = getFirstSolidBlockPos(source);
         if (sourceAnchor == null) return false;
 

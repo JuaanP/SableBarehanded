@@ -24,7 +24,7 @@ public class MixinEntityRenderDispatcher {
         if (entity == mc.player && mc.options.getCameraType().isFirstPerson()) {
             Camera camera = mc.gameRenderer.getMainCamera();
             if (camera.getEntity() == entity && !camera.isDetached()) {
-                boolean isGrabbing = ClientGrabSession.isHoldingGrab || ClientAssemblyTracker.isActive();
+                boolean isGrabbing = (ClientGrabSession.isHoldingGrab && !ClientGrabSession.isWaitingForGrabSync) || ClientAssemblyTracker.isActive();
 
                 if (isGrabbing && !ClientRenderState.isRenderingCustomArm) {
                     ci.cancel();

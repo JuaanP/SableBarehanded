@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.6.3]
+
+### Fixed & Compatibility
+- **Sable: Ragdolls Compatibility:** Added compatibility with the *Sable: Ragdolls* mod to prevent interactions with ragdolls that cause server crashes and physics exploits.
+- **HUD & Animation Flickering:** Fixed a visual bug where the grab HUD and arm animations would briefly flicker on the client when a grab attempt was rejected or canceled by the server. The client now properly delays rendering the grab state until it receives explicit server confirmation.
+
 ## [1.6.2]
 
 ### Fixed

@@ -32,7 +32,7 @@ public class MixinPlayerModel {
                 if (camera.getEntity() == entity && !camera.isDetached()) {
 
                     if (!ClientRenderState.isRenderingCustomArm) {
-                        boolean isGrabbing = ClientGrabSession.isHoldingGrab || ClientAssemblyTracker.isActive();
+                        boolean isGrabbing = (ClientGrabSession.isHoldingGrab && !ClientGrabSession.isWaitingForGrabSync) || ClientAssemblyTracker.isActive();
 
                         if (isGrabbing) {
                             model.rightArm.visible = false;

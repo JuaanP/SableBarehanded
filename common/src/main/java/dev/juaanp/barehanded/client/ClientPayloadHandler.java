@@ -35,10 +35,15 @@ public class ClientPayloadHandler {
         Player player = getPlayerFromId(packet.entityId());
         if (player != null) {
             GRABBING_PLAYERS.remove(player.getUUID());
-
             if (player == Minecraft.getInstance().player) {
+                boolean wasWaiting = ClientGrabSession.isWaitingForGrabSync;
                 ClientGrabSession.reset();
                 ClientAssemblyTracker.reset();
+
+                if (wasWaiting) {
+                    ClientInputTracker.preventRegrabUntilRelease = true;
+                    ClientInputTracker.keysReleasedTicks = 0;
+                }
             }
         }
     }

@@ -44,3 +44,10 @@ type="required"
 versionRange = "${clothconfig_neoforge_version_range}"
 ordering = "NONE"
 side = "CLIENT"
+
+[[dependencies.${mod_id}]]
+modId = "sable_player_ragdoll"
+type = "optional"
+ordering = "AFTER"
+side = "BOTH"
+versionRange = "[0.7.0,)"

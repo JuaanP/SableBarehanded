@@ -1,6 +1,7 @@
 package dev.juaanp.barehanded.util;
 
 import dev.juaanp.barehanded.Constants;
+import dev.juaanp.barehanded.compat.RagdollCompatService;
 import dev.juaanp.barehanded.config.ServerConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
@@ -19,7 +20,6 @@ import net.minecraft.world.level.material.Fluids;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -30,37 +30,26 @@ public class AssemblyBehaviorHelper {
     public static boolean isIgnored(Level level, BlockPos pos, BlockState state) {
         if (state.isAir()) return true;
 
-        // 1. Override Tag (Highest Priority)
         if (state.is(Constants.Tags.GRABBABLE)) return false;
 
-        // 2. Whitelist Mode
         if (ServerConfig.INSTANCE.useWhitelistMode) {
-            return true; // If we reach here in whitelist mode, it didn't have the GRABBABLE tag.
+            return true;
         }
 
-        // BLACKLIST MODE (Default)
-        
-        // 3. Spawners Config Override
-        // This overrides the ungrabbable tag because spawner is in the default tag.
         if (state.is(Blocks.SPAWNER)) {
             return !ServerConfig.INSTANCE.allowGrabbingSpawners;
         }
 
-        // 4. Unbreakable Blocks Config Override
-        // This overrides the ungrabbable tag because bedrock is in the default tag.
         if (state.getDestroySpeed(level, pos) < 0.0F) {
             if (!ServerConfig.INSTANCE.allowGrabbingUnbreakableBlocks) {
                 return true;
             }
-            // If allowed, ensure it's not a weird non-solid fluid
             if (!state.getFluidState().isEmpty() && !state.isSolidRender(level, pos)) return true;
             return false;
         }
 
-        // 5. Ungrabbable Tag
         if (state.is(Constants.Tags.UNGRABBABLE)) return true;
 
-        // 6. Fluids
         if (!state.getFluidState().isEmpty() && !state.isSolidRender(level, pos)) {
             return true;
         }

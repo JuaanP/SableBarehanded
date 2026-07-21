@@ -43,7 +43,7 @@ public class MixinItemInHandRenderer {
 
         boolean isGrabbing = this.minecraft.player != null && (
                 ClientPayloadHandler.GRABBING_PLAYERS.contains(this.minecraft.player.getUUID()) ||
-                        ClientGrabSession.isHoldingGrab ||
+                        (ClientGrabSession.isHoldingGrab && !ClientGrabSession.isWaitingForGrabSync) ||
                         ClientAssemblyTracker.assemblyChargeTicks > 0
         );
 

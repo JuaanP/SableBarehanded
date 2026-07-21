@@ -1,5 +1,6 @@
 package dev.juaanp.barehanded.physics;
 
+import dev.juaanp.barehanded.compat.RagdollCompatService;
 import dev.juaanp.barehanded.config.ServerConfig;
 import dev.ryanhcode.sable.sublevel.ServerSubLevel;
 import net.minecraft.ChatFormatting;
@@ -11,6 +12,16 @@ import net.minecraft.world.level.block.state.BlockState;
 public class KeybindDisassembleHandler {
     public static void attemptDisassemble(ServerPlayer player, ServerSubLevel subLevel, boolean isAltDown) {
         if (!ServerConfig.INSTANCE.enableKeybindDisassemble) return;
+
+        var ragdollCompat = RagdollCompatService.get();
+        if (ragdollCompat != null && ragdollCompat.isAnyRagdollSubLevel(subLevel)) {
+            ServerLevel level = (ServerLevel) player.level();
+            boolean released = ragdollCompat.releaseRagdoll(level, subLevel);
+            if (released) {
+                ServerGrabManager.stopGrabbing(player.getUUID());
+            }
+            return;
+        }
 
         int limit = ServerConfig.INSTANCE.disassembleBlockLimit;
         if (limit > 0 && DisassembleHandler.getBlockCount(subLevel) > limit) {

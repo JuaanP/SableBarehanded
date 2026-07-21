@@ -26,7 +26,6 @@ public class ClientGrabSession {
     public static double currentTetherStrain = 0.0;
 
     public static void startWaiting() {
-        isHoldingGrab = true;
         isWaitingForGrabSync = true;
         currentTetherStrain = 0.0;
         waitingTicks = 0;

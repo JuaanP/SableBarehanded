@@ -1,5 +1,6 @@
 package dev.juaanp.barehanded.physics;
 
+import dev.juaanp.barehanded.compat.RagdollCompatService;
 import dev.juaanp.barehanded.config.ServerConfig;
 import dev.juaanp.barehanded.physics.impact.ImpactFaceDetector;
 import dev.juaanp.barehanded.physics.impact.ImpactResult;
@@ -65,6 +66,11 @@ public class ImpactDisassembleHandler {
                 ServerGrabManager.stopGrabbing(player.getUUID());
                 cleanup(subLevel.getUniqueId());
             }
+            return;
+        }
+
+        var ragdollCompat = RagdollCompatService.get();
+        if (ragdollCompat != null && ragdollCompat.isAnyRagdollSubLevel(subLevel)) {
             return;
         }
 

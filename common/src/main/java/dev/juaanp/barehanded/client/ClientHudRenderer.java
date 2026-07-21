@@ -17,7 +17,7 @@ public class ClientHudRenderer {
             return;
         }
 
-        if (!ClientGrabSession.isHoldingGrab) {
+        if (!ClientGrabSession.isHoldingGrab || ClientGrabSession.isWaitingForGrabSync) {
             renderPlaceToggle(graphics, mc);
             return;
         }

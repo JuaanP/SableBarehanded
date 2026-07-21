@@ -3,6 +3,8 @@ package dev.juaanp.barehanded;
 import com.google.gson.Gson;
 import dev.juaanp.barehanded.client.ClientPayloadHandler;
 import dev.juaanp.barehanded.client.NeoForgeClient;
+import dev.juaanp.barehanded.compat.NeoForgeRagdollCompat;
+import dev.juaanp.barehanded.compat.RagdollCompatService;
 import dev.juaanp.barehanded.config.ServerConfig;
 import dev.juaanp.barehanded.network.*;
 import dev.juaanp.barehanded.physics.GrabPhysicsController;
@@ -27,6 +29,10 @@ public class BarehandedNeoForge {
 
     public BarehandedNeoForge(IEventBus modEventBus, ModContainer modContainer) {
         ServerConfig.load();
+
+        RagdollCompatService.register(
+                new NeoForgeRagdollCompat()
+        );
 
         modEventBus.addListener(this::registerPayloads);
 

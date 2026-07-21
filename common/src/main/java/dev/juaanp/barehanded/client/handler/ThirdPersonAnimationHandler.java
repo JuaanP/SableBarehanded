@@ -22,7 +22,7 @@ public class ThirdPersonAnimationHandler {
         boolean isAssemblingNetwork = ClientPayloadHandler.ASSEMBLING_PLAYERS.contains(player.getUUID());
 
         if (isLocalPlayer) {
-            isGrabbing = isGrabbing || ClientGrabSession.isHoldingGrab || ClientAssemblyTracker.isActive();
+            isGrabbing = isGrabbing || (ClientGrabSession.isHoldingGrab && !ClientGrabSession.isWaitingForGrabSync) || ClientAssemblyTracker.isActive();
         } else if (isAssemblingNetwork) {
             isGrabbing = true;
         }

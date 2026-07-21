@@ -1,6 +1,7 @@
 package dev.juaanp.barehanded.physics;
 
 import dev.juaanp.barehanded.api.BarehandedEvents;
+import dev.juaanp.barehanded.compat.RagdollCompatService;
 import dev.juaanp.barehanded.config.ServerConfig;
 import dev.juaanp.barehanded.platform.Services;
 import dev.juaanp.barehanded.util.AssemblyBehaviorHelper;
@@ -42,6 +43,17 @@ public class GrabActionHandler {
 
         SubLevel target = Sable.HELPER.getContaining(level, pos);
         if (!(target instanceof ServerSubLevel serverSubLevel)) {
+            Services.NETWORK.sendStopGrabbingAnimation(player);
+            return;
+        }
+
+        var ragdollCompat = RagdollCompatService.get();
+        if (ragdollCompat != null &&
+                (ragdollCompat.isPlayerRidingOwnRagdoll(player, serverSubLevel)
+                        ||
+                 ragdollCompat.isAnyRagdollSubLevel(serverSubLevel)
+                )
+        ) {
             Services.NETWORK.sendStopGrabbingAnimation(player);
             return;
         }
