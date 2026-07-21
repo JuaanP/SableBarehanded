@@ -57,6 +57,11 @@ public class ImpactDisassembleHandler {
         if (!meetsImpactCriteria(previousVelocity, currentVelocity, subLevel)) return;
         if (!PlayerIntentValidator.wasIntentionalImpact(player, subLevel, previousVelocity)) return;
 
+        var ragdollCompat = RagdollCompatService.get();
+        if (ragdollCompat != null && (ragdollCompat.isAnyRagdollSubLevel(subLevel) || ragdollCompat.containsRagdollBlocks(subLevel))) {
+            return;
+        }
+
         ServerLevel level = (ServerLevel) player.level();
 
         ServerSubLevel targetShip = DisassembleHandler.findTargetSubLevel(level, subLevel);
@@ -66,11 +71,6 @@ public class ImpactDisassembleHandler {
                 ServerGrabManager.stopGrabbing(player.getUUID());
                 cleanup(subLevel.getUniqueId());
             }
-            return;
-        }
-
-        var ragdollCompat = RagdollCompatService.get();
-        if (ragdollCompat != null && ragdollCompat.isAnyRagdollSubLevel(subLevel)) {
             return;
         }
 

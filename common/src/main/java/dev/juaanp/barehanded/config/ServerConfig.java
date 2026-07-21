@@ -18,7 +18,7 @@ public class ServerConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final File FILE = Paths.get("config", Constants.MOD_ID + "-server.json").toFile();
 
-    public int configVersion = 11;
+    public int configVersion = 12;
 
     public double maxForce = 90.0;
     public double minDistance = 1.5;
@@ -36,6 +36,7 @@ public class ServerConfig {
     public boolean allowGrabbingSpawners = false;
     public boolean useWhitelistMode = false;
     public boolean allowGrabbingUnbreakableBlocks = false;
+    public boolean preventGrabbingSubLevelsWithUngrabbableBlocks = true;
 
     public String[] surfMechanicalBlocks = new String[]{
             "simulated:swivel_bearing",
@@ -190,6 +191,10 @@ public class ServerConfig {
     public double leadPredictionFactor = 0.5;
     public double leadDownwardClamp = 0.0;
     public double creativeMaxMotorForce = 1e12;
+
+    public boolean sableRagdollsCompatAllowGrabbingPlayerRagdolls = false;
+    public boolean sableRagdollsCompatAllowGrabbingMobRagdolls = true;
+    public double sableRagdollsCompatMobRagdollMaxSize = 1.0;
 
     public static ServerConfig INSTANCE = new ServerConfig();
 

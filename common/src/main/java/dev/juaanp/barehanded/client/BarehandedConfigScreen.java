@@ -53,6 +53,7 @@ public class BarehandedConfigScreen {
         buildAdvanced(server, eb);
         buildMovementPenalty(server, eb);
         buildLeadPrediction(server, eb);
+        buildCompat(server, eb);
     }
 
     private static void buildCoreGrab(ConfigCategory server, ConfigEntryBuilder eb) {
@@ -79,6 +80,12 @@ public class BarehandedConfigScreen {
         addBoolean(grab, eb, "Allow Grabbing Spawners", "Overrides all restrictions to explicitly allow grabbing Monster Spawners.", ServerConfig.INSTANCE.allowGrabbingSpawners, SERVER_DEFAULTS.allowGrabbingSpawners, v -> ServerConfig.INSTANCE.allowGrabbingSpawners = v);
         addBoolean(grab, eb, "Use Whitelist Mode", "If true, ONLY blocks in the #barehanded:grabbable tag can be grabbed. If false, all blocks except those in #barehanded:ungrabbable can be grabbed.", ServerConfig.INSTANCE.useWhitelistMode, SERVER_DEFAULTS.useWhitelistMode, v -> ServerConfig.INSTANCE.useWhitelistMode = v);
         addBoolean(grab, eb, "Allow Grabbing Unbreakable Blocks", "Allows grabbing blocks with destroySpeed < 0 (bedrock, barriers, etc). In whitelist mode, these blocks must also be in #barehanded:grabbable.", ServerConfig.INSTANCE.allowGrabbingUnbreakableBlocks, SERVER_DEFAULTS.allowGrabbingUnbreakableBlocks, v -> ServerConfig.INSTANCE.allowGrabbingUnbreakableBlocks = v);
+
+        addBoolean(grab, eb, "Prevent Grabbing Sub-Levels with Ungrabbable Blocks",
+                "If true, prevents grabbing an entire sub-level if it contains any block from the #barehanded:ungrabbable tag.",
+                ServerConfig.INSTANCE.preventGrabbingSubLevelsWithUngrabbableBlocks,
+                SERVER_DEFAULTS.preventGrabbingSubLevelsWithUngrabbableBlocks,
+                v -> ServerConfig.INSTANCE.preventGrabbingSubLevelsWithUngrabbableBlocks = v);
 
         server.addEntry(grab.build());
     }
@@ -266,6 +273,31 @@ public class BarehandedConfigScreen {
         addDouble(leadPrediction, eb, "Lead Prediction Factor", "Multiplier for predicting the anchor target ahead of the player's movement.", 0.0, 100.0, ServerConfig.INSTANCE.leadPredictionFactor, SERVER_DEFAULTS.leadPredictionFactor, v -> ServerConfig.INSTANCE.leadPredictionFactor = v);
         addDouble(leadPrediction, eb, "Lead Downward Clamp", "Clamps downward prediction to prevent the object from being dragged into the floor.", -100.0, 0.0, ServerConfig.INSTANCE.leadDownwardClamp, SERVER_DEFAULTS.leadDownwardClamp, v -> ServerConfig.INSTANCE.leadDownwardClamp = v);
         server.addEntry(leadPrediction.build());
+    }
+
+    private static void buildCompat(ConfigCategory server, ConfigEntryBuilder eb) {
+        SubCategoryBuilder compat = eb.startSubCategory(Component.literal("Compatibility"));
+
+        addBoolean(compat, eb, "[Sable: Ragdolls] Allow Grabbing Player Ragdolls",
+                "Allows grabbing player ragdolls.",
+                ServerConfig.INSTANCE.sableRagdollsCompatAllowGrabbingPlayerRagdolls,
+                SERVER_DEFAULTS.sableRagdollsCompatAllowGrabbingPlayerRagdolls,
+                v -> ServerConfig.INSTANCE.sableRagdollsCompatAllowGrabbingPlayerRagdolls = v);
+
+        addBoolean(compat, eb, "[Sable: Ragdolls] Allow Grabbing Mob Ragdolls",
+                "Allows grabbing mob ragdolls.",
+                ServerConfig.INSTANCE.sableRagdollsCompatAllowGrabbingMobRagdolls,
+                SERVER_DEFAULTS.sableRagdollsCompatAllowGrabbingMobRagdolls,
+                v -> ServerConfig.INSTANCE.sableRagdollsCompatAllowGrabbingMobRagdolls = v);
+
+        addDouble(compat, eb, "[Sable: Ragdolls] Mob Ragdoll Max Size",
+                "Maximum mob size (bounding box width/height) that can be grabbed.",
+                0.1, 1000.0,
+                ServerConfig.INSTANCE.sableRagdollsCompatMobRagdollMaxSize,
+                SERVER_DEFAULTS.sableRagdollsCompatMobRagdollMaxSize,
+                v -> ServerConfig.INSTANCE.sableRagdollsCompatMobRagdollMaxSize = v);
+
+        server.addEntry(compat.build());
     }
 
     private static void buildClientCategories(ConfigCategory client, ConfigEntryBuilder eb) {

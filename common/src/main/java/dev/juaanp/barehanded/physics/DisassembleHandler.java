@@ -60,7 +60,7 @@ public class DisassembleHandler {
     public static boolean disassembleIntoSubLevel(ServerLevel worldLevel, ServerSubLevel source, ServerSubLevel target, ServerPlayer player) {
 
         var ragdollCompat = RagdollCompatService.get();
-        if (ragdollCompat != null && ragdollCompat.isAnyRagdollSubLevel(source) || ragdollCompat.isAnyRagdollSubLevel(target)) {
+        if (ragdollCompat != null && (ragdollCompat.isAnyRagdollSubLevel(source) || ragdollCompat.isAnyRagdollSubLevel(target))) {
             if (ServerConfig.INSTANCE.showDisassembleMessages) {
                 player.displayClientMessage(
                         net.minecraft.network.chat.Component.literal("Cannot merge with ragdolls")
@@ -228,6 +228,12 @@ public class DisassembleHandler {
     public static boolean disassemble(ServerLevel worldLevel, ServerSubLevel subLevel,
                                       BlockPos subLevelAnchor, BlockPos disassemblyGoal, Rotation rotation,
                                       BlockState impactedBlock, Direction impactFace, BlockState placedBlockState) {
+
+        var ragdollCompat = RagdollCompatService.get();
+        if (ragdollCompat != null && (ragdollCompat.isAnyRagdollSubLevel(subLevel) || ragdollCompat.containsRagdollBlocks(subLevel))) {
+            return false;
+        }
+
         BoundingBox3i plotBounds = new BoundingBox3i(subLevel.getPlot().getBoundingBox());
 
         int angle = rotation == Rotation.NONE ? 0 : (4 - rotation.ordinal());

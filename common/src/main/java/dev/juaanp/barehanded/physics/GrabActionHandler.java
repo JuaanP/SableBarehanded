@@ -1,5 +1,6 @@
 package dev.juaanp.barehanded.physics;
 
+import dev.juaanp.barehanded.Constants;
 import dev.juaanp.barehanded.api.BarehandedEvents;
 import dev.juaanp.barehanded.compat.RagdollCompatService;
 import dev.juaanp.barehanded.config.ServerConfig;
@@ -8,6 +9,7 @@ import dev.juaanp.barehanded.util.AssemblyBehaviorHelper;
 import dev.juaanp.barehanded.util.GrabSessionHelper;
 import dev.ryanhcode.sable.Sable;
 import dev.ryanhcode.sable.api.SubLevelAssemblyHelper;
+import dev.ryanhcode.sable.api.physics.PhysicsPipeline;
 import dev.ryanhcode.sable.api.sublevel.ServerSubLevelContainer;
 import dev.ryanhcode.sable.api.sublevel.SubLevelContainer;
 import dev.ryanhcode.sable.companion.math.BoundingBox3i;
@@ -23,6 +25,10 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.FallingBlock;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Quaterniond;
@@ -47,13 +53,7 @@ public class GrabActionHandler {
             return;
         }
 
-        var ragdollCompat = RagdollCompatService.get();
-        if (ragdollCompat != null &&
-                (ragdollCompat.isPlayerRidingOwnRagdoll(player, serverSubLevel)
-                        ||
-                 ragdollCompat.isAnyRagdollSubLevel(serverSubLevel)
-                )
-        ) {
+        if (!RagdollCompatService.get().canGrabSubLevel(player, serverSubLevel)) {
             Services.NETWORK.sendStopGrabbingAnimation(player);
             return;
         }
@@ -76,7 +76,7 @@ public class GrabActionHandler {
             return;
         }
 
-        dev.ryanhcode.sable.api.physics.PhysicsPipeline pipeline = ((ServerSubLevelContainer) SubLevelContainer.getContainer(level)).physicsSystem().getPipeline();
+        PhysicsPipeline pipeline = ((ServerSubLevelContainer) SubLevelContainer.getContainer(level)).physicsSystem().getPipeline();
 
         org.joml.Vector3dc com = serverSubLevel.getMassTracker().getCenterOfMass();
         if (com == null || serverSubLevel.getMassTracker().getMass() <= ServerConfig.INSTANCE.minPhysicsMass) {
@@ -85,7 +85,9 @@ public class GrabActionHandler {
         }
 
         int limit = ServerConfig.INSTANCE.blockLimit;
-        if (limit > 0) {
+        boolean checkUngrabbable = ServerConfig.INSTANCE.preventGrabbingSubLevelsWithUngrabbableBlocks;
+
+        if (limit > 0 || checkUngrabbable) {
             int blockCount = 0;
             ServerLevel subLevelLevel = (ServerLevel) serverSubLevel.getLevel();
             for (dev.ryanhcode.sable.sublevel.plot.PlotChunkHolder chunk : serverSubLevel.getPlot().getLoadedChunks()) {
@@ -95,12 +97,28 @@ public class GrabActionHandler {
                     for (int y = bounds.minY(); y <= bounds.maxY(); y++) {
                         for (int z = bounds.minZ(); z <= bounds.maxZ(); z++) {
                             BlockPos iterPos = new BlockPos(x + chunk.getPos().getMinBlockX(), y, z + chunk.getPos().getMinBlockZ());
-                            if (!subLevelLevel.getBlockState(iterPos).isAir()) {
-                                blockCount++;
-                                if (blockCount > limit) {
-                                    player.displayClientMessage(Component.literal("[Sable] Too many blocks (Limit: " + limit + ")").withStyle(ChatFormatting.RED), true);
+                            BlockState state = subLevelLevel.getBlockState(iterPos);
+
+                            if (!state.isAir()) {
+                                if (checkUngrabbable && state.is(Constants.Tags.UNGRABBABLE)) {
+                                    if (ServerConfig.INSTANCE.showDisassembleMessages) {
+                                        player.displayClientMessage(
+                                                Component.literal("Cannot grab: contains ungrabbable blocks")
+                                                        .withStyle(ChatFormatting.RED), true);
+                                    }
                                     Services.NETWORK.sendStopGrabbingAnimation(player);
                                     return;
+                                }
+
+                                if (limit > 0) {
+                                    blockCount++;
+                                    if (blockCount > limit) {
+                                        player.displayClientMessage(
+                                                Component.literal("[Sable] Too many blocks (Limit: " + limit + ")")
+                                                        .withStyle(ChatFormatting.RED), true);
+                                        Services.NETWORK.sendStopGrabbingAnimation(player);
+                                        return;
+                                    }
                                 }
                             }
                         }
@@ -149,6 +167,12 @@ public class GrabActionHandler {
                 Services.NETWORK.sendStopGrabbingAnimation(player);
                 return;
             }
+
+            if (!RagdollCompatService.get().canGrabSubLevel(player, serverSubLevel)) {
+                Services.NETWORK.sendStopGrabbingAnimation(player);
+                return;
+            }
+
             ripBlockOffAndGrab(player, serverSubLevel, pos);
             return;
         }
@@ -194,9 +218,9 @@ public class GrabActionHandler {
             boolean isFastLift = AssemblyBehaviorHelper.isFastLift(level, pos, mainState);
 
             if (!isFastLift) {
-                net.minecraft.world.level.block.SoundType soundType = mainState.getSoundType();
+                SoundType soundType = mainState.getSoundType();
                 level.playSound(null, pos, soundType.getBreakSound(), SoundSource.BLOCKS, 1.0f, 1.0f);
-                level.levelEvent(2001, pos, net.minecraft.world.level.block.Block.getId(mainState));
+                level.levelEvent(2001, pos, Block.getId(mainState));
             } else {
                 level.playSound(null, pos, SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2f, 0.5f);
             }
@@ -207,10 +231,10 @@ public class GrabActionHandler {
                     if (!blocks.contains(neighbor)) {
                         BlockState neighborState = level.getBlockState(neighbor);
 
-                        if (neighborState.getBlock() instanceof net.minecraft.world.level.block.FallingBlock) {
+                        if (neighborState.getBlock() instanceof FallingBlock) {
                             level.scheduleTick(neighbor, neighborState.getBlock(), 15);
                         } else {
-                            level.neighborChanged(neighbor, net.minecraft.world.level.block.Blocks.AIR, bPos);
+                            level.neighborChanged(neighbor, Blocks.AIR, bPos);
 
                             net.minecraft.world.level.material.FluidState fluid = level.getFluidState(neighbor);
                             if (!fluid.isEmpty()) {
@@ -356,7 +380,12 @@ public class GrabActionHandler {
     public static void forceGrab(Player player, ServerSubLevel serverSubLevel, BlockPos localGrabBlock) {
         if (!ServerGrabManager.canPlayerGrab(player)) return;
 
-        dev.ryanhcode.sable.api.physics.PhysicsPipeline pipeline = ((ServerSubLevelContainer) SubLevelContainer.getContainer(player.level())).physicsSystem().getPipeline();
+        if (!RagdollCompatService.get().canGrabSubLevel(player, serverSubLevel)) {
+            Services.NETWORK.sendStopGrabbingAnimation(player);
+            return;
+        }
+
+        PhysicsPipeline pipeline = ((ServerSubLevelContainer) SubLevelContainer.getContainer(player.level())).physicsSystem().getPipeline();
 
         org.joml.Vector3dc com = serverSubLevel.getMassTracker().getCenterOfMass();
         if (com == null || serverSubLevel.getMassTracker().getMass() <= ServerConfig.INSTANCE.minPhysicsMass) {

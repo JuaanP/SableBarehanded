@@ -32,14 +32,14 @@ public class AssemblyBehaviorHelper {
 
         if (state.is(Constants.Tags.GRABBABLE)) return false;
 
+        if (state.is(Constants.Tags.UNGRABBABLE)) return true;
+
         if (ServerConfig.INSTANCE.useWhitelistMode) {
             return true;
         }
-
         if (state.is(Blocks.SPAWNER)) {
             return !ServerConfig.INSTANCE.allowGrabbingSpawners;
         }
-
         if (state.getDestroySpeed(level, pos) < 0.0F) {
             if (!ServerConfig.INSTANCE.allowGrabbingUnbreakableBlocks) {
                 return true;
@@ -47,13 +47,9 @@ public class AssemblyBehaviorHelper {
             if (!state.getFluidState().isEmpty() && !state.isSolidRender(level, pos)) return true;
             return false;
         }
-
-        if (state.is(Constants.Tags.UNGRABBABLE)) return true;
-
         if (!state.getFluidState().isEmpty() && !state.isSolidRender(level, pos)) {
             return true;
         }
-
         return false;
     }
 

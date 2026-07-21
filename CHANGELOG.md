@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.6.4]
+
+### Added
+- **Ungrabbable Blocks Check:** New configuration option `preventGrabbingSubLevelsWithUngrabbableBlocks` (enabled by default) to prevent grabbing entire structures if they contain at least one block from the `#barehanded:ungrabbable` tag.
+
+### Compatibility
+- **Sable: Ragdolls:** Added new configuration options `sableRagdollsCompatAllowGrabbingPlayerRagdolls` (disabled by default), `sableRagdollsCompatAllowGrabbingMobRagdolls` (enabled by default) and `sableRagdollsCompatMobRagdollMaxSize` to allow or restrict interactions with player and mob ragdolls.
+- **Sable: Ragdolls:** Strictly blocked *assemble/disassemble* actions on blocks or sub-levels that contain ragdoll parts or corpses.
+
 ## [1.6.3]
 
 ### Fixed & Compatibility
