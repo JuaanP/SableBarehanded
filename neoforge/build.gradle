@@ -48,8 +48,8 @@ neoForge {
 }
 
 dependencies {
-    api("dev.ryanhcode.sable:sable-neoforge-${minecraft_version}:$sable_version") { transitive = false }
-    api "me.shedaniel.cloth:cloth-config-neoforge:${project.clothconfig_version}"
+    compileOnly("dev.ryanhcode.sable:sable-neoforge-${minecraft_version}:$sable_version") { transitive = false }
+    compileOnly "me.shedaniel.cloth:cloth-config-neoforge:${project.clothconfig_version}"
 
     // Compat
     compileOnlyApi "maven.modrinth:sable-ragdolls:${project.sable_ragdolls_version}"

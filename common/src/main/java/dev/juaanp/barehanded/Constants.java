@@ -15,5 +15,6 @@ public class Constants {
 	public static class Tags {
 		public static final TagKey<Block> UNGRABBABLE = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(MOD_ID, "ungrabbable"));
 		public static final TagKey<Block> GRABBABLE = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(MOD_ID, "grabbable"));
+		public static final TagKey<Block> TREE_LOGS = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(MOD_ID, "tree_logs"));
 	}
 }

@@ -1,7 +1,6 @@
 package dev.juaanp.barehanded.util;
 
 import dev.juaanp.barehanded.Constants;
-import dev.juaanp.barehanded.compat.RagdollCompatService;
 import dev.juaanp.barehanded.config.ServerConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
@@ -31,6 +30,12 @@ public class AssemblyBehaviorHelper {
         if (state.isAir()) return true;
 
         if (state.is(Constants.Tags.GRABBABLE)) return false;
+
+        if (dev.juaanp.barehanded.compat.TreeModCompatHelper.isLogBlock(state)) {
+            if (dev.juaanp.barehanded.compat.TreeModCompatHelper.getEffectiveMode() == ServerConfig.TreeAssemblyMode.BLOCK) {
+                return true;
+            }
+        }
 
         if (state.is(Constants.Tags.UNGRABBABLE)) return true;
 

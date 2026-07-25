@@ -297,6 +297,17 @@ public class BarehandedConfigScreen {
                 SERVER_DEFAULTS.sableRagdollsCompatMobRagdollMaxSize,
                 v -> ServerConfig.INSTANCE.sableRagdollsCompatMobRagdollMaxSize = v);
 
+        var treeEnum = eb.startEnumSelector(
+                        Component.literal("Tree Assembly Mode"),
+                        ServerConfig.TreeAssemblyMode.class,
+                        ServerConfig.INSTANCE.treeAssemblyMode
+                )
+                .setDefaultValue(SERVER_DEFAULTS.treeAssemblyMode)
+                .setTooltip(Component.literal("AUTO: Uses BREAK mode if a tree mod is loaded, otherwise NONE.\nNONE: No special handling; tree logs assemble into physics SubLevels as normal.\nBREAK: Breaks the log block to trigger the tree mod's native felling behavior.\nBLOCK: Prevents assembling tree logs."))
+                .setSaveConsumer(v -> ServerConfig.INSTANCE.treeAssemblyMode = v)
+                .build();
+        compat.add(treeEnum);
+
         server.addEntry(compat.build());
     }
 

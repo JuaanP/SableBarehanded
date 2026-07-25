@@ -192,9 +192,17 @@ public class ServerConfig {
     public double leadDownwardClamp = 0.0;
     public double creativeMaxMotorForce = 1e12;
 
+    public enum TreeAssemblyMode {
+        AUTO,
+        NONE,
+        BREAK,
+        BLOCK
+    }
+
     public boolean sableRagdollsCompatAllowGrabbingPlayerRagdolls = false;
     public boolean sableRagdollsCompatAllowGrabbingMobRagdolls = true;
     public double sableRagdollsCompatMobRagdollMaxSize = 1.0;
+    public TreeAssemblyMode treeAssemblyMode = TreeAssemblyMode.AUTO;
 
     public static ServerConfig INSTANCE = new ServerConfig();
 
@@ -210,6 +218,9 @@ public class ServerConfig {
                 }
 
                 if (loaded != null) {
+                    if (loaded.treeAssemblyMode == null) {
+                        loaded.treeAssemblyMode = TreeAssemblyMode.AUTO;
+                    }
                     if (loaded.configVersion < INSTANCE.configVersion) {
                         LOGGER.warn("Sable Barehanded server config outdated (v{} -> v{}). Backing up to {}.backup and resetting to new defaults...",
                                 loaded.configVersion, INSTANCE.configVersion, FILE.getName());

@@ -13,11 +13,11 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
 
-    modApi("dev.ryanhcode.sable:sable-fabric-${minecraft_version}:$sable_version")
+    modCompileOnly("dev.ryanhcode.sable:sable-fabric-${minecraft_version}:$sable_version")
 
-    modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}")
+    modCompileOnly("com.terraformersmc:modmenu:${project.modmenu_version}")
 
-    modImplementation("me.shedaniel.cloth:cloth-config-fabric:${project.clothconfig_version}") {
+    modCompileOnly("me.shedaniel.cloth:cloth-config-fabric:${project.clothconfig_version}") {
         exclude(group: "net.fabricmc.fabric-api")
     }
 }

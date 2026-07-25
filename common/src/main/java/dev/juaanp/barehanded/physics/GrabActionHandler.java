@@ -195,6 +195,18 @@ public class GrabActionHandler {
             return;
         }
 
+        if (dev.juaanp.barehanded.compat.TreeModCompatHelper.isLogBlock(mainState)) {
+            ServerConfig.TreeAssemblyMode treeMode = dev.juaanp.barehanded.compat.TreeModCompatHelper.getEffectiveMode();
+            if (treeMode == ServerConfig.TreeAssemblyMode.BLOCK) {
+                Services.NETWORK.sendStopGrabbingAnimation(player);
+                return;
+            } else if (treeMode == ServerConfig.TreeAssemblyMode.BREAK) {
+                Services.NETWORK.sendStopGrabbingAnimation(player);
+                dev.juaanp.barehanded.compat.TreeModCompatHelper.breakBlockAsPlayer(player, level, pos);
+                return;
+            }
+        }
+
         List<BlockPos> blocks = AssemblyBehaviorHelper.getConnectedBlocks(level, pos);
 
         if (!BarehandedEvents.fireBeforeAssemble(player, pos, blocks)) {
@@ -265,6 +277,18 @@ public class GrabActionHandler {
         if (stateToRip.isAir()) {
             Services.NETWORK.sendStopGrabbingAnimation(player);
             return;
+        }
+
+        if (dev.juaanp.barehanded.compat.TreeModCompatHelper.isLogBlock(stateToRip)) {
+            ServerConfig.TreeAssemblyMode treeMode = dev.juaanp.barehanded.compat.TreeModCompatHelper.getEffectiveMode();
+            if (treeMode == ServerConfig.TreeAssemblyMode.BLOCK) {
+                Services.NETWORK.sendStopGrabbingAnimation(player);
+                return;
+            } else if (treeMode == ServerConfig.TreeAssemblyMode.BREAK) {
+                Services.NETWORK.sendStopGrabbingAnimation(player);
+                dev.juaanp.barehanded.compat.TreeModCompatHelper.breakBlockAsPlayer(player, subLevelLevel, localPos);
+                return;
+            }
         }
 
         if (DisassembleHandler.getBlockCount(serverSubLevel) <= 1) {
