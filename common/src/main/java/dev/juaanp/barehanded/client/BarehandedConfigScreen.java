@@ -348,6 +348,7 @@ public class BarehandedConfigScreen {
         addDouble(asm, eb, "Visual Shake Multiplier", "How intensely the screen/arms shake while tearing a block from the world.", 0.0, 0.2, ClientConfig.INSTANCE.assemblyShakeMultiplier, CLIENT_DEFAULTS.assemblyShakeMultiplier, v -> ClientConfig.INSTANCE.assemblyShakeMultiplier = v);
         addBoolean(asm, eb, "Prevent Assembly When Mining", "Stops barehanded assembly from triggering if the block is actively being mined.", ClientConfig.INSTANCE.preventAssemblyWhenMining, CLIENT_DEFAULTS.preventAssemblyWhenMining, v -> ClientConfig.INSTANCE.preventAssemblyWhenMining = v);
         addDouble(asm, eb, "Mining Prevent Threshold", "Mining progress threshold required to cancel an accidental assembly attempt.", 0.01, 1.0, ClientConfig.INSTANCE.barehandedAssemblyMiningThreshold, CLIENT_DEFAULTS.barehandedAssemblyMiningThreshold, v -> ClientConfig.INSTANCE.barehandedAssemblyMiningThreshold = v);
+        addBoolean(asm, eb, "Un-sneak On Tree Break", "Temporarily un-sneaks the player while breaking tree logs to trigger tree-felling mods (e.g. FallingTree).", ClientConfig.INSTANCE.unsneakOnTreeBreak, CLIENT_DEFAULTS.unsneakOnTreeBreak, v -> ClientConfig.INSTANCE.unsneakOnTreeBreak = v);
 
         client.addEntry(asm.build());
     }

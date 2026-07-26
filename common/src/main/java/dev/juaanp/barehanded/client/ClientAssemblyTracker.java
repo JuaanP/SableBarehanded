@@ -124,7 +124,7 @@ public class ClientAssemblyTracker {
         if (mc.gameMode != null) mc.gameMode.stopDestroyBlock();
 
         if (assemblyChargeTicks >= currentRequiredAssemblyTicks) {
-            Services.NETWORK.sendAssembleGrabRequest(assemblyTargetPos);
+            Services.NETWORK.sendAssembleGrabRequest(assemblyTargetPos, ClientConfig.INSTANCE.unsneakOnTreeBreak);
             ClientGrabSession.startWaiting();
             reset();
         }

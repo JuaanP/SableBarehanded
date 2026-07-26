@@ -153,6 +153,10 @@ public class GrabActionHandler {
     }
 
     public static void assembleAndGrab(Player player, BlockPos pos) {
+        assembleAndGrab(player, pos, true);
+    }
+
+    public static void assembleAndGrab(Player player, BlockPos pos, boolean unsneakOnTreeBreak) {
         Level level = player.level();
         if (level.isClientSide()) return;
 
@@ -173,7 +177,7 @@ public class GrabActionHandler {
                 return;
             }
 
-            ripBlockOffAndGrab(player, serverSubLevel, pos);
+            ripBlockOffAndGrab(player, serverSubLevel, pos, unsneakOnTreeBreak);
             return;
         }
 
@@ -202,7 +206,7 @@ public class GrabActionHandler {
                 return;
             } else if (treeMode == ServerConfig.TreeAssemblyMode.BREAK) {
                 Services.NETWORK.sendStopGrabbingAnimation(player);
-                dev.juaanp.barehanded.compat.TreeModCompatHelper.breakBlockAsPlayer(player, level, pos);
+                dev.juaanp.barehanded.compat.TreeModCompatHelper.breakBlockAsPlayer(player, level, pos, unsneakOnTreeBreak);
                 return;
             }
         }
@@ -270,7 +274,7 @@ public class GrabActionHandler {
         }
     }
 
-    private static void ripBlockOffAndGrab(Player player, ServerSubLevel serverSubLevel, BlockPos localPos) {
+    private static void ripBlockOffAndGrab(Player player, ServerSubLevel serverSubLevel, BlockPos localPos, boolean unsneakOnTreeBreak) {
         ServerLevel subLevelLevel = (ServerLevel) serverSubLevel.getLevel();
         BlockState stateToRip = subLevelLevel.getBlockState(localPos);
 
@@ -286,7 +290,7 @@ public class GrabActionHandler {
                 return;
             } else if (treeMode == ServerConfig.TreeAssemblyMode.BREAK) {
                 Services.NETWORK.sendStopGrabbingAnimation(player);
-                dev.juaanp.barehanded.compat.TreeModCompatHelper.breakBlockAsPlayer(player, subLevelLevel, localPos);
+                dev.juaanp.barehanded.compat.TreeModCompatHelper.breakBlockAsPlayer(player, subLevelLevel, localPos, unsneakOnTreeBreak);
                 return;
             }
         }

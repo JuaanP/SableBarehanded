@@ -96,17 +96,21 @@ public class TreeModCompatHelper {
         return mode;
     }
 
-    public static void breakBlockAsPlayer(Player player, Level level, BlockPos pos) {
+    public static void breakBlockAsPlayer(Player player, Level level, BlockPos pos, boolean unsneakOnTreeBreak) {
         if (player instanceof ServerPlayer serverPlayer && level instanceof ServerLevel serverLevel) {
             boolean wasShiftDown = serverPlayer.isShiftKeyDown();
             Pose originalPose = serverPlayer.getPose();
             try {
-                serverPlayer.setShiftKeyDown(false);
-                serverPlayer.setPose(Pose.STANDING);
+                if (unsneakOnTreeBreak) {
+                    serverPlayer.setShiftKeyDown(false);
+                    serverPlayer.setPose(Pose.STANDING);
+                }
                 Services.PLATFORM.fireBlockBreakEvent(serverPlayer, serverLevel, pos);
             } finally {
-                serverPlayer.setPose(originalPose);
-                serverPlayer.setShiftKeyDown(wasShiftDown);
+                if (unsneakOnTreeBreak) {
+                    serverPlayer.setPose(originalPose);
+                    serverPlayer.setShiftKeyDown(wasShiftDown);
+                }
             }
         } else if (level instanceof ServerLevel serverLevel) {
             serverLevel.destroyBlock(pos, true, player);

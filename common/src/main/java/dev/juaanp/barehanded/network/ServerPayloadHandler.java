@@ -30,7 +30,7 @@ public class ServerPayloadHandler {
     }
 
     public static void handleAssembleGrab(ServerPlayer player, AssembleGrabPacket packet) {
-        GrabActionHandler.assembleAndGrab(player, packet.blockPos());
+        GrabActionHandler.assembleAndGrab(player, packet.blockPos(), packet.unsneakOnTreeBreak());
     }
 
     public static void handleRotateGrab(ServerPlayer player, RotateGrabPacket packet) {

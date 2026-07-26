@@ -25,8 +25,8 @@ public class NeoForgeNetworkHelper implements INetworkHelper {
     }
 
     @Override
-    public void sendAssembleGrabRequest(BlockPos pos) {
-        PacketDistributor.sendToServer(new AssembleGrabPacket(pos));
+    public void sendAssembleGrabRequest(BlockPos pos, boolean unsneakOnTreeBreak) {
+        PacketDistributor.sendToServer(new AssembleGrabPacket(pos, unsneakOnTreeBreak));
     }
 
     @Override

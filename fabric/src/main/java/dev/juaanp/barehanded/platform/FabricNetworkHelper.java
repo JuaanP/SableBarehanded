@@ -40,8 +40,8 @@ public class FabricNetworkHelper implements INetworkHelper {
     }
 
     @Override
-    public void sendAssembleGrabRequest(BlockPos pos) {
-        ClientPlayNetworking.send(new AssembleGrabPacket(pos));
+    public void sendAssembleGrabRequest(BlockPos pos, boolean unsneakOnTreeBreak) {
+        ClientPlayNetworking.send(new AssembleGrabPacket(pos, unsneakOnTreeBreak));
     }
 
     @Override

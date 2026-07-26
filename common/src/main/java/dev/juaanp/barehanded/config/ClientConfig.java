@@ -54,6 +54,7 @@ public class ClientConfig {
 
     public boolean preventAssemblyWhenMining = true;
     public double barehandedAssemblyMiningThreshold = 0.08;
+    public boolean unsneakOnTreeBreak = true;
 
     public int regrabDebounceTicks = 2;
 
