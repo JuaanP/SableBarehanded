@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Compatibility
 - **Tree Mods:** Assembly compatibility with tree felling mods (*Tree Physics*, *FallingTree*, *HT's TreeChop*, *Dynamic Trees*, etc...).
+- **Tree Logs Tag:** Added `#barehanded:tree_logs` block tag to manually register custom log blocks not automatically detected.
 - **Config Options:**
   - `treeAssemblyMode` (Server): Controls tree log behavior when tree mods are present (`AUTO`, `BREAK`, `BLOCK`, `NONE`).
   - `unsneakOnTreeBreak` (Client): Toggle to temporarily un-sneak while breaking logs so tree mods trigger correctly.
