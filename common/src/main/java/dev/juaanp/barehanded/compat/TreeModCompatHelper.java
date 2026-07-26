@@ -3,11 +3,17 @@ package dev.juaanp.barehanded.compat;
 import dev.juaanp.barehanded.Constants;
 import dev.juaanp.barehanded.config.ServerConfig;
 import dev.juaanp.barehanded.platform.Services;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -19,10 +25,23 @@ public class TreeModCompatHelper {
             "dynamictrees",
             "treephysics",
             "fallingtree",
+            "fallingtrees",
+            "falling_trees",
             "treechop",
             "ht_tree_plant",
+            "ht_treeplant",
             "tree_harvester",
-            "lumberjack"
+            "treeharvester",
+            "lumberjack",
+            "timber",
+            "timbermod",
+            "capitate",
+            "treecapitator",
+            "tree_capitator",
+            "treefeller",
+            "tree_feller",
+            "chopping",
+            "cutthrough"
     );
 
     private static final TagKey<Block> C_LOGS = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("c", "logs"));
@@ -73,16 +92,19 @@ public class TreeModCompatHelper {
         return mode;
     }
 
-    public static void breakBlockAsPlayer(net.minecraft.world.entity.player.Player player, net.minecraft.world.level.Level level, net.minecraft.core.BlockPos pos) {
-        if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
+    public static void breakBlockAsPlayer(Player player, Level level, BlockPos pos) {
+        if (player instanceof ServerPlayer serverPlayer && level instanceof ServerLevel serverLevel) {
             boolean wasShiftDown = serverPlayer.isShiftKeyDown();
+            Pose originalPose = serverPlayer.getPose();
             try {
                 serverPlayer.setShiftKeyDown(false);
-                serverPlayer.gameMode.destroyBlock(pos);
+                serverPlayer.setPose(Pose.STANDING);
+                Services.PLATFORM.fireBlockBreakEvent(serverPlayer, serverLevel, pos);
             } finally {
+                serverPlayer.setPose(originalPose);
                 serverPlayer.setShiftKeyDown(wasShiftDown);
             }
-        } else if (level instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+        } else if (level instanceof ServerLevel serverLevel) {
             serverLevel.destroyBlock(pos, true, player);
         }
     }
