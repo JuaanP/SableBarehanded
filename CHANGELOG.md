@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.6.5]
+
+### Compatibility
+- **Tree Mods:** Assembly compatibility with tree felling mods (*Tree Physics*, *FallingTree*, *HT's TreeChop*, *Dynamic Trees*, etc...).
+- **Config Options:**
+  - `treeAssemblyMode` (Server): Controls tree log behavior when tree mods are present (`AUTO`, `BREAK`, `BLOCK`, `NONE`).
+  - `unsneakOnTreeBreak` (Client): Toggle to temporarily un-sneak while breaking logs so tree mods trigger correctly.
+
 ## [1.6.4]
 
 ### Added
