@@ -156,6 +156,14 @@ public class AssemblyBehaviorHelper {
                 totalTicks += ServerConfig.INSTANCE.fastLiftAssemblyTicks;
             } else {
                 float progressPerTick = state.getDestroyProgress(player, level, pos);
+
+                if (dev.juaanp.barehanded.compat.TreeModCompatHelper.isLogBlock(state)) {
+                    float standardLogProgress = getStandardLogDestroyProgress(player, level, pos, state);
+                    if (progressPerTick > standardLogProgress || progressPerTick >= 0.1F) {
+                        progressPerTick = standardLogProgress;
+                    }
+                }
+
                 if (progressPerTick <= 0.0F) return Integer.MAX_VALUE;
                 int vanillaTicks = (int) Math.ceil(1.0F / progressPerTick);
                 totalTicks += vanillaTicks;
@@ -163,7 +171,21 @@ public class AssemblyBehaviorHelper {
         }
 
         double strengthMulti = EncumbranceHelper.getStrengthMultiplier(player);
+        int result = (int) Math.max(1, (totalTicks / strengthMulti) / ServerConfig.INSTANCE.barehandedAssemblySpeedMultiplier);
 
-        return (int) Math.max(1, (totalTicks / strengthMulti) / ServerConfig.INSTANCE.barehandedAssemblySpeedMultiplier);
+        if (blocks.size() == 1 && dev.juaanp.barehanded.compat.TreeModCompatHelper.isLogBlock(level.getBlockState(blocks.get(0)))) {
+            return Math.max(result, 20);
+        }
+
+        return result;
+    }
+
+    private static float getStandardLogDestroyProgress(Player player, Level level, BlockPos pos, BlockState state) {
+        float hardness = 2.0F;
+        boolean canHarvest = player.hasCorrectToolForDrops(state) || state.is(net.minecraft.tags.BlockTags.LOGS);
+        float speed = player.getDestroySpeed(state);
+        if (speed <= 0.0F) speed = 1.0F;
+        int i = canHarvest ? 30 : 100;
+        return speed / hardness / (float) i;
     }
 }

@@ -75,6 +75,10 @@ public class TreeModCompatHelper {
 
         ResourceLocation id = BuiltInRegistries.BLOCK.getKey(state.getBlock());
         if (id != null) {
+            String path = id.getPath().toLowerCase();
+            if (path.contains("log") || path.contains("stem") || path.contains("branch") || path.contains("trunk") || path.contains("chopped")) {
+                return true;
+            }
             String namespace = id.getNamespace().toLowerCase();
             if (TREE_MOD_IDS.contains(namespace)) {
                 return true;
