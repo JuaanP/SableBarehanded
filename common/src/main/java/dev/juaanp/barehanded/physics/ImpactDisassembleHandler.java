@@ -23,13 +23,16 @@ public class ImpactDisassembleHandler {
     private static final double M_S_TO_B_T = 1.0 / 20.0;
     private static final double TICKS_PER_SECOND = 20.0;
 
-    public static void checkImpact(ServerPlayer player, ServerSubLevel subLevel, GrabSession grab) {
-        if (!ServerConfig.INSTANCE.enableImpactDisassemble) return;
+    /**
+     * @return true if the grab session was ended during impact handling
+     */
+    public static boolean checkImpact(ServerPlayer player, ServerSubLevel subLevel, GrabSession grab) {
+        if (!ServerConfig.INSTANCE.enableImpactDisassemble) return false;
 
         GrabSession currentGrab = ServerGrabManager.getGrabSession(player);
         if (currentGrab == null || currentGrab.subLevel != subLevel) {
             cleanup(subLevel.getUniqueId());
-            return;
+            return currentGrab == null;
         }
 
         grab.impactTicks++;
@@ -41,7 +44,7 @@ public class ImpactDisassembleHandler {
         if (previousPosition == null || grab.impactTicks == 1) {
             previousPositions.put(subLevelId, new Vector3d(currentPosition));
             calculatedVelocities.remove(subLevelId);
-            return;
+            return false;
         }
 
         Vector3d previousVelocity = calculatedVelocities.get(subLevelId);
@@ -51,11 +54,11 @@ public class ImpactDisassembleHandler {
         previousPositions.put(subLevelId, new Vector3d(currentPosition));
         calculatedVelocities.put(subLevelId, new Vector3d(currentVelocity));
 
-        if (grab.impactTicks < 10) return;
-        if (previousVelocity == null) return;
+        if (grab.impactTicks < 10) return false;
+        if (previousVelocity == null) return false;
 
-        if (!meetsImpactCriteria(previousVelocity, currentVelocity, subLevel)) return;
-        if (!PlayerIntentValidator.wasIntentionalImpact(player, subLevel, previousVelocity)) return;
+        if (!meetsImpactCriteria(previousVelocity, currentVelocity, subLevel)) return false;
+        if (!PlayerIntentValidator.wasIntentionalImpact(player, subLevel, previousVelocity)) return false;
 
         var ragdollCompat = RagdollCompatService.get();
         if (ragdollCompat != null && (ragdollCompat.isAnyRagdollSubLevel(subLevel) || ragdollCompat.containsRagdollBlocks(subLevel))) {
@@ -70,30 +73,31 @@ public class ImpactDisassembleHandler {
             if (success) {
                 ServerGrabManager.stopGrabbing(player.getUUID());
                 cleanup(subLevel.getUniqueId());
+                return true;
             }
-            return;
+            return false;
         }
 
         if (grab.isAltDown) {
-            return;
+            return false;
         }
 
         Vec3 approachDir = PlayerIntentValidator.getApproachDirection(previousVelocity);
         Optional<ImpactResult> impact = ImpactFaceDetector.detectImpact(level, subLevel, approachDir);
-        if (impact.isEmpty()) return;
+        if (impact.isEmpty()) return false;
 
         ImpactResult result = impact.get();
 
         if (!DisassembleHandler.isAlignedToGrid(subLevel,
                 ServerConfig.INSTANCE.impactRotationTolerance,
-                ServerConfig.INSTANCE.impactPositionTolerance)) return;
+                ServerConfig.INSTANCE.impactPositionTolerance)) return false;
 
         int limit = ServerConfig.INSTANCE.disassembleBlockLimit;
         if (limit > 0 && DisassembleHandler.getBlockCount(subLevel) > limit) {
-            return;
+            return false;
         }
 
-        performDisassemble(level, player, subLevel, result);
+        return performDisassemble(level, player, subLevel, result);
     }
 
     private static boolean meetsImpactCriteria(Vector3d previousVelocity, Vector3d currentVelocity, ServerSubLevel subLevel) {
@@ -115,8 +119,8 @@ public class ImpactDisassembleHandler {
         return impactForce >= ServerConfig.INSTANCE.impactForceThreshold;
     }
 
-    private static void performDisassemble(ServerLevel level, ServerPlayer player,
-                                           ServerSubLevel subLevel, ImpactResult impact) {
+    private static boolean performDisassemble(ServerLevel level, ServerPlayer player,
+                                              ServerSubLevel subLevel, ImpactResult impact) {
         DisassembleHandler.PlacementResult placement = DisassembleHandler.computePlacement(
                 subLevel, impact.face(), impact.worldBlock()
         );
@@ -134,6 +138,8 @@ public class ImpactDisassembleHandler {
             ServerGrabManager.stopGrabbing(player.getUUID());
             cleanup(subLevel.getUniqueId());
         }
+
+        return success;
     }
 
     public static void cleanup(UUID subLevelId) {

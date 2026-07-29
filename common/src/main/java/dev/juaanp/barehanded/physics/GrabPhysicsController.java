@@ -39,6 +39,7 @@ public class GrabPhysicsController {
     }
 
     public static void rebuildConstraint(GrabSession grab) {
+        if (grab.subLevel.isRemoved()) return;
         if (grab.constraintHandle != null) {
             grab.constraintHandle.remove();
         }
@@ -46,6 +47,26 @@ public class GrabPhysicsController {
                 null, grab.subLevel,
                 new FreeConstraintConfiguration(grab.anchorGlobalOrigin, grab.localPivot, grab.baseOrientation)
         );
+    }
+
+    private static boolean isGrabPhysicsValid(Player player, GrabSession grab) {
+        ServerSubLevelContainer container = (ServerSubLevelContainer) SubLevelContainer.getContainer(player.level());
+        return container != null
+                && !grab.subLevel.isRemoved()
+                && container.getSubLevel(grab.subLevel.getUniqueId()) != null
+                && grab.subLevel.getMassTracker().getMass() > ServerConfig.INSTANCE.minPhysicsMass;
+    }
+
+    private static boolean ensureActiveGrab(Player player, UUID playerId, GrabSession grab) {
+        if (ServerGrabManager.getGrabSession(player) != grab) {
+            cleanupPlayer(playerId);
+            return false;
+        }
+        if (!isGrabPhysicsValid(player, grab)) {
+            ServerGrabManager.stopGrabbing(playerId);
+            return false;
+        }
+        return true;
     }
 
     private static void applyCameraLockedRotation(Player player, GrabSession grab) {
@@ -115,13 +136,7 @@ public class GrabPhysicsController {
             return;
         }
 
-        ServerSubLevelContainer container = (ServerSubLevelContainer) SubLevelContainer.getContainer(player.level());
-
-        if (container == null ||
-                grab.subLevel.isRemoved() ||
-                container.getSubLevel(grab.subLevel.getUniqueId()) == null ||
-                grab.subLevel.getMassTracker().getMass() <= ServerConfig.INSTANCE.minPhysicsMass) {
-            ServerGrabManager.stopGrabbing(playerId);
+        if (!ensureActiveGrab(player, playerId, grab)) {
             return;
         }
 
@@ -133,7 +148,10 @@ public class GrabPhysicsController {
         grab.pipeline.wakeUp(grab.subLevel);
 
         if (player instanceof ServerPlayer serverPlayer) {
-            ImpactDisassembleHandler.checkImpact(serverPlayer, grab.subLevel, grab);
+            if (ImpactDisassembleHandler.checkImpact(serverPlayer, grab.subLevel, grab)) {
+                cleanupPlayer(playerId);
+                return;
+            }
         }
 
         int grace = graceTicksMap.getOrDefault(playerId, 0);
@@ -211,6 +229,10 @@ public class GrabPhysicsController {
         }
 
         if (isGhostEverything) {
+            if (!ensureActiveGrab(player, playerId, grab)) {
+                return;
+            }
+
             Vector3d pivotReference = grab.rotateAroundCenter ? grab.localCenterOfMass : grab.subLevel.logicalPose().rotationPoint();
             Vector3d localOffsetToGrab = new Vector3d(grab.localPivot).sub(pivotReference);
             Vector3d rotatedOffset = new Vector3d(localOffsetToGrab).rotate(grab.targetGlobalOrientation);
