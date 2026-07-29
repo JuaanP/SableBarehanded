@@ -26,7 +26,7 @@ public class ClientConfig {
     public boolean invertVerticalRotation = false;
     public boolean invertHorizontalRotation = false;
     public boolean rotateAroundCenter = false;
-    public boolean preventMovementWhileRotating = true;
+    public boolean preventMovementWhileRotating = false;
 
     public double armTransitionSpeed = 0.13;
     public double armGrabLowerOffset = 1.5;

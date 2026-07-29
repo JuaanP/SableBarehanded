@@ -7,11 +7,9 @@
   "key.barehanded.grab": "Toggle Grab Sub-level",
   "key.barehanded.pull": "Pull Object Closer",
   "key.barehanded.push": "Push Object Further",
-
   "config.barehanded.title": "Sable Barehanded",
   "config.barehanded.category.server": "Server Settings",
   "config.barehanded.category.client": "Client Settings",
-
   "config.barehanded.subcategory.grab": "Grab",
   "config.barehanded.subcategory.rotation": "Rotation",
   "config.barehanded.subcategory.assembling": "Assembling",
@@ -29,7 +27,6 @@
   "config.barehanded.subcategory.render": "Animation & Rendering",
   "config.barehanded.subcategory.assembly_client": "Client Assembly",
   "config.barehanded.subcategory.hud": "HUD",
-
   "config.barehanded.option.maxForce": "Max Force (N)",
   "config.barehanded.option.maxForce.tooltip": "Maximum spring force applied to move a grabbed object.",
   "config.barehanded.option.minDistance": "Min Distance (m)",
@@ -72,7 +69,6 @@
   "config.barehanded.option.allowGrabbingUnbreakableBlocks.tooltip": "Allows grabbing blocks with destroySpeed < 0 (bedrock, barriers, etc). In whitelist mode, these blocks must also be in #barehanded:grabbable.",
   "config.barehanded.option.preventGrabbingSubLevelsWithUngrabbableBlocks": "Prevent Grabbing Sub-Levels with Ungrabbable Blocks",
   "config.barehanded.option.preventGrabbingSubLevelsWithUngrabbableBlocks.tooltip": "If true, prevents grabbing an entire sub-level if it contains any block from the #barehanded:ungrabbable tag.",
-
   "config.barehanded.option.enableRotation": "Enable Rotation",
   "config.barehanded.option.enableRotation.tooltip": "Allows players to rotate grabbed objects using the mouse.",
   "config.barehanded.option.cameraLockedRotationX": "Camera Locked Rotation X (Pitch)",
@@ -95,7 +91,6 @@
   "config.barehanded.option.angularBrakeThreshold.tooltip": "Angle (radians) where the angular brake activates.",
   "config.barehanded.option.angularBrakeMultiplier": "Angular Brake Multiplier",
   "config.barehanded.option.angularBrakeMultiplier.tooltip": "Damping multiplier when angular brake is active.",
-
   "config.barehanded.option.enableBarehandedAssembly": "Enable Assembly",
   "config.barehanded.option.enableBarehandedAssembly.tooltip": "Allows players to pull and detach connected blocks from the world.",
   "config.barehanded.option.enableRipOffBlocks": "Enable Rip-Off Blocks",
@@ -122,7 +117,6 @@
   "config.barehanded.option.assemblyMaxStretchBuffer.tooltip": "Absolute maximum distance before the assembly charge forcefully breaks.",
   "config.barehanded.option.enablePhysicsBlockPlacement": "Enable Physics Placement",
   "config.barehanded.option.enablePhysicsBlockPlacement.tooltip": "Allows placing blocks directly as physics objects using the toggle key.",
-
   "config.barehanded.option.enableImpactDisassemble": "Enable Impact Disassemble",
   "config.barehanded.option.enableImpactDisassemble.tooltip": "Slam a grabbed sublevel into a world block to disassemble it.",
   "config.barehanded.option.impactForceThreshold": "Impact Force Threshold",
@@ -153,7 +147,6 @@
   "config.barehanded.option.keybindPositionTolerance.tooltip": "Maximum position deviation from grid for keybind disassembly.",
   "config.barehanded.option.disassembleBlockLimit": "Max Disassemble Blocks",
   "config.barehanded.option.disassembleBlockLimit.tooltip": "Maximum number of blocks a grabbed structure can have to allow disassembly. 0 = unlimited.",
-
   "config.barehanded.option.enableEncumbrance": "Enable Encumbrance",
   "config.barehanded.option.enableEncumbrance.tooltip": "Enables player movement and camera penalties based on grabbed object mass.",
   "config.barehanded.option.physicsGravity": "Physics Gravity",
@@ -182,7 +175,6 @@
   "config.barehanded.option.recoilVelocityThreshold.tooltip": "Minimum away-velocity required for the object to apply a recoil/pullback force.",
   "config.barehanded.option.tetherHardEscapeBuffer": "Tether Hard Escape Buffer",
   "config.barehanded.option.tetherHardEscapeBuffer.tooltip": "Hard distance limit where the tether forcefully strips away-velocity to prevent escaping.",
-
   "config.barehanded.option.enableExhaustion": "Enable Exhaustion",
   "config.barehanded.option.enableExhaustion.tooltip": "Consumes player hunger based on physical effort when grabbing objects.",
   "config.barehanded.option.exhaustionIdleRate": "Idle Drain Rate",
@@ -205,7 +197,6 @@
   "config.barehanded.option.exhaustionKineticReferenceSpeed.tooltip": "Block speed (m/t) at which kinetic exhaustion reaches its maximum.",
   "config.barehanded.option.exhaustionVerticalWeightFactor": "Vertical Weight Factor",
   "config.barehanded.option.exhaustionVerticalWeightFactor.tooltip": "Multiplier for vertical player movement (jumping) when calculating exhaustion.",
-
   "config.barehanded.option.standingOnGrabSuspendTicks": "Standing-on-Grab Suspend Ticks",
   "config.barehanded.option.standingOnGrabSuspendTicks.tooltip": "Ticks physics stays suspended after stepping off a grabbed object.",
   "config.barehanded.option.grabProximityEyeSuspendDistance": "Proximity Eye Suspend Distance",
@@ -220,14 +211,12 @@
   "config.barehanded.option.creativeTensionSuspendThreshold.tooltip": "Tension suspend threshold in Creative Super Strength mode.",
   "config.barehanded.option.creativeTensionBreakThreshold": "Creative Tension Break",
   "config.barehanded.option.creativeTensionBreakThreshold.tooltip": "Tension break threshold in Creative Super Strength mode.",
-
   "config.barehanded.option.maxPlayerVelocityYUp": "Max Velocity Y Up (m/t)",
   "config.barehanded.option.maxPlayerVelocityYUp.tooltip": "Maximum upward velocity allowed while grabbing.",
   "config.barehanded.option.maxPlayerVelocityYDown": "Max Velocity Y Down (m/t)",
   "config.barehanded.option.maxPlayerVelocityYDown.tooltip": "Maximum downward velocity allowed while grabbing.",
   "config.barehanded.option.maxPlayerVelocityXZ": "Max Velocity XZ (m/t)",
   "config.barehanded.option.maxPlayerVelocityXZ.tooltip": "Maximum horizontal velocity allowed while grabbing.",
-
   "config.barehanded.option.ignoreCollisionsGrabSelf": "[Grab] Ignore Self",
   "config.barehanded.option.ignoreCollisionsGrabSelf.tooltip": "Prevents the grabbed object from colliding with the grabber.",
   "config.barehanded.option.ignoreCollisionsGrabOtherPlayers": "[Grab] Ignore Other Players",
@@ -246,7 +235,6 @@
   "config.barehanded.option.ignoreCollisionsRotationEntities.tooltip": "Prevents collisions with mobs/entities while rotating.",
   "config.barehanded.option.ignoreCollisionsRotationEverything": "[Rotate] Ignore Everything",
   "config.barehanded.option.ignoreCollisionsRotationEverything.tooltip": "Makes the object completely non-collidable while rotating.",
-
   "config.barehanded.option.stiffness": "Stiffness",
   "config.barehanded.option.stiffness.tooltip": "Base linear spring stiffness. Higher = more rigid but can cause jitter.",
   "config.barehanded.option.damping": "Damping",
@@ -293,7 +281,6 @@
   "config.barehanded.option.swayStiffnessEdgeRangeFactor.tooltip": "Range sway multiplier when holding objects from edges.",
   "config.barehanded.option.freePivotDampingMultiplier": "Free Pivot Damping",
   "config.barehanded.option.freePivotDampingMultiplier.tooltip": "Friction applied when the object hangs freely to prevent endless swinging.",
-
   "config.barehanded.option.baseMovementPenalty": "Base Movement Penalty",
   "config.barehanded.option.baseMovementPenalty.tooltip": "Base movement speed reduction when holding any object.",
   "config.barehanded.option.weightPenaltyMultiplier": "Weight Penalty Multiplier",
@@ -310,14 +297,12 @@
   "config.barehanded.option.tensionPenaltyMaxDistance.tooltip": "Tension distance at which movement penalty reaches its maximum.",
   "config.barehanded.option.kineticPenaltyReferenceSpeed": "Kinetic Penalty Reference Speed",
   "config.barehanded.option.kineticPenaltyReferenceSpeed.tooltip": "Block speed at which kinetic movement penalty reaches its maximum.",
-
   "config.barehanded.option.leadVelocityThreshold": "Lead Velocity Threshold",
   "config.barehanded.option.leadVelocityThreshold.tooltip": "Player speed threshold to activate target prediction.",
   "config.barehanded.option.leadPredictionFactor": "Lead Prediction Factor",
   "config.barehanded.option.leadPredictionFactor.tooltip": "Multiplier for predicting the anchor target ahead of the player's movement.",
   "config.barehanded.option.leadDownwardClamp": "Lead Downward Clamp",
   "config.barehanded.option.leadDownwardClamp.tooltip": "Clamps downward prediction to prevent the object from being dragged into the floor.",
-
   "config.barehanded.option.sableRagdollsCompatAllowGrabbingPlayerRagdolls": "[Sable: Ragdolls] Allow Grabbing Player Ragdolls",
   "config.barehanded.option.sableRagdollsCompatAllowGrabbingPlayerRagdolls.tooltip": "Allows grabbing player ragdolls.",
   "config.barehanded.option.sableRagdollsCompatAllowGrabbingMobRagdolls": "[Sable: Ragdolls] Allow Grabbing Mob Ragdolls",
@@ -326,7 +311,6 @@
   "config.barehanded.option.sableRagdollsCompatMobRagdollMaxSize.tooltip": "Maximum mob size (bounding box width/height) that can be grabbed.",
   "config.barehanded.option.treeAssemblyMode": "Tree Assembly Mode",
   "config.barehanded.option.treeAssemblyMode.tooltip": "AUTO: Uses BREAK mode if a tree mod is loaded, otherwise NONE.\nNONE: No special handling; tree logs assemble into physics SubLevels as normal.\nBREAK: Breaks the log block to trigger the tree mod's native felling behavior.\nBLOCK: Prevents assembling tree logs.",
-
   "config.barehanded.option.verticalRotationSensitivity": "Vertical Rotation Sensitivity",
   "config.barehanded.option.verticalRotationSensitivity.tooltip": "Mouse sensitivity for rotating grabbed sub-levels up/down.",
   "config.barehanded.option.horizontalRotationSensitivity": "Horizontal Rotation Sensitivity",
@@ -339,7 +323,6 @@
   "config.barehanded.option.invertHorizontalRotation.tooltip": "Inverts the X-axis when rotating.",
   "config.barehanded.option.rotateAroundCenter": "Default Center Pivot",
   "config.barehanded.option.rotateAroundCenter.tooltip": "If true, grabbed sub-levels rotate around their center of mass by default instead of the grab point.",
-
   "config.barehanded.option.hideHandsWhileGrabbing": "Hide Global Arms",
   "config.barehanded.option.hideHandsWhileGrabbing.tooltip": "Forces First-Person and Third-Person arms to be hidden.",
   "config.barehanded.option.hideFirstPersonArms": "Hide First Person Arms",
@@ -348,7 +331,6 @@
   "config.barehanded.option.hideThirdPersonArms.tooltip": "Hides the custom outstretched arms in third person when grabbing.",
   "config.barehanded.option.armTransitionSpeed": "Arm Transition Speed",
   "config.barehanded.option.armTransitionSpeed.tooltip": "How fast the arms raise when grabbing a block.",
-
   "config.barehanded.option.assemblyShakeMultiplier": "Visual Shake Multiplier",
   "config.barehanded.option.assemblyShakeMultiplier.tooltip": "How intensely the screen/arms shake while tearing a block from the world.",
   "config.barehanded.option.preventAssemblyWhenMining": "Prevent Assembly When Mining",
@@ -357,14 +339,12 @@
   "config.barehanded.option.barehandedAssemblyMiningThreshold.tooltip": "Mining progress threshold required to cancel an accidental assembly attempt.",
   "config.barehanded.option.unsneakOnTreeBreak": "Un-sneak On Tree Break",
   "config.barehanded.option.unsneakOnTreeBreak.tooltip": "Temporarily un-sneaks the player while breaking tree logs to trigger tree-felling mods (e.g. FallingTree).",
-
   "config.barehanded.option.hideGrabHud": "Hide Grab HUD",
   "config.barehanded.option.hideGrabHud.tooltip": "Hides rotation/mass HUD when grabbing.",
   "config.barehanded.option.hidePhysicsPlacementOverlay": "Hide Placement Overlay",
   "config.barehanded.option.hidePhysicsPlacementOverlay.tooltip": "Hides permanent Physics Placement HUD overlay.",
   "config.barehanded.option.showPhysicsPlacementMessage": "Show Placement Message",
   "config.barehanded.option.showPhysicsPlacementMessage.tooltip": "Shows temporary message when toggling physics placement.",
-
   "hud.barehanded.hold_to_rotate": "Hold [ %s ] to rotate ",
   "hud.barehanded.rotation_pivot": "Rotation Pivot: %s",
   "hud.barehanded.pivot.center_of_mass": "CENTER OF MASS ",
@@ -374,7 +354,6 @@
   "hud.barehanded.pivot.grab_point_short": "Grab Point ",
   "hud.barehanded.pivot.center_mass_short": "Center Mass ",
   "hud.barehanded.physics_placement": "Physics Placement",
-
   "message.barehanded.placement_mode": "Block Placement: ",
   "message.barehanded.placement_mode.physics": "Physics",
   "message.barehanded.placement_mode.normal": "Normal",
@@ -386,5 +365,7 @@
   "message.barehanded.grab.cannot_grab_ungrabbable": "Cannot grab: contains ungrabbable blocks",
   "message.barehanded.grab.too_many_blocks": "[Sable] Too many blocks (Limit: %s)",
   "message.barehanded.disassemble.structure_too_large": "Structure is too large to disassemble (Limit: %s)",
-  "message.barehanded.disassemble.cannot_place_here": "Cannot place here"
+  "message.barehanded.disassemble.cannot_place_here": "Cannot place here",
+  "config.barehanded.option.preventMovementWhileRotating": "Lock Movement While Rotating",
+  "config.barehanded.option.preventMovementWhileRotating.tooltip": "Locks player movement inputs while actively rotating a grabbed object."
 }

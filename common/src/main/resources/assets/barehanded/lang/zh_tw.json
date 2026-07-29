@@ -7,11 +7,9 @@
   "key.barehanded.grab": "切换抓取子层级结构",
   "key.barehanded.pull": "拉近物体",
   "key.barehanded.push": "推远物体",
-
   "config.barehanded.title": "Sable Barehanded",
   "config.barehanded.category.server": "服务端设置",
   "config.barehanded.category.client": "客户端设置",
-
   "config.barehanded.subcategory.grab": "抓取",
   "config.barehanded.subcategory.rotation": "旋转",
   "config.barehanded.subcategory.assembling": "组装",
@@ -29,7 +27,6 @@
   "config.barehanded.subcategory.render": "动画与渲染",
   "config.barehanded.subcategory.assembly_client": "客户端组装",
   "config.barehanded.subcategory.hud": "HUD界面",
-
   "config.barehanded.option.maxForce": "最大作用力 (N)",
   "config.barehanded.option.maxForce.tooltip": "用于移动抓取物体的最大弹簧作用力。",
   "config.barehanded.option.minDistance": "最小距离 (m)",
@@ -72,7 +69,6 @@
   "config.barehanded.option.allowGrabbingUnbreakableBlocks.tooltip": "允许抓取硬度小于0的方块（基岩、屏障等）。",
   "config.barehanded.option.preventGrabbingSubLevelsWithUngrabbableBlocks": "含有不可抓取方块时禁止抓取整体",
   "config.barehanded.option.preventGrabbingSubLevelsWithUngrabbableBlocks.tooltip": "若启用，当结构中包含 #barehanded:ungrabbable 标签方块时禁止抓取整个结构。",
-
   "config.barehanded.option.enableRotation": "启用旋转",
   "config.barehanded.option.enableRotation.tooltip": "允许玩家使用鼠标旋转抓取的物体。",
   "config.barehanded.option.cameraLockedRotationX": "相机锁定 X 轴旋转 (俯仰)",
@@ -95,7 +91,6 @@
   "config.barehanded.option.angularBrakeThreshold.tooltip": "角制动生效的角度阈值（弧度）。",
   "config.barehanded.option.angularBrakeMultiplier": "角制动倍率",
   "config.barehanded.option.angularBrakeMultiplier.tooltip": "角制动生效时的阻尼倍率。",
-
   "config.barehanded.option.enableBarehandedAssembly": "启用拆剥组装",
   "config.barehanded.option.enableBarehandedAssembly.tooltip": "允许玩家拉动并从世界中脱离相连方块。",
   "config.barehanded.option.enableRipOffBlocks": "启用强行撕下单方块",
@@ -122,7 +117,6 @@
   "config.barehanded.option.assemblyMaxStretchBuffer.tooltip": "强制中断组装蓄力的绝对最大距离。",
   "config.barehanded.option.enablePhysicsBlockPlacement": "启用物理放置",
   "config.barehanded.option.enablePhysicsBlockPlacement.tooltip": "允许使用按键直接将方块放置为物理实体。",
-
   "config.barehanded.option.enableImpactDisassemble": "启用撞击拆卸",
   "config.barehanded.option.enableImpactDisassemble.tooltip": "将抓取的结构猛撞向世界方块以将其拆卸合并。",
   "config.barehanded.option.impactForceThreshold": "撞击力阈值",
@@ -153,7 +147,6 @@
   "config.barehanded.option.keybindPositionTolerance.tooltip": "按键拆卸允许的最大位置偏差。",
   "config.barehanded.option.disassembleBlockLimit": "最大拆卸方块限制",
   "config.barehanded.option.disassembleBlockLimit.tooltip": "允许拆卸结构的最大方块数。0 = 无限制。",
-
   "config.barehanded.option.enableEncumbrance": "启用负重系统",
   "config.barehanded.option.enableEncumbrance.tooltip": "根据抓取物体的质量启用移动与视角惩罚。",
   "config.barehanded.option.physicsGravity": "物理重力加速度",
@@ -182,7 +175,6 @@
   "config.barehanded.option.recoilVelocityThreshold.tooltip": "物体触发反冲拉力所需的最小远离速度。",
   "config.barehanded.option.tetherHardEscapeBuffer": "拉绳硬逃逸缓冲",
   "config.barehanded.option.tetherHardEscapeBuffer.tooltip": "拉绳强制消除远离速度以防脱离的极限距离。",
-
   "config.barehanded.option.enableExhaustion": "启用体能消耗",
   "config.barehanded.option.enableExhaustion.tooltip": "搬运物体时根据物理付出消耗玩家饥饿度。",
   "config.barehanded.option.exhaustionIdleRate": "悬空静止消耗率",
@@ -205,7 +197,6 @@
   "config.barehanded.option.exhaustionKineticReferenceSpeed.tooltip": "动能疲劳达到最大值时的方块移动速度。",
   "config.barehanded.option.exhaustionVerticalWeightFactor": "垂直移动重量因子",
   "config.barehanded.option.exhaustionVerticalWeightFactor.tooltip": "计算疲劳时玩家垂直移动（跳跃）的倍率。",
-
   "config.barehanded.option.standingOnGrabSuspendTicks": "踩踏物体物理暂停刻",
   "config.barehanded.option.standingOnGrabSuspendTicks.tooltip": "走下抓取物体后物理保持暂停的刻数。",
   "config.barehanded.option.grabProximityEyeSuspendDistance": "眼睛近距离物理暂停距离",
@@ -220,14 +211,12 @@
   "config.barehanded.option.creativeTensionSuspendThreshold.tooltip": "创造模式超级力量下的张力暂停阈值。",
   "config.barehanded.option.creativeTensionBreakThreshold": "创造模式张力中断阈值",
   "config.barehanded.option.creativeTensionBreakThreshold.tooltip": "创造模式超级力量下的张力中断阈值。",
-
   "config.barehanded.option.maxPlayerVelocityYUp": "最大向上速度 (m/t)",
   "config.barehanded.option.maxPlayerVelocityYUp.tooltip": "抓取时允许的最大向上移动速度。",
   "config.barehanded.option.maxPlayerVelocityYDown": "最大向下速度 (m/t)",
   "config.barehanded.option.maxPlayerVelocityYDown.tooltip": "抓取时允许的最大向下移动速度。",
   "config.barehanded.option.maxPlayerVelocityXZ": "最大水平速度 (m/t)",
   "config.barehanded.option.maxPlayerVelocityXZ.tooltip": "抓取时允许的最大水平移动速度。",
-
   "config.barehanded.option.ignoreCollisionsGrabSelf": "[抓取] 无视抓取者碰撞",
   "config.barehanded.option.ignoreCollisionsGrabSelf.tooltip": "防止抓取的物体与玩家自身发生碰撞。",
   "config.barehanded.option.ignoreCollisionsGrabOtherPlayers": "[抓取] 无视其他玩家碰撞",
@@ -246,7 +235,6 @@
   "config.barehanded.option.ignoreCollisionsRotationEntities.tooltip": "旋转时防止物体与生物/实体发生碰撞。",
   "config.barehanded.option.ignoreCollisionsRotationEverything": "[旋转] 无视一切碰撞",
   "config.barehanded.option.ignoreCollisionsRotationEverything.tooltip": "旋转时使物体完全无碰撞。",
-
   "config.barehanded.option.stiffness": "线性刚度",
   "config.barehanded.option.stiffness.tooltip": "基础线性弹簧刚度。越高越刚硬但可能引起抖动。",
   "config.barehanded.option.damping": "线性阻尼",
@@ -293,7 +281,6 @@
   "config.barehanded.option.swayStiffnessEdgeRangeFactor.tooltip": "从边缘抓取物体时的范围晃动倍率。",
   "config.barehanded.option.freePivotDampingMultiplier": "自由支点阻尼倍率",
   "config.barehanded.option.freePivotDampingMultiplier.tooltip": "物体自由悬挂时的摩擦阻尼，防止无休止摆动。",
-
   "config.barehanded.option.baseMovementPenalty": "基础移动惩罚",
   "config.barehanded.option.baseMovementPenalty.tooltip": "搬运任何物体时的基础移动速度降低比例。",
   "config.barehanded.option.weightPenaltyMultiplier": "重量惩罚倍率",
@@ -310,14 +297,12 @@
   "config.barehanded.option.tensionPenaltyMaxDistance.tooltip": "移动惩罚达到最大值时的张力距离。",
   "config.barehanded.option.kineticPenaltyReferenceSpeed": "动能惩罚参考速度",
   "config.barehanded.option.kineticPenaltyReferenceSpeed.tooltip": "动能移动惩罚达到最大值时的方块移动速度。",
-
   "config.barehanded.option.leadVelocityThreshold": "前瞻速度阈值",
   "config.barehanded.option.leadVelocityThreshold.tooltip": "激活目标移动预测所需的玩家速度阈值。",
   "config.barehanded.option.leadPredictionFactor": "前瞻预测因子",
   "config.barehanded.option.leadPredictionFactor.tooltip": "在玩家移动前方预判锚点目标的倍率。",
   "config.barehanded.option.leadDownwardClamp": "向下预测限制",
   "config.barehanded.option.leadDownwardClamp.tooltip": "限制向下方向的预测，防止物体被拖入地面内部。",
-
   "config.barehanded.option.sableRagdollsCompatAllowGrabbingPlayerRagdolls": "[Sable: Ragdolls] 允许抓取玩家布娃娃",
   "config.barehanded.option.sableRagdollsCompatAllowGrabbingPlayerRagdolls.tooltip": "允许抓取玩家布娃娃实体。",
   "config.barehanded.option.sableRagdollsCompatAllowGrabbingMobRagdolls": "[Sable: Ragdolls] 允许抓取生物布娃娃",
@@ -326,7 +311,6 @@
   "config.barehanded.option.sableRagdollsCompatMobRagdollMaxSize.tooltip": "允许抓取生物的最大包围盒尺寸。",
   "config.barehanded.option.treeAssemblyMode": "树木组装处理模式",
   "config.barehanded.option.treeAssemblyMode.tooltip": "AUTO: 若加载砍树模组则使用 BREAK 破坏模式，否则为 NONE。\nNONE: 无特殊处理，按普通物理子层级组装。\nBREAK: 破坏木头方块以触发砍树模组的原生砍倒逻辑。\nBLOCK: 禁止组装树木原木。",
-
   "config.barehanded.option.verticalRotationSensitivity": "垂直旋转灵敏度",
   "config.barehanded.option.verticalRotationSensitivity.tooltip": "鼠标上下旋转抓取子层级结构的灵敏度。",
   "config.barehanded.option.horizontalRotationSensitivity": "水平旋转灵敏度",
@@ -339,7 +323,6 @@
   "config.barehanded.option.invertHorizontalRotation.tooltip": "旋转时反转 X 轴操控。",
   "config.barehanded.option.rotateAroundCenter": "默认质心旋转",
   "config.barehanded.option.rotateAroundCenter.tooltip": "若启用，抓取的结构默认围绕质心旋转而非抓取点。",
-
   "config.barehanded.option.hideHandsWhileGrabbing": "全局隐藏手臂",
   "config.barehanded.option.hideHandsWhileGrabbing.tooltip": "强制隐藏第一人称和第三人称的手臂。",
   "config.barehanded.option.hideFirstPersonArms": "隐藏第一人称手臂",
@@ -348,7 +331,6 @@
   "config.barehanded.option.hideThirdPersonArms.tooltip": "抓取时隐藏第三人称下自定义的向前伸出手臂。",
   "config.barehanded.option.armTransitionSpeed": "手臂过渡抬起速度",
   "config.barehanded.option.armTransitionSpeed.tooltip": "抓取方块时手臂抬起过渡的速度。",
-
   "config.barehanded.option.assemblyShakeMultiplier": "画面震动感倍率",
   "config.barehanded.option.assemblyShakeMultiplier.tooltip": "从世界撕下方块时画面和手臂晃动的强烈程度。",
   "config.barehanded.option.preventAssemblyWhenMining": "挖掘时禁止组装拆剥",
@@ -357,14 +339,12 @@
   "config.barehanded.option.barehandedAssemblyMiningThreshold.tooltip": "取消意外拆剥组装所需的最低挖掘进度。",
   "config.barehanded.option.unsneakOnTreeBreak": "破坏树木时自动取消潜行",
   "config.barehanded.option.unsneakOnTreeBreak.tooltip": "破坏原木时临时取消潜行以触发砍树模组（如 FallingTree）。",
-
   "config.barehanded.option.hideGrabHud": "隐藏抓取 HUD",
   "config.barehanded.option.hideGrabHud.tooltip": "抓取时隐藏旋转与质量 HUD 提示。",
   "config.barehanded.option.hidePhysicsPlacementOverlay": "隐藏物理放置常驻提示",
   "config.barehanded.option.hidePhysicsPlacementOverlay.tooltip": "隐藏角落常驻的物理放置 HUD 叠加层。",
   "config.barehanded.option.showPhysicsPlacementMessage": "显示物理放置切换消息",
   "config.barehanded.option.showPhysicsPlacementMessage.tooltip": "切换物理放置模式时在动作栏显示临时提示。",
-
   "hud.barehanded.hold_to_rotate": "按住 [ %s ] 进行旋转 ",
   "hud.barehanded.rotation_pivot": "旋转支点: %s",
   "hud.barehanded.pivot.center_of_mass": "质心 ",
@@ -374,7 +354,6 @@
   "hud.barehanded.pivot.grab_point_short": "抓取点 ",
   "hud.barehanded.pivot.center_mass_short": "质心 ",
   "hud.barehanded.physics_placement": "物理放置",
-
   "message.barehanded.placement_mode": "方块放置模式: ",
   "message.barehanded.placement_mode.physics": "物理",
   "message.barehanded.placement_mode.normal": "常规",
@@ -386,5 +365,7 @@
   "message.barehanded.grab.cannot_grab_ungrabbable": "无法抓取：包含不可抓取的方块",
   "message.barehanded.grab.too_many_blocks": "[Sable] 方块数量过多 (上限: %s)",
   "message.barehanded.disassemble.structure_too_large": "结构过大无法拆卸 (上限: %s)",
-  "message.barehanded.disassemble.cannot_place_here": "无法在此处放置"
+  "message.barehanded.disassemble.cannot_place_here": "无法在此处放置",
+  "config.barehanded.option.preventMovementWhileRotating": "旋转时锁定玩家移动",
+  "config.barehanded.option.preventMovementWhileRotating.tooltip": "若启用，在旋转抓取物体时锁定玩家的移动输入。"
 }

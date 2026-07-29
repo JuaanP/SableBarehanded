@@ -7,11 +7,9 @@
   "key.barehanded.grab": "उप-स्तर पकड़ टॉगल करें",
   "key.barehanded.pull": "वस्तु को करीब खींचें",
   "key.barehanded.push": "वस्तु को दूर धकेलें",
-
   "config.barehanded.title": "Sable Barehanded",
   "config.barehanded.category.server": "सर्वर सेटिंग्स",
   "config.barehanded.category.client": "क्लाइंट सेटिंग्स",
-
   "config.barehanded.subcategory.grab": "पकड़",
   "config.barehanded.subcategory.rotation": "घूर्णन (रोटेशन)",
   "config.barehanded.subcategory.assembling": "असेंबलिंग (जोड़ना)",
@@ -29,7 +27,6 @@
   "config.barehanded.subcategory.render": "एनीमेशन और रेंडरिंग",
   "config.barehanded.subcategory.assembly_client": "क्लाइंट असेंबली",
   "config.barehanded.subcategory.hud": "HUD (इंटरफेस)",
-
   "config.barehanded.option.maxForce": "अधिकतम बल (N)",
   "config.barehanded.option.maxForce.tooltip": "पकड़ी गई वस्तु को स्थानांतरित करने के लिए अधिकतम स्प्रिंग बल।",
   "config.barehanded.option.minDistance": "न्यूनतम दूरी (m)",
@@ -72,7 +69,6 @@
   "config.barehanded.option.allowGrabbingUnbreakableBlocks.tooltip": "बैडरॉक, बैरियर आदि ब्लॉक पकड़ने की अनुमति देता है।",
   "config.barehanded.option.preventGrabbingSubLevelsWithUngrabbableBlocks": "अग्राह्य ब्लॉकों वाले उप-स्तरों को रोकना",
   "config.barehanded.option.preventGrabbingSubLevelsWithUngrabbableBlocks.tooltip": "यदि सत्य है, तो अग्राह्य ब्लॉक वाले पूरे उप-स्तर को पकड़ने से रोकता है।",
-
   "config.barehanded.option.enableRotation": "घूर्णन सक्षम करें",
   "config.barehanded.option.enableRotation.tooltip": "माउस का उपयोग करके पकड़ी गई वस्तुओं को घुमाने की अनुमति देता है।",
   "config.barehanded.option.cameraLockedRotationX": "कैमरा लॉक्ड X-रोटेशन (पिच)",
@@ -95,7 +91,6 @@
   "config.barehanded.option.angularBrakeThreshold.tooltip": "कोण जहाँ कोणीय ब्रेक सक्रिय होता है।",
   "config.barehanded.option.angularBrakeMultiplier": "कोणीय ब्रेक गुणक",
   "config.barehanded.option.angularBrakeMultiplier.tooltip": "कोणीय ब्रेक सक्रिय होने पर अवमंदन गुणक।",
-
   "config.barehanded.option.enableBarehandedAssembly": "असेंबली सक्षम करें",
   "config.barehanded.option.enableBarehandedAssembly.tooltip": "दुनिया से जुड़े ब्लॉकों को खींचने और अलग करने की अनुमति देता है।",
   "config.barehanded.option.enableRipOffBlocks": "सिंगल ब्लॉक रिप-ऑफ सक्षम करें",
@@ -122,7 +117,6 @@
   "config.barehanded.option.assemblyMaxStretchBuffer.tooltip": "असेंबली चार्ज जबरन टूटने से पहले पूर्ण अधिकतम दूरी।",
   "config.barehanded.option.enablePhysicsBlockPlacement": "भौतिकी प्लेसमेंट सक्षम करें",
   "config.barehanded.option.enablePhysicsBlockPlacement.tooltip": "टॉगल कुंजी का उपयोग करके ब्लॉकों को भौतिकी वस्तुओं के रूप में रखने की अनुमति देता है।",
-
   "config.barehanded.option.enableImpactDisassemble": "प्रभाव डिसअसेंबल सक्षम करें",
   "config.barehanded.option.enableImpactDisassemble.tooltip": "किसी उप-स्तर को अलग करने के लिए उसे विश्व ब्लॉक पर पटकें।",
   "config.barehanded.option.impactForceThreshold": "प्रभाव बल सीमा",
@@ -153,7 +147,6 @@
   "config.barehanded.option.keybindPositionTolerance.tooltip": "कीबाइंड डिसअसेंबली के लिए अधिकतम स्थिति विचलन।",
   "config.barehanded.option.disassembleBlockLimit": "अधिकतम डिसअसेंबल ब्लॉक",
   "config.barehanded.option.disassembleBlockLimit.tooltip": "डिसअसेंबली की अनुमति देने के लिए अधिकतम ब्लॉक सीमा। 0 = असीमित।",
-
   "config.barehanded.option.enableEncumbrance": "बोझ (Encumbrance) सक्षम करें",
   "config.barehanded.option.enableEncumbrance.tooltip": "पकड़ी गई वस्तु के द्रव्यमान के आधार पर खिलाड़ी की गति और कैमरा दंड सक्षम करता है।",
   "config.barehanded.option.physicsGravity": "भौतिकी गुरुत्वाकर्षण",
@@ -182,7 +175,6 @@
   "config.barehanded.option.recoilVelocityThreshold.tooltip": "खिंचाव बल लागू करने के लिए आवश्यक न्यूनतम गति।",
   "config.barehanded.option.tetherHardEscapeBuffer": "टेदर हार्ड एस्केप बफर",
   "config.barehanded.option.tetherHardEscapeBuffer.tooltip": "कठोर दूरी सीमा जहाँ टेदर गति छीन लेता है।",
-
   "config.barehanded.option.enableExhaustion": "थकान सक्षम करें",
   "config.barehanded.option.enableExhaustion.tooltip": "वस्तुओं को पकड़ने पर शारीरिक प्रयास के आधार पर भूख की खपत करता है।",
   "config.barehanded.option.exhaustionIdleRate": "निष्क्रिय थकान दर",
@@ -205,7 +197,6 @@
   "config.barehanded.option.exhaustionKineticReferenceSpeed.tooltip": "गतिज थकान अधिकतम तक पहुँचने पर ब्लॉक गति।",
   "config.barehanded.option.exhaustionVerticalWeightFactor": "लंबवत वजन कारक",
   "config.barehanded.option.exhaustionVerticalWeightFactor.tooltip": "थकान की गणना करते समय लंबवत गति का गुणक।",
-
   "config.barehanded.option.standingOnGrabSuspendTicks": "वस्तु पर खड़े होने पर भौतिकी विराम",
   "config.barehanded.option.standingOnGrabSuspendTicks.tooltip": "पकड़ी गई वस्तु से उतरने के बाद भौतिकी विराम समय।",
   "config.barehanded.option.grabProximityEyeSuspendDistance": "आंखों के निकट भौतिकी विराम",
@@ -220,14 +211,12 @@
   "config.barehanded.option.creativeTensionSuspendThreshold.tooltip": "क्रिएटिव मोड में तनाव विराम सीमा।",
   "config.barehanded.option.creativeTensionBreakThreshold": "क्रिएटिव तनाव टूटना",
   "config.barehanded.option.creativeTensionBreakThreshold.tooltip": "क्रिएटिव मोड में तनाव टूटने की सीमा।",
-
   "config.barehanded.option.maxPlayerVelocityYUp": "अधिकतम गति Y ऊपर (m/t)",
   "config.barehanded.option.maxPlayerVelocityYUp.tooltip": "पकड़ के दौरान अधिकतम ऊपर की ओर गति।",
   "config.barehanded.option.maxPlayerVelocityYDown": "अधिकतम गति Y नीचे (m/t)",
   "config.barehanded.option.maxPlayerVelocityYDown.tooltip": "पकड़ के दौरान अधिकतम नीचे की ओर गति।",
   "config.barehanded.option.maxPlayerVelocityXZ": "अधिकतम गति XZ (m/t)",
   "config.barehanded.option.maxPlayerVelocityXZ.tooltip": "पकड़ के दौरान अधिकतम क्षैतिज गति।",
-
   "config.barehanded.option.ignoreCollisionsGrabSelf": "[पकड़] स्वयं को अनदेखा करें",
   "config.barehanded.option.ignoreCollisionsGrabSelf.tooltip": "पकड़ी गई वस्तु को पकड़ने वाले से टकराने से रोकता है।",
   "config.barehanded.option.ignoreCollisionsGrabOtherPlayers": "[पकड़] अन्य खिलाड़ियों को अनदेखा करें",
@@ -246,7 +235,6 @@
   "config.barehanded.option.ignoreCollisionsRotationEntities.tooltip": "घूर्णन के दौरान मॉब्स/एंटीटीज के साथ टकराव को रोकता है।",
   "config.barehanded.option.ignoreCollisionsRotationEverything": "[घूर्णन] सब कुछ अनदेखा करें",
   "config.barehanded.option.ignoreCollisionsRotationEverything.tooltip": "घूर्णन के दौरान वस्तु को पूरी तरह पारगम्य बनाता है।",
-
   "config.barehanded.option.stiffness": "कठोरता (Stiffness)",
   "config.barehanded.option.stiffness.tooltip": "स्प्रिंग की आधार कठोरता। उच्च = अधिक मजबूत लेकिन कंपन पैदा कर सकता है।",
   "config.barehanded.option.damping": "अवमंदन (Damping)",
@@ -293,7 +281,6 @@
   "config.barehanded.option.swayStiffnessEdgeRangeFactor.tooltip": "किनारों से पकड़ते समय सीमा झूलने का गुणक।",
   "config.barehanded.option.freePivotDampingMultiplier": "मुक्त धुरी अवमंदन",
   "config.barehanded.option.freePivotDampingMultiplier.tooltip": "वस्तु स्वतंत्र रूप से लटकने पर दोलन रोकने के लिए घर्षण।",
-
   "config.barehanded.option.baseMovementPenalty": "आधार गति दंड",
   "config.barehanded.option.baseMovementPenalty.tooltip": "किसी भी वस्तु को पकड़े रहने पर गति में आधार कमी।",
   "config.barehanded.option.weightPenaltyMultiplier": "वजन दंड गुणक",
@@ -310,14 +297,12 @@
   "config.barehanded.option.tensionPenaltyMaxDistance.tooltip": "तनाव दूरी जिस पर गति दंड अधिकतम तक पहुंचता है।",
   "config.barehanded.option.kineticPenaltyReferenceSpeed": "गतिज दंड संदर्भ गति",
   "config.barehanded.option.kineticPenaltyReferenceSpeed.tooltip": "ब्लॉक गति जिस पर गतिज दंड अधिकतम तक पहुंचता है।",
-
   "config.barehanded.option.leadVelocityThreshold": "अग्रिम गति सीमा",
   "config.barehanded.option.leadVelocityThreshold.tooltip": "लक्ष्य भविष्यवाणी सक्रिय करने के लिए खिलाड़ी की गति सीमा।",
   "config.barehanded.option.leadPredictionFactor": "अग्रिम भविष्यवाणी कारक",
   "config.barehanded.option.leadPredictionFactor.tooltip": "खिलाड़ी की गति से आगे एंकर का अनुमान लगाने का गुणक।",
   "config.barehanded.option.leadDownwardClamp": "नीचे की ओर भविष्यवाणी नियंत्रण",
   "config.barehanded.option.leadDownwardClamp.tooltip": "वस्तु को जमीन में धंसने से रोकने के लिए नीचे की भविष्यवाणी को रोकता है।",
-
   "config.barehanded.option.sableRagdollsCompatAllowGrabbingPlayerRagdolls": "[Sable: Ragdolls] खिलाड़ी रैगडॉल पकड़ने की अनुमति दें",
   "config.barehanded.option.sableRagdollsCompatAllowGrabbingPlayerRagdolls.tooltip": "खिलाड़ियों के रैगडॉल पकड़ने की अनुमति देता है।",
   "config.barehanded.option.sableRagdollsCompatAllowGrabbingMobRagdolls": "[Sable: Ragdolls] मॉब रैगडॉल पकड़ने की अनुमति दें",
@@ -326,7 +311,6 @@
   "config.barehanded.option.sableRagdollsCompatMobRagdollMaxSize.tooltip": "पकड़े जा सकने वाले मॉब रैगडॉल का अधिकतम आकार।",
   "config.barehanded.option.treeAssemblyMode": "पेड़ असेंबली मोड",
   "config.barehanded.option.treeAssemblyMode.tooltip": "AUTO: यदि ट्री मॉड मौजूद है तो BREAK, अन्यथा NONE।\nNONE: सामान्य भौतिकी असेंबली।\nBREAK: ट्री मॉड ट्रिगर करने के लिए ब्लॉक तोड़ता है।\nBLOCK: पेड़ के तनों को असेंबल करने से रोकता है।",
-
   "config.barehanded.option.verticalRotationSensitivity": "लंबवत घूर्णन संवेदनशीलता",
   "config.barehanded.option.verticalRotationSensitivity.tooltip": "ऊपर/नीचे घुमाने के लिए माउस संवेदनशीलता।",
   "config.barehanded.option.horizontalRotationSensitivity": "क्षैतिज घूर्णन संवेदनशीलता",
@@ -339,7 +323,6 @@
   "config.barehanded.option.invertHorizontalRotation.tooltip": "घूर्णन करते समय X-अक्ष को उल्टा करता है।",
   "config.barehanded.option.rotateAroundCenter": "डिफ़ॉल्ट केंद्र धुरी",
   "config.barehanded.option.rotateAroundCenter.tooltip": "यदि सत्य है, तो उप-स्तर डिफ़ॉल्ट रूप से अपने द्रव्यमान केंद्र के चारों ओर घूमते हैं।",
-
   "config.barehanded.option.hideHandsWhileGrabbing": "ग्लोबल हाथ छिपाएं",
   "config.barehanded.option.hideHandsWhileGrabbing.tooltip": "प्रथम और तृतीय व्यक्ति दोनों में हाथों को छिपाने के लिए बाध्य करता है।",
   "config.barehanded.option.hideFirstPersonArms": "प्रथम व्यक्ति हाथ छिपाएं",
@@ -348,7 +331,6 @@
   "config.barehanded.option.hideThirdPersonArms.tooltip": "पकड़ते समय तृतीय व्यक्ति में फैले हाथों को छिपाता है।",
   "config.barehanded.option.armTransitionSpeed": "हाथ संक्रमण गति",
   "config.barehanded.option.armTransitionSpeed.tooltip": "ब्लॉक पकड़ते समय हाथ उठने की गति।",
-
   "config.barehanded.option.assemblyShakeMultiplier": "दृश्य कंपन गुणक",
   "config.barehanded.option.assemblyShakeMultiplier.tooltip": "ब्लॉक फाड़ते समय स्क्रीन/हाथ कितनी तेजी से कांपते हैं।",
   "config.barehanded.option.preventAssemblyWhenMining": "खनन के दौरान असेंबली रोकें",
@@ -357,14 +339,12 @@
   "config.barehanded.option.barehandedAssemblyMiningThreshold.tooltip": "आकस्मिक असेंबली को रद्द करने के लिए आवश्यक खनन प्रगति।",
   "config.barehanded.option.unsneakOnTreeBreak": "पेड़ टूटने पर अन-स्नीक करें",
   "config.barehanded.option.unsneakOnTreeBreak.tooltip": "पेड़ काटने वाले मॉड्स को ट्रिगर करने के लिए लकड़ी तोड़ते समय खिलाड़ी को अस्थायी रूप से अन-स्नीक करता है।",
-
   "config.barehanded.option.hideGrabHud": "ग्रैब HUD छिपाएं",
   "config.barehanded.option.hideGrabHud.tooltip": "पकड़ते समय घूर्णन/द्रव्यमान HUD छिपाता है।",
   "config.barehanded.option.hidePhysicsPlacementOverlay": "प्लेसमेंट ओवरले छिपाएं",
   "config.barehanded.option.hidePhysicsPlacementOverlay.tooltip": "स्थायी भौतिकी प्लेसमेंट ओवरले छिपाता है।",
   "config.barehanded.option.showPhysicsPlacementMessage": "प्लेसमेंट संदेश दिखाएं",
   "config.barehanded.option.showPhysicsPlacementMessage.tooltip": "भौतिकी प्लेसमेंट स्विच करते समय संदेश दिखाता है।",
-
   "hud.barehanded.hold_to_rotate": "घुमाने के लिए [ %s ] दबाकर रखें ",
   "hud.barehanded.rotation_pivot": "घूर्णन धुरी: %s",
   "hud.barehanded.pivot.center_of_mass": "द्रव्यमान केंद्र ",
@@ -374,7 +354,6 @@
   "hud.barehanded.pivot.grab_point_short": "पकड़ बिंदु ",
   "hud.barehanded.pivot.center_mass_short": "द्रव्यमान केंद्र ",
   "hud.barehanded.physics_placement": "भौतिकी प्लेसमेंट",
-
   "message.barehanded.placement_mode": "ब्लॉक प्लेसमेंट: ",
   "message.barehanded.placement_mode.physics": "भौतिकी",
   "message.barehanded.placement_mode.normal": "सामान्य",
@@ -386,5 +365,7 @@
   "message.barehanded.grab.cannot_grab_ungrabbable": "पकड़ नहीं सकते: अग्राह्य ब्लॉक शामिल हैं",
   "message.barehanded.grab.too_many_blocks": "[Sable] बहुत अधिक ब्लॉक (सीमा: %s)",
   "message.barehanded.disassemble.structure_too_large": "संरचना अलग करने के लिए बहुत बड़ी है (सीमा: %s)",
-  "message.barehanded.disassemble.cannot_place_here": "यहाँ नहीं रखा जा सकता"
+  "message.barehanded.disassemble.cannot_place_here": "यहाँ नहीं रखा जा सकता",
+  "config.barehanded.option.preventMovementWhileRotating": "घुमाते समय चाल ब्लॉक करें",
+  "config.barehanded.option.preventMovementWhileRotating.tooltip": "यदि सत्य है, तो वस्तु घुमाते समय खिलाड़ी के मूवमेंट इनपुट को रोकता है।"
 }

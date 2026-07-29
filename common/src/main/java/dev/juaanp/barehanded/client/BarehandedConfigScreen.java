@@ -323,6 +323,7 @@ public class BarehandedConfigScreen {
         addBoolean(inp, eb, "invertVerticalRotation", ClientConfig.INSTANCE.invertVerticalRotation, CLIENT_DEFAULTS.invertVerticalRotation, v -> ClientConfig.INSTANCE.invertVerticalRotation = v);
         addBoolean(inp, eb, "invertHorizontalRotation", ClientConfig.INSTANCE.invertHorizontalRotation, CLIENT_DEFAULTS.invertHorizontalRotation, v -> ClientConfig.INSTANCE.invertHorizontalRotation = v);
         addBoolean(inp, eb, "rotateAroundCenter", ClientConfig.INSTANCE.rotateAroundCenter, CLIENT_DEFAULTS.rotateAroundCenter, v -> ClientConfig.INSTANCE.rotateAroundCenter = v);
+        addBoolean(inp, eb, "preventMovementWhileRotating", ClientConfig.INSTANCE.preventMovementWhileRotating, CLIENT_DEFAULTS.preventMovementWhileRotating, v -> ClientConfig.INSTANCE.preventMovementWhileRotating = v);
 
         client.addEntry(inp.build());
     }

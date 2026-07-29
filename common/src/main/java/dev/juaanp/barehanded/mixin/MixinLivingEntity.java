@@ -15,17 +15,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(LivingEntity.class)
 public abstract class MixinLivingEntity {
 
-    @Inject(method = "travel", at = @At("HEAD"), cancellable = true)
-    private void barehanded$onTravel(Vec3 movementInput, CallbackInfo ci) {
-        if ((Object) this instanceof LocalPlayer player) {
-            if (MovementInputHandler.shouldPreventMovement()) {
-                double currentY = player.getDeltaMovement().y;
-                player.setDeltaMovement(0.0, currentY, 0.0);
-                ci.cancel();
-            }
-        }
-    }
-
     @ModifyVariable(method = "travel", at = @At("HEAD"), argsOnly = true, ordinal = 0)
     private Vec3 barehanded$modifyTravelInput(Vec3 movementInput) {
         if ((Object) this instanceof LocalPlayer player) {

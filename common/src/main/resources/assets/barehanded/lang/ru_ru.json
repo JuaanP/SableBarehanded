@@ -7,11 +7,9 @@
   "key.barehanded.grab": "Переключить захват подуровня",
   "key.barehanded.pull": "Притянуть объект ближе",
   "key.barehanded.push": "Оттолкнуть объект дальше",
-
   "config.barehanded.title": "Sable Barehanded",
   "config.barehanded.category.server": "Настройки сервера",
   "config.barehanded.category.client": "Настройки клиента",
-
   "config.barehanded.subcategory.grab": "Захват",
   "config.barehanded.subcategory.rotation": "Вращение",
   "config.barehanded.subcategory.assembling": "Сборка",
@@ -29,7 +27,6 @@
   "config.barehanded.subcategory.render": "Анимация и рендеринг",
   "config.barehanded.subcategory.assembly_client": "Клиентская сборка",
   "config.barehanded.subcategory.hud": "Интерфейс (HUD)",
-
   "config.barehanded.option.maxForce": "Максимальная сила (Н)",
   "config.barehanded.option.maxForce.tooltip": "Максимальная сила пружины для перемещения захваченного объекта.",
   "config.barehanded.option.minDistance": "Минимальная дистанция (м)",
@@ -72,7 +69,6 @@
   "config.barehanded.option.allowGrabbingUnbreakableBlocks.tooltip": "Разрешает захватывать бедрок, барьеры и другие неразрушимые блоки.",
   "config.barehanded.option.preventGrabbingSubLevelsWithUngrabbableBlocks": "Запретить захват при наличии запрещенных блоков",
   "config.barehanded.option.preventGrabbingSubLevelsWithUngrabbableBlocks.tooltip": "Запрещает захват всего подуровня, если в нем есть хотя бы один блок из #barehanded:ungrabbable.",
-
   "config.barehanded.option.enableRotation": "Включить вращение",
   "config.barehanded.option.enableRotation.tooltip": "Позволяет вращать захваченные объекты мышью.",
   "config.barehanded.option.cameraLockedRotationX": "Привязка X-вращения к камере (Тангаж)",
@@ -95,7 +91,6 @@
   "config.barehanded.option.angularBrakeThreshold.tooltip": "Угол (радианы), при котором срабатывает угловой тормоз.",
   "config.barehanded.option.angularBrakeMultiplier": "Множитель углового тормоза",
   "config.barehanded.option.angularBrakeMultiplier.tooltip": "Коэффициент гашения при активном угловом тормозе.",
-
   "config.barehanded.option.enableBarehandedAssembly": "Включить отрывание блоков",
   "config.barehanded.option.enableBarehandedAssembly.tooltip": "Позволяет отрывать и извлекать связанные блоки из мира.",
   "config.barehanded.option.enableRipOffBlocks": "Включить отрывание по одному блоку",
@@ -122,7 +117,6 @@
   "config.barehanded.option.assemblyMaxStretchBuffer.tooltip": "Предельное расстояние до принудительного срыва отрывания.",
   "config.barehanded.option.enablePhysicsBlockPlacement": "Включить физическую установку",
   "config.barehanded.option.enablePhysicsBlockPlacement.tooltip": "Позволяет ставить блоки как физические объекты горячей клавишей.",
-
   "config.barehanded.option.enableImpactDisassemble": "Включить разборку при ударе",
   "config.barehanded.option.enableImpactDisassemble.tooltip": "Ударьте захваченный объект о блок мира для его разборки.",
   "config.barehanded.option.impactForceThreshold": "Порог силы удара",
@@ -153,7 +147,6 @@
   "config.barehanded.option.keybindPositionTolerance.tooltip": "Максимальное отклонение координат при разборке клавишей.",
   "config.barehanded.option.disassembleBlockLimit": "Лимит блоков для разборки",
   "config.barehanded.option.disassembleBlockLimit.tooltip": "Максимальное количество блоков в объекте для разборки. 0 = без лимита.",
-
   "config.barehanded.option.enableEncumbrance": "Включить отягощение",
   "config.barehanded.option.enableEncumbrance.tooltip": "Включает замедление и штрафы к камере от массы тяжелых предметов.",
   "config.barehanded.option.physicsGravity": "Физическая гравитация",
@@ -182,7 +175,6 @@
   "config.barehanded.option.recoilVelocityThreshold.tooltip": "Минимальная скорость отдачи для применения импульса.",
   "config.barehanded.option.tetherHardEscapeBuffer": "Буфер жесткого удержания",
   "config.barehanded.option.tetherHardEscapeBuffer.tooltip": "Предельное расстояние, при котором трос гасит скорость движения.",
-
   "config.barehanded.option.enableExhaustion": "Включить расходование сытости",
   "config.barehanded.option.enableExhaustion.tooltip": "Тратит голод игрока от физической нагрузки при переноске предметов.",
   "config.barehanded.option.exhaustionIdleRate": "Пассивный расход голода",
@@ -205,7 +197,6 @@
   "config.barehanded.option.exhaustionKineticReferenceSpeed.tooltip": "Скорость объекта, при которой кинетическое истощение максимально.",
   "config.barehanded.option.exhaustionVerticalWeightFactor": "Вертикальный фактор веса",
   "config.barehanded.option.exhaustionVerticalWeightFactor.tooltip": "Множитель расхода голода при вертикальных движениях и прыжках.",
-
   "config.barehanded.option.standingOnGrabSuspendTicks": "Тики паузы при стоянии на объекте",
   "config.barehanded.option.standingOnGrabSuspendTicks.tooltip": "Тики приостановки физики после слезания с объекта.",
   "config.barehanded.option.grabProximityEyeSuspendDistance": "Дистанция паузы от глаз",
@@ -220,14 +211,12 @@
   "config.barehanded.option.creativeTensionSuspendThreshold.tooltip": "Порог отключения физики в творческом режиме суперсилы.",
   "config.barehanded.option.creativeTensionBreakThreshold": "Срыв от натяжения в Творчестве",
   "config.barehanded.option.creativeTensionBreakThreshold.tooltip": "Порог срыва хватки в творческом режиме суперсилы.",
-
   "config.barehanded.option.maxPlayerVelocityYUp": "Макс. скорость Y вверх (м/т)",
   "config.barehanded.option.maxPlayerVelocityYUp.tooltip": "Максимальная скорость движения вверх при захвате.",
   "config.barehanded.option.maxPlayerVelocityYDown": "Макс. скорость Y вниз (м/t)",
   "config.barehanded.option.maxPlayerVelocityYDown.tooltip": "Максимальная скорость движения вниз при захвате.",
   "config.barehanded.option.maxPlayerVelocityXZ": "Макс. скорость XZ (м/т)",
   "config.barehanded.option.maxPlayerVelocityXZ.tooltip": "Максимальная горизонтальная скорость при захвате.",
-
   "config.barehanded.option.ignoreCollisionsGrabSelf": "[Захват] Игнорировать себя",
   "config.barehanded.option.ignoreCollisionsGrabSelf.tooltip": "Отключает столкновения захваченного объекта с несущим его игроком.",
   "config.barehanded.option.ignoreCollisionsGrabOtherPlayers": "[Захват] Игнорировать других игроков",
@@ -246,7 +235,6 @@
   "config.barehanded.option.ignoreCollisionsRotationEntities.tooltip": "Отключает столкновения с мобами при вращении.",
   "config.barehanded.option.ignoreCollisionsRotationEverything": "[Вращение] Игнорировать всё",
   "config.barehanded.option.ignoreCollisionsRotationEverything.tooltip": "Делает объект полностью проницаемым во время вращения.",
-
   "config.barehanded.option.stiffness": "Жесткость",
   "config.barehanded.option.stiffness.tooltip": "Базовая жесткость пружины. Выше = жестче, но может вызывать тряску.",
   "config.barehanded.option.damping": "Гашение",
@@ -293,7 +281,6 @@
   "config.barehanded.option.swayStiffnessEdgeRangeFactor.tooltip": "Диапазон покачивания при удержании за края.",
   "config.barehanded.option.freePivotDampingMultiplier": "Гашение свободного подвеса",
   "config.barehanded.option.freePivotDampingMultiplier.tooltip": "Трение свободного раскачивания висящего объекта.",
-
   "config.barehanded.option.baseMovementPenalty": "Базовый штраф к движению",
   "config.barehanded.option.baseMovementPenalty.tooltip": "Базовое замедление при переноске любых объектов.",
   "config.barehanded.option.weightPenaltyMultiplier": "Множитель штрафа от веса",
@@ -310,14 +297,12 @@
   "config.barehanded.option.tensionPenaltyMaxDistance.tooltip": "Дистанция натяжения для максимального замедления.",
   "config.barehanded.option.kineticPenaltyReferenceSpeed": "Эталонная кинетическая скорость штрафа",
   "config.barehanded.option.kineticPenaltyReferenceSpeed.tooltip": "Скорость блока для максимального кинетического замедления.",
-
   "config.barehanded.option.leadVelocityThreshold": "Порог скорости упреждения",
   "config.barehanded.option.leadVelocityThreshold.tooltip": "Скорость игрока для включения упреждения.",
   "config.barehanded.option.leadPredictionFactor": "Фактор упреждения цели",
   "config.barehanded.option.leadPredictionFactor.tooltip": "Множитель выноса точки якоря вправление движения.",
   "config.barehanded.option.leadDownwardClamp": "Ограничение упреждения вниз",
   "config.barehanded.option.leadDownwardClamp.tooltip": "Ограничивает упреждение вниз для предотвращения втягивания в пол.",
-
   "config.barehanded.option.sableRagdollsCompatAllowGrabbingPlayerRagdolls": "[Sable: Ragdolls] Захватывать регдоллы игроков",
   "config.barehanded.option.sableRagdollsCompatAllowGrabbingPlayerRagdolls.tooltip": "Разрешает захватывать регдоллы игроков.",
   "config.barehanded.option.sableRagdollsCompatAllowGrabbingMobRagdolls": "[Sable: Ragdolls] Захватывать регдоллы мобов",
@@ -326,7 +311,6 @@
   "config.barehanded.option.sableRagdollsCompatMobRagdollMaxSize.tooltip": "Максимальный размер моба для захвата.",
   "config.barehanded.option.treeAssemblyMode": "Режим сборки деревьев",
   "config.barehanded.option.treeAssemblyMode.tooltip": "AUTO: Режим BREAK при наличии мода на деревья, иначе NONE.\nNONE: Обычный захват бревна.\nBREAK: Ломает блок для нативной валки дерева.\nBLOCK: Запрещает захват бревен.",
-
   "config.barehanded.option.verticalRotationSensitivity": "Вертикальная чувствительность вращения",
   "config.barehanded.option.verticalRotationSensitivity.tooltip": "Чувствительность мыши при вращении вверх/вниз.",
   "config.barehanded.option.horizontalRotationSensitivity": "Горизонтальная чувствительность вращения",
@@ -339,7 +323,6 @@
   "config.barehanded.option.invertHorizontalRotation.tooltip": "Инвертирует ось X при вращении.",
   "config.barehanded.option.rotateAroundCenter": "Вращение вокруг центра масс по умолчанию",
   "config.barehanded.option.rotateAroundCenter.tooltip": "По умолчанию вращает объект вокруг центра масс, а не точки хвата.",
-
   "config.barehanded.option.hideHandsWhileGrabbing": "Скрывать руки глобально",
   "config.barehanded.option.hideHandsWhileGrabbing.tooltip": "Принудительно скрывает руки от 1-го и 3-го лица.",
   "config.barehanded.option.hideFirstPersonArms": "Скрывать руки от 1-го лица",
@@ -348,7 +331,6 @@
   "config.barehanded.option.hideThirdPersonArms.tooltip": "Скрывает вытянутые руки при захвате от 3-го лица.",
   "config.barehanded.option.armTransitionSpeed": "Скорость анимации рук",
   "config.barehanded.option.armTransitionSpeed.tooltip": "Скорость подъема рук при захвате блока.",
-
   "config.barehanded.option.assemblyShakeMultiplier": "Множитель тряски экрана",
   "config.barehanded.option.assemblyShakeMultiplier.tooltip": "Интенсивность тряски экрана и рук при отрывании блоков.",
   "config.barehanded.option.preventAssemblyWhenMining": "Запретить отрывание при добыче",
@@ -357,14 +339,12 @@
   "config.barehanded.option.barehandedAssemblyMiningThreshold.tooltip": "Прогресс добычи для отмены случайного отрывания.",
   "config.barehanded.option.unsneakOnTreeBreak": "Вставать при срубании дерева",
   "config.barehanded.option.unsneakOnTreeBreak.tooltip": "Временно сбрасывает приседание для срабатывания модов валки деревьев.",
-
   "config.barehanded.option.hideGrabHud": "Скрыть HUD захвата",
   "config.barehanded.option.hideGrabHud.tooltip": "Скрывает интерфейс вращения и массы при захвате.",
   "config.barehanded.option.hidePhysicsPlacementOverlay": "Скрыть оверлей установки",
   "config.barehanded.option.hidePhysicsPlacementOverlay.tooltip": "Скрывает постоянную надпись физической установки.",
   "config.barehanded.option.showPhysicsPlacementMessage": "Показывать сообщение установки",
   "config.barehanded.option.showPhysicsPlacementMessage.tooltip": "Показывает всплывающее сообщение при переключении режима.",
-
   "hud.barehanded.hold_to_rotate": "Зажмите [ %s ] для вращения ",
   "hud.barehanded.rotation_pivot": "Ось вращения: %s",
   "hud.barehanded.pivot.center_of_mass": "ЦЕНТР МАСС ",
@@ -374,7 +354,6 @@
   "hud.barehanded.pivot.grab_point_short": "Точка хвата ",
   "hud.barehanded.pivot.center_mass_short": "Центр масс ",
   "hud.barehanded.physics_placement": "Физическая установка",
-
   "message.barehanded.placement_mode": "Режим установки блоков: ",
   "message.barehanded.placement_mode.physics": "Физика",
   "message.barehanded.placement_mode.normal": "Обычный",
@@ -386,5 +365,7 @@
   "message.barehanded.grab.cannot_grab_ungrabbable": "Нельзя захватить: содержит запрещенные блоки",
   "message.barehanded.grab.too_many_blocks": "[Sable] Слишком много блоков (Лимит: %s)",
   "message.barehanded.disassemble.structure_too_large": "Структура слишком велика для разборки (Лимит: %s)",
-  "message.barehanded.disassemble.cannot_place_here": "Нельзя установить здесь"
+  "message.barehanded.disassemble.cannot_place_here": "Нельзя установить здесь",
+  "config.barehanded.option.preventMovementWhileRotating": "Блокировать движение при вращении",
+  "config.barehanded.option.preventMovementWhileRotating.tooltip": "Блокирует ввод движения игрока во время вращения захваченного объекта."
 }

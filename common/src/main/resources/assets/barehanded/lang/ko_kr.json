@@ -7,11 +7,9 @@
   "key.barehanded.grab": "서브레벨 잡기 토글",
   "key.barehanded.pull": "물체 당기기",
   "key.barehanded.push": "물체 밀기",
-
   "config.barehanded.title": "Sable Barehanded",
   "config.barehanded.category.server": "서버 설정",
   "config.barehanded.category.client": "클라이언트 설정",
-
   "config.barehanded.subcategory.grab": "잡기",
   "config.barehanded.subcategory.rotation": "회전",
   "config.barehanded.subcategory.assembling": "조립 (떼어내기)",
@@ -29,7 +27,6 @@
   "config.barehanded.subcategory.render": "애니메이션 및 렌더링",
   "config.barehanded.subcategory.assembly_client": "클라이언트 조립",
   "config.barehanded.subcategory.hud": "HUD",
-
   "config.barehanded.option.maxForce": "최대 힘 (N)",
   "config.barehanded.option.maxForce.tooltip": "잡은 물체를 이동시키기 위해 적용되는 최대 스프링 힘.",
   "config.barehanded.option.minDistance": "최소 거리 (m)",
@@ -72,7 +69,6 @@
   "config.barehanded.option.allowGrabbingUnbreakableBlocks.tooltip": "기반암, 장벽 등 파괴 불가 블록 잡기를 허용합니다.",
   "config.barehanded.option.preventGrabbingSubLevelsWithUngrabbableBlocks": "잡기 불가 블록 포함 시 전체 잡기 방지",
   "config.barehanded.option.preventGrabbingSubLevelsWithUngrabbableBlocks.tooltip": "#barehanded:ungrabbable 태그 블록이 포함되어 있으면 전체 서브레벨 잡기를 금지합니다.",
-
   "config.barehanded.option.enableRotation": "회전 활성화",
   "config.barehanded.option.enableRotation.tooltip": "마우스 조작으로 잡은 물체를 회전시킬 수 있게 합니다.",
   "config.barehanded.option.cameraLockedRotationX": "카메라 연동 X축 회전 (피치)",
@@ -95,7 +91,6 @@
   "config.barehanded.option.angularBrakeThreshold.tooltip": "각도 브레이크가 작동하는 각도 임계값.",
   "config.barehanded.option.angularBrakeMultiplier": "각도 브레이크 배율",
   "config.barehanded.option.angularBrakeMultiplier.tooltip": "각도 브레이크 작동 시 감쇄 배율.",
-
   "config.barehanded.option.enableBarehandedAssembly": "조립 (떼어내기) 활성화",
   "config.barehanded.option.enableBarehandedAssembly.tooltip": "월드에서 연결된 블록을 잡아 뜯어낼 수 있게 합니다.",
   "config.barehanded.option.enableRipOffBlocks": "단일 블록 뜯어내기 활성화",
@@ -122,7 +117,6 @@
   "config.barehanded.option.assemblyMaxStretchBuffer.tooltip": "조립 차지가 강제로 끊어지는 절대 최대 거리.",
   "config.barehanded.option.enablePhysicsBlockPlacement": "물리 배치 활성화",
   "config.barehanded.option.enablePhysicsBlockPlacement.tooltip": "토글 키로 블록을 물리 개체로 직접 배치할 수 있게 합니다.",
-
   "config.barehanded.option.enableImpactDisassemble": "충돌 분해 활성화",
   "config.barehanded.option.enableImpactDisassemble.tooltip": "잡은 구조물을 월드 블록에 내던져 분해 설치합니다.",
   "config.barehanded.option.impactForceThreshold": "충돌 힘 임계값",
@@ -153,7 +147,6 @@
   "config.barehanded.option.keybindPositionTolerance.tooltip": "단축키 분해에 필요한 위치 허용 오차.",
   "config.barehanded.option.disassembleBlockLimit": "최대 분해 블록 수",
   "config.barehanded.option.disassembleBlockLimit.tooltip": "분해가 허용되는 구조물의 최대 블록 개수. 0 = 무제한.",
-
   "config.barehanded.option.enableEncumbrance": "하중 시스템 활성화",
   "config.barehanded.option.enableEncumbrance.tooltip": "잡은 물체의 질량에 따른 이동 및 시야 페널티를 활성화합니다.",
   "config.barehanded.option.physicsGravity": "물리 중력 가속도",
@@ -182,7 +175,6 @@
   "config.barehanded.option.recoilVelocityThreshold.tooltip": "반동 힘을 적용하기 위해 필요한 최소 멀어짐 속도.",
   "config.barehanded.option.tetherHardEscapeBuffer": "테더 강제 탈출 방지 버퍼",
   "config.barehanded.option.tetherHardEscapeBuffer.tooltip": "이탈을 막기 위해 테더가 속도를 무조건 제거하는 절대 거리.",
-
   "config.barehanded.option.enableExhaustion": "피로도 시스템 활성화",
   "config.barehanded.option.enableExhaustion.tooltip": "물체를 들고 이동할 때 육체적 노동에 따라 허기 수치를 소모합니다.",
   "config.barehanded.option.exhaustionIdleRate": "공중 유지 소모율",
@@ -205,7 +197,6 @@
   "config.barehanded.option.exhaustionKineticReferenceSpeed.tooltip": "운동 피로도가 최대에 도달하는 블록 이동 속도.",
   "config.barehanded.option.exhaustionVerticalWeightFactor": "수직 이동 무게 요소",
   "config.barehanded.option.exhaustionVerticalWeightFactor.tooltip": "피로도 계산 시 수직 이동(점프)에 적용되는 배율.",
-
   "config.barehanded.option.standingOnGrabSuspendTicks": "물체 위 착지 시 물리 정지 틱",
   "config.barehanded.option.standingOnGrabSuspendTicks.tooltip": "잡은 물체에서 내려온 후 물리가 정지되는 유지 시간.",
   "config.barehanded.option.grabProximityEyeSuspendDistance": "시선 근접 물리 정지 거리",
@@ -220,14 +211,12 @@
   "config.barehanded.option.creativeTensionSuspendThreshold.tooltip": "크리에이티브 초인적 힘 상태에서의 장력 정지 임계값.",
   "config.barehanded.option.creativeTensionBreakThreshold": "크리에이티브 장력 끊김",
   "config.barehanded.option.creativeTensionBreakThreshold.tooltip": "크리에이티브 초인적 힘 상태에서의 장력 끊김 임계값.",
-
   "config.barehanded.option.maxPlayerVelocityYUp": "최대 상승 속도 Y (m/t)",
   "config.barehanded.option.maxPlayerVelocityYUp.tooltip": "잡기 중 허용되는 최대 상승 속도.",
   "config.barehanded.option.maxPlayerVelocityYDown": "최대 하강 속도 Y (m/t)",
   "config.barehanded.option.maxPlayerVelocityYDown.tooltip": "잡기 중 허용되는 최대 하강 속도.",
   "config.barehanded.option.maxPlayerVelocityXZ": "최대 수평 속도 XZ (m/t)",
   "config.barehanded.option.maxPlayerVelocityXZ.tooltip": "잡기 중 허용되는 최대 수평 이동 속도.",
-
   "config.barehanded.option.ignoreCollisionsGrabSelf": "[잡기] 자신과의 충돌 무시",
   "config.barehanded.option.ignoreCollisionsGrabSelf.tooltip": "잡은 물체가 들고 있는 플레이어와 충돌하지 않도록 합니다.",
   "config.barehanded.option.ignoreCollisionsGrabOtherPlayers": "[잡기] 다른 플레이어와의 충돌 무시",
@@ -246,7 +235,6 @@
   "config.barehanded.option.ignoreCollisionsRotationEntities.tooltip": "회전 중에 몹이나 엔티티와의 충돌을 방지합니다.",
   "config.barehanded.option.ignoreCollisionsRotationEverything": "[회전] 모든 충돌 무시",
   "config.barehanded.option.ignoreCollisionsRotationEverything.tooltip": "회전 중인 물체의 충돌을 완전히 통과하게 만듭니다.",
-
   "config.barehanded.option.stiffness": "강도 (Stiffness)",
   "config.barehanded.option.stiffness.tooltip": "기본 직선 스프링 강도. 높을수록 고정되지만 떨림이 발생할 수 있습니다.",
   "config.barehanded.option.damping": "감쇄 (Damping)",
@@ -293,7 +281,6 @@
   "config.barehanded.option.swayStiffnessEdgeRangeFactor.tooltip": "모서리를 잡아 매달 때의 범위 흔들림 배율.",
   "config.barehanded.option.freePivotDampingMultiplier": "자유 피벗 감쇄 배율",
   "config.barehanded.option.freePivotDampingMultiplier.tooltip": "자유 매달기 상태에서 무한 흔들림을 방지하기 위한 마찰 감쇄.",
-
   "config.barehanded.option.baseMovementPenalty": "기본 이동 페널티",
   "config.barehanded.option.baseMovementPenalty.tooltip": "물체를 운반하고 있을 때의 기본 이동 속도 감소율.",
   "config.barehanded.option.weightPenaltyMultiplier": "무게 페널티 배율",
@@ -310,14 +297,12 @@
   "config.barehanded.option.tensionPenaltyMaxDistance.tooltip": "이동 페널티가 최대에 도달하는 장력 거리.",
   "config.barehanded.option.kineticPenaltyReferenceSpeed": "운동 페널티 참조 속도",
   "config.barehanded.option.kineticPenaltyReferenceSpeed.tooltip": "운동 페널티가 최대에 도달하는 블록 이동 속도.",
-
   "config.barehanded.option.leadVelocityThreshold": "이동 예측 속도 임계값",
   "config.barehanded.option.leadVelocityThreshold.tooltip": "앵커 이동 예측을 활성화하는 플레이어 속도 한계.",
   "config.barehanded.option.leadPredictionFactor": "이동 예측 요소",
   "config.barehanded.option.leadPredictionFactor.tooltip": "플레이어 진행 방향으로 앵커를 선행시키는 예측 배율.",
   "config.barehanded.option.leadDownwardClamp": "하향 예측 제한",
   "config.barehanded.option.leadDownwardClamp.tooltip": "물체가 바닥에 파묻히는 것을 방지하기 위해 아래쪽 예측을 제한합니다.",
-
   "config.barehanded.option.sableRagdollsCompatAllowGrabbingPlayerRagdolls": "[Sable: Ragdolls] 플레이어 래그돌 잡기 허용",
   "config.barehanded.option.sableRagdollsCompatAllowGrabbingPlayerRagdolls.tooltip": "플레이어 시체 래그돌을 잡을 수 있게 합니다.",
   "config.barehanded.option.sableRagdollsCompatAllowGrabbingMobRagdolls": "[Sable: Ragdolls] 몹 래그돌 잡기 허용",
@@ -326,7 +311,6 @@
   "config.barehanded.option.sableRagdollsCompatMobRagdollMaxSize.tooltip": "잡을 수 있는 몹 래그돌의 최대 히트박스 크기.",
   "config.barehanded.option.treeAssemblyMode": "수목 조립 처리 모드",
   "config.barehanded.option.treeAssemblyMode.tooltip": "AUTO: 벌목 모드 로드 시 BREAK, 미로드 시 NONE.\nNONE: 일반 물리 서브레벨로 조립.\nBREAK: 벌목 연동을 위해 원목 파괴.\nBLOCK: 수목 원목의 조립 금지.",
-
   "config.barehanded.option.verticalRotationSensitivity": "수직 회전 감도",
   "config.barehanded.option.verticalRotationSensitivity.tooltip": "마우스 상하 회전 감도.",
   "config.barehanded.option.horizontalRotationSensitivity": "수평 회전 감도",
@@ -339,7 +323,6 @@
   "config.barehanded.option.invertHorizontalRotation.tooltip": "회전 시 X축 조작을 반전시킵니다.",
   "config.barehanded.option.rotateAroundCenter": "기본 질량중심 회전",
   "config.barehanded.option.rotateAroundCenter.tooltip": "잡은 서브레벨을 기본적으로 잡기 지점이 아닌 질량중심 기준으로 회전시킵니다.",
-
   "config.barehanded.option.hideHandsWhileGrabbing": "글로벌 팔 비표시",
   "config.barehanded.option.hideHandsWhileGrabbing.tooltip": "1인칭 및 3인칭 팔 렌더링을 강제로 비표시합니다.",
   "config.barehanded.option.hideFirstPersonArms": "1인칭 팔 비표시",
@@ -348,7 +331,6 @@
   "config.barehanded.option.hideThirdPersonArms.tooltip": "잡기 시 3인칭 커스텀 뻗은 팔을 비표시합니다.",
   "config.barehanded.option.armTransitionSpeed": "팔 들어올리기 전환 속도",
   "config.barehanded.option.armTransitionSpeed.tooltip": "블록을 잡았을 때 팔이 들리는 애니메이션 속도.",
-
   "config.barehanded.option.assemblyShakeMultiplier": "화면 흔들림 배율",
   "config.barehanded.option.assemblyShakeMultiplier.tooltip": "월드에서 블록을 뜯어낼 때의 화면 및 팔 흔들림 강도.",
   "config.barehanded.option.preventAssemblyWhenMining": "채굴 중 뜯어내기 방지",
@@ -357,14 +339,12 @@
   "config.barehanded.option.barehandedAssemblyMiningThreshold.tooltip": "실수 뜯어내기를 취소하는 데 필요한 최소 채굴 진행도.",
   "config.barehanded.option.unsneakOnTreeBreak": "벌목 시 웅크리기 해제",
   "config.barehanded.option.unsneakOnTreeBreak.tooltip": "벌목 모드를 정상 작동시키기 위해 원목 파괴 시 일시적으로 웅크리기를 해제합니다.",
-
   "config.barehanded.option.hideGrabHud": "잡기 HUD 비표시",
   "config.barehanded.option.hideGrabHud.tooltip": "잡기 시 회전·질량 HUD 표시를 숨깁니다.",
   "config.barehanded.option.hidePhysicsPlacementOverlay": "물리 배치 오버레이 비표시",
   "config.barehanded.option.hidePhysicsPlacementOverlay.tooltip": "상시 표시되는 물리 배치 모드 HUD 오버레이를 숨깁니다.",
   "config.barehanded.option.showPhysicsPlacementMessage": "물리 배치 메시지 표시",
   "config.barehanded.option.showPhysicsPlacementMessage.tooltip": "물리 배치 모드 전환 시 임시 액션바 메시지를 표시합니다.",
-
   "hud.barehanded.hold_to_rotate": "[ %s ] 길게 눌러 회전 ",
   "hud.barehanded.rotation_pivot": "회전 피벗: %s",
   "hud.barehanded.pivot.center_of_mass": "질량중심 ",
@@ -374,7 +354,6 @@
   "hud.barehanded.pivot.grab_point_short": "잡기 지점 ",
   "hud.barehanded.pivot.center_mass_short": "질량중심 ",
   "hud.barehanded.physics_placement": "물리 배치",
-
   "message.barehanded.placement_mode": "블록 배치 모드: ",
   "message.barehanded.placement_mode.physics": "물리",
   "message.barehanded.placement_mode.normal": "일반",
@@ -386,5 +365,7 @@
   "message.barehanded.grab.cannot_grab_ungrabbable": "잡을 수 없음: 잡기 불가 블록이 포함되어 있습니다",
   "message.barehanded.grab.too_many_blocks": "[Sable] 블록이 너무 많습니다 (제한: %s)",
   "message.barehanded.disassemble.structure_too_large": "구조물이 너무 커서 분해할 수 없습니다 (제한: %s)",
-  "message.barehanded.disassemble.cannot_place_here": "여기에 배치할 수 없습니다"
+  "message.barehanded.disassemble.cannot_place_here": "여기에 배치할 수 없습니다",
+  "config.barehanded.option.preventMovementWhileRotating": "회전 중 이동 잠금",
+  "config.barehanded.option.preventMovementWhileRotating.tooltip": "참일 경우, 물체를 회전하는 동안 플레이어의 이동 입력을 잠급니다."
 }

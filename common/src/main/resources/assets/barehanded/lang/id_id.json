@@ -7,11 +7,9 @@
   "key.barehanded.grab": "Alihkan Pegang Sub-level",
   "key.barehanded.pull": "Tarik Objek Lebih Dekat",
   "key.barehanded.push": "Dorong Objek Lebih Jauh",
-
   "config.barehanded.title": "Sable Barehanded",
   "config.barehanded.category.server": "Pengaturan Server",
   "config.barehanded.category.client": "Pengaturan Klien",
-
   "config.barehanded.subcategory.grab": "Pegang",
   "config.barehanded.subcategory.rotation": "Rotasi",
   "config.barehanded.subcategory.assembling": "Perakitan",
@@ -29,7 +27,6 @@
   "config.barehanded.subcategory.render": "Animasi & Rendering",
   "config.barehanded.subcategory.assembly_client": "Perakitan Klien",
   "config.barehanded.subcategory.hud": "HUD",
-
   "config.barehanded.option.maxForce": "Gaya Maksimum (N)",
   "config.barehanded.option.maxForce.tooltip": "Gaya pegas maksimum yang diterapkan untuk memindahkan objek yang dipegang.",
   "config.barehanded.option.minDistance": "Jarak Minimum (m)",
@@ -72,7 +69,6 @@
   "config.barehanded.option.allowGrabbingUnbreakableBlocks.tooltip": "Mengizinkan memegang Bedrock, Penghalang, dll.",
   "config.barehanded.option.preventGrabbingSubLevelsWithUngrabbableBlocks": "Cegah Memegang Sub-Level dengan Blok Terlarang",
   "config.barehanded.option.preventGrabbingSubLevelsWithUngrabbableBlocks.tooltip": "Mencegah memegang seluruh sub-level jika berisi blok dari tag #barehanded:ungrabbable.",
-
   "config.barehanded.option.enableRotation": "Aktifkan Rotasi",
   "config.barehanded.option.enableRotation.tooltip": "Mengizinkan pemain memutar objek yang dipegang menggunakan mouse.",
   "config.barehanded.option.cameraLockedRotationX": "Rotasi X Terkunci Kamera (Pitch)",
@@ -95,7 +91,6 @@
   "config.barehanded.option.angularBrakeThreshold.tooltip": "Sudut (radian) di mana rem sudut diaktifkan.",
   "config.barehanded.option.angularBrakeMultiplier": "Pengali Rem Sudut",
   "config.barehanded.option.angularBrakeMultiplier.tooltip": "Pengali redaman saat rem sudut aktif.",
-
   "config.barehanded.option.enableBarehandedAssembly": "Aktifkan Perakitan",
   "config.barehanded.option.enableBarehandedAssembly.tooltip": "Mengizinkan menarik dan melepaskan blok yang terhubung dari dunia.",
   "config.barehanded.option.enableRipOffBlocks": "Aktifkan Pelepasan Blok Tunggal",
@@ -122,7 +117,6 @@
   "config.barehanded.option.assemblyMaxStretchBuffer.tooltip": "Jarak maksimum mutlak sebelum perakitan terputus paksa.",
   "config.barehanded.option.enablePhysicsBlockPlacement": "Aktifkan Penempatan Fisika",
   "config.barehanded.option.enablePhysicsBlockPlacement.tooltip": "Mengizinkan menempatkan blok secara langsung sebagai objek fisika.",
-
   "config.barehanded.option.enableImpactDisassemble": "Aktifkan Pembongkaran Benturan",
   "config.barehanded.option.enableImpactDisassemble.tooltip": "Benturkan sub-level ke blok dunia untuk membongkarnya.",
   "config.barehanded.option.impactForceThreshold": "Batas Gaya Benturan",
@@ -153,7 +147,6 @@
   "config.barehanded.option.keybindPositionTolerance.tooltip": "Deviasi posisi maksimum untuk pembongkaran tombol.",
   "config.barehanded.option.disassembleBlockLimit": "Batas Blok Pembongkaran",
   "config.barehanded.option.disassembleBlockLimit.tooltip": "Jumlah maksimum blok yang dapat dibongkar. 0 = tanpa batas.",
-
   "config.barehanded.option.enableEncumbrance": "Aktifkan Beban",
   "config.barehanded.option.enableEncumbrance.tooltip": "Mengaktifkan penalti gerakan dan kamera berdasarkan massa objek.",
   "config.barehanded.option.physicsGravity": "Gravitasi Fisika",
@@ -182,7 +175,6 @@
   "config.barehanded.option.recoilVelocityThreshold.tooltip": "Kecepatan menjauh minimum untuk menerapkan gaya tolakan.",
   "config.barehanded.option.tetherHardEscapeBuffer": "Penyangga Lepas Keras Pengikat",
   "config.barehanded.option.tetherHardEscapeBuffer.tooltip": "Batas jarak keras di mana pengikat menghapus kecepatan menjauh.",
-
   "config.barehanded.option.enableExhaustion": "Aktifkan Kelelahan",
   "config.barehanded.option.enableExhaustion.tooltip": "Mengkonsumsi tingkat kelaparan berdasarkan usaha fisik.",
   "config.barehanded.option.exhaustionIdleRate": "Tingkat Kelelahan Diam",
@@ -205,7 +197,6 @@
   "config.barehanded.option.exhaustionKineticReferenceSpeed.tooltip": "Kecepatan blok di mana kelelahan kinetik mencapai maksimum.",
   "config.barehanded.option.exhaustionVerticalWeightFactor": "Faktor Berat Vertikal",
   "config.barehanded.option.exhaustionVerticalWeightFactor.tooltip": "Pengali gerakan vertikal pemain (melompat) saat menghitung kelelahan.",
-
   "config.barehanded.option.standingOnGrabSuspendTicks": "Centang Penundaan Saat Berdiri di Atas Objek",
   "config.barehanded.option.standingOnGrabSuspendTicks.tooltip": "Waktu fisika ditunda setelah melangkah turun dari objek.",
   "config.barehanded.option.grabProximityEyeSuspendDistance": "Jarak Penundaan Kedekatan Mata",
@@ -220,14 +211,12 @@
   "config.barehanded.option.creativeTensionSuspendThreshold.tooltip": "Batas penundaan tegangan dalam mode Kreatif.",
   "config.barehanded.option.creativeTensionBreakThreshold": "Putus Tegangan Kreatif",
   "config.barehanded.option.creativeTensionBreakThreshold.tooltip": "Batas putus tegangan dalam mode Kreatif.",
-
   "config.barehanded.option.maxPlayerVelocityYUp": "Kecepatan Maks Y Ke Atas (m/t)",
   "config.barehanded.option.maxPlayerVelocityYUp.tooltip": "Kecepatan ke atas maksimum yang diizinkan saat memegang.",
   "config.barehanded.option.maxPlayerVelocityYDown": "Kecepatan Maks Y Ke Bawah (m/t)",
   "config.barehanded.option.maxPlayerVelocityYDown.tooltip": "Kecepatan ke bawah maksimum yang diizinkan saat memegang.",
   "config.barehanded.option.maxPlayerVelocityXZ": "Kecepatan Maks XZ (m/t)",
   "config.barehanded.option.maxPlayerVelocityXZ.tooltip": "Kecepatan horizontal maksimum yang diizinkan saat memegang.",
-
   "config.barehanded.option.ignoreCollisionsGrabSelf": "[Pegang] Abaikan Diri Sendiri",
   "config.barehanded.option.ignoreCollisionsGrabSelf.tooltip": "Mencegah objek yang dipegang bertabrakan dengan pembawa.",
   "config.barehanded.option.ignoreCollisionsGrabOtherPlayers": "[Pegang] Abaikan Pemain Lain",
@@ -246,7 +235,6 @@
   "config.barehanded.option.ignoreCollisionsRotationEntities.tooltip": "Mencegah tabrakan dengan mob/entitas saat memutar.",
   "config.barehanded.option.ignoreCollisionsRotationEverything": "[Rotasi] Abaikan Semuanya",
   "config.barehanded.option.ignoreCollisionsRotationEverything.tooltip": "Membuat objek dapat ditembus sepenuhnya saat memutar.",
-
   "config.barehanded.option.stiffness": "Kekakuan",
   "config.barehanded.option.stiffness.tooltip": "Kekakuan pegas linear dasar. Lebih tinggi = lebih kaku.",
   "config.barehanded.option.damping": "Redaman",
@@ -293,7 +281,6 @@
   "config.barehanded.option.swayStiffnessEdgeRangeFactor.tooltip": "Pengali ayunan jangkauan saat memegang dari tepi.",
   "config.barehanded.option.freePivotDampingMultiplier": "Redaman Pivot Bebas",
   "config.barehanded.option.freePivotDampingMultiplier.tooltip": "Gesekan yang diterapkan saat objek tergantung bebas.",
-
   "config.barehanded.option.baseMovementPenalty": "Penalti Gerakan Dasar",
   "config.barehanded.option.baseMovementPenalty.tooltip": "Pengurangan kecepatan dasar saat membawa objek apa pun.",
   "config.barehanded.option.weightPenaltyMultiplier": "Pengali Penalti Berat",
@@ -310,14 +297,12 @@
   "config.barehanded.option.tensionPenaltyMaxDistance.tooltip": "Jarak tegangan di mana penalti gerakan mencapai maksimum.",
   "config.barehanded.option.kineticPenaltyReferenceSpeed": "Kecepatan Referensi Penalti Kinetik",
   "config.barehanded.option.kineticPenaltyReferenceSpeed.tooltip": "Kecepatan blok di mana penalti kinetik mencapai maksimum.",
-
   "config.barehanded.option.leadVelocityThreshold": "Batas Kecepatan Prediksi",
   "config.barehanded.option.leadVelocityThreshold.tooltip": "Batas kecepatan pemain untuk mengaktifkan prediksi target.",
   "config.barehanded.option.leadPredictionFactor": "Faktor Prediksi Target",
   "config.barehanded.option.leadPredictionFactor.tooltip": "Pengali untuk memprediksi target jangkar di depan gerakan pemain.",
   "config.barehanded.option.leadDownwardClamp": "Pembatas Prediksi Ke Bawah",
   "config.barehanded.option.leadDownwardClamp.tooltip": "Membatasi prediksi ke bawah agar objek tidak terseret ke dalam lantai.",
-
   "config.barehanded.option.sableRagdollsCompatAllowGrabbingPlayerRagdolls": "[Sable: Ragdolls] Izinkan Memegang Ragdoll Pemain",
   "config.barehanded.option.sableRagdollsCompatAllowGrabbingPlayerRagdolls.tooltip": "Mengizinkan memegang ragdoll pemain.",
   "config.barehanded.option.sableRagdollsCompatAllowGrabbingMobRagdolls": "[Sable: Ragdolls] Izinkan Memegang Ragdoll Mob",
@@ -326,7 +311,6 @@
   "config.barehanded.option.sableRagdollsCompatMobRagdollMaxSize.tooltip": "Ukuran mob maksimum yang dapat dipegang.",
   "config.barehanded.option.treeAssemblyMode": "Mode Perakitan Pohon",
   "config.barehanded.option.treeAssemblyMode.tooltip": "AUTO: Mode BREAK jika mod pohon dimuat, jika tidak NONE.\nNONE: Perakitan normal.\nBREAK: Menghancurkan batang untuk memicu penebangan alami.\nBLOCK: Mencegah merakit batang pohon.",
-
   "config.barehanded.option.verticalRotationSensitivity": "Sensitivitas Rotasi Vertikal",
   "config.barehanded.option.verticalRotationSensitivity.tooltip": "Sensitivitas mouse untuk memutar sub-level ke atas/bawah.",
   "config.barehanded.option.horizontalRotationSensitivity": "Sensitivitas Rotasi Horizontal",
@@ -339,7 +323,6 @@
   "config.barehanded.option.invertHorizontalRotation.tooltip": "Membalikkan sumbu X saat memutar.",
   "config.barehanded.option.rotateAroundCenter": "Pivot Pusat Bawaan",
   "config.barehanded.option.rotateAroundCenter.tooltip": "Sub-level berputar di sekitar pusat massanya secara bawaan.",
-
   "config.barehanded.option.hideHandsWhileGrabbing": "Sembunyikan Tangan Global",
   "config.barehanded.option.hideHandsWhileGrabbing.tooltip": "Memaksa menyembunyikan tangan di orang pertama dan ketiga.",
   "config.barehanded.option.hideFirstPersonArms": "Sembunyikan Tangan Orang Pertama",
@@ -348,7 +331,6 @@
   "config.barehanded.option.hideThirdPersonArms.tooltip": "Menyembunyikan tangan yang terentang saat memegang objek.",
   "config.barehanded.option.armTransitionSpeed": "Kecepatan Transisi Tangan",
   "config.barehanded.option.armTransitionSpeed.tooltip": "Seberapa cepat tangan terangkat saat memegang blok.",
-
   "config.barehanded.option.assemblyShakeMultiplier": "Pengali Guncangan Visual",
   "config.barehanded.option.assemblyShakeMultiplier.tooltip": "Seberapa kuat layar/tangan berguncang saat mencabut blok.",
   "config.barehanded.option.preventAssemblyWhenMining": "Cegah Perakitan Saat Menambang",
@@ -357,14 +339,12 @@
   "config.barehanded.option.barehandedAssemblyMiningThreshold.tooltip": "Kemajuan penambangan yang diperlukan untuk membatalkan perakitan tak sengaja.",
   "config.barehanded.option.unsneakOnTreeBreak": "Lepas Mengendap Saat Menebang Pohon",
   "config.barehanded.option.unsneakOnTreeBreak.tooltip": "Melepas mengendap sementara untuk memicu mod penebang pohon.",
-
   "config.barehanded.option.hideGrabHud": "Sembunyikan HUD Pegang",
   "config.barehanded.option.hideGrabHud.tooltip": "Menyembunyikan HUD rotasi/massa saat memegang.",
   "config.barehanded.option.hidePhysicsPlacementOverlay": "Sembunyikan Hamparan Penempatan",
   "config.barehanded.option.hidePhysicsPlacementOverlay.tooltip": "Menyembunyikan hamparan HUD penempatan fisika.",
   "config.barehanded.option.showPhysicsPlacementMessage": "Tampilkan Pesan Penempatan",
   "config.barehanded.option.showPhysicsPlacementMessage.tooltip": "Menampilkan pesan sementara saat mengalihkan penempatan fisika.",
-
   "hud.barehanded.hold_to_rotate": "Tahan [ %s ] untuk memutar ",
   "hud.barehanded.rotation_pivot": "Pivot Rotasi: %s",
   "hud.barehanded.pivot.center_of_mass": "PUSAT MASSA ",
@@ -374,7 +354,6 @@
   "hud.barehanded.pivot.grab_point_short": "Titik Pegang ",
   "hud.barehanded.pivot.center_mass_short": "Pusat Massa ",
   "hud.barehanded.physics_placement": "Penempatan Fisika",
-
   "message.barehanded.placement_mode": "Penempatan Blok: ",
   "message.barehanded.placement_mode.physics": "Fisika",
   "message.barehanded.placement_mode.normal": "Normal",
@@ -386,5 +365,7 @@
   "message.barehanded.grab.cannot_grab_ungrabbable": "Tidak dapat memegang: berisi blok terlarang",
   "message.barehanded.grab.too_many_blocks": "[Sable] Terlalu banyak blok (Batas: %s)",
   "message.barehanded.disassemble.structure_too_large": "Struktur terlalu besar untuk dibongkar (Batas: %s)",
-  "message.barehanded.disassemble.cannot_place_here": "Tidak dapat menempatkan di sini"
+  "message.barehanded.disassemble.cannot_place_here": "Tidak dapat menempatkan di sini",
+  "config.barehanded.option.preventMovementWhileRotating": "Kunci Gerakan Saat Memutar",
+  "config.barehanded.option.preventMovementWhileRotating.tooltip": "Jika benar, mengunci input gerakan pemain saat memutar objek yang dipegang."
 }

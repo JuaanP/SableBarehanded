@@ -7,11 +7,9 @@
   "key.barehanded.grab": "Przełącz chwytanie podpoziomu",
   "key.barehanded.pull": "Przyciągnij obiekt bliżej",
   "key.barehanded.push": "Odepchnij obiekt dalej",
-
   "config.barehanded.title": "Sable Barehanded",
   "config.barehanded.category.server": "Ustawienia serwera",
   "config.barehanded.category.client": "Ustawienia klienta",
-
   "config.barehanded.subcategory.grab": "Chwytanie",
   "config.barehanded.subcategory.rotation": "Obrót",
   "config.barehanded.subcategory.assembling": "Montaż",
@@ -29,7 +27,6 @@
   "config.barehanded.subcategory.render": "Animacje i renderowanie",
   "config.barehanded.subcategory.assembly_client": "Montaż klienta",
   "config.barehanded.subcategory.hud": "HUD",
-
   "config.barehanded.option.maxForce": "Maksymalna siła (N)",
   "config.barehanded.option.maxForce.tooltip": "Maksymalna siła sprężyny przykłada do przesuwania chwyconego obiektu.",
   "config.barehanded.option.minDistance": "Minimalna odległość (m)",
@@ -72,7 +69,6 @@
   "config.barehanded.option.allowGrabbingUnbreakableBlocks.tooltip": "Zezwala na chwytanie Bedrocka, Barier itp.",
   "config.barehanded.option.preventGrabbingSubLevelsWithUngrabbableBlocks": "Zabroń chwytania z zabronionymi blokami",
   "config.barehanded.option.preventGrabbingSubLevelsWithUngrabbableBlocks.tooltip": "Zapobiega chwytaniu całego podpoziomu, jeśli zawiera blok z #barehanded:ungrabbable.",
-
   "config.barehanded.option.enableRotation": "Włącz obracanie",
   "config.barehanded.option.enableRotation.tooltip": "Zezwala graczom na obracanie chwyconych obiektów myszą.",
   "config.barehanded.option.cameraLockedRotationX": "Obrót X zablokowany z kamerą (Nachylenie)",
@@ -95,7 +91,6 @@
   "config.barehanded.option.angularBrakeThreshold.tooltip": "Kąt, przy którym aktywuje się hamulec kątowy.",
   "config.barehanded.option.angularBrakeMultiplier": "Mnożnik hamulca kątowego",
   "config.barehanded.option.angularBrakeMultiplier.tooltip": "Mnożnik tłumienia przy aktywnym hamulcu kątowym.",
-
   "config.barehanded.option.enableBarehandedAssembly": "Włącz montaż",
   "config.barehanded.option.enableBarehandedAssembly.tooltip": "Zezwala na wyciąganie i odłączanie połączonych bloków ze świata.",
   "config.barehanded.option.enableRipOffBlocks": "Włącz wyrywanie pojedynczych bloków",
@@ -122,7 +117,6 @@
   "config.barehanded.option.assemblyMaxStretchBuffer.tooltip": "Absolutna maksymalna odległość przed gwałtownym przerwaniem montażu.",
   "config.barehanded.option.enablePhysicsBlockPlacement": "Włącz stawianie fizyczne",
   "config.barehanded.option.enablePhysicsBlockPlacement.tooltip": "Zezwala na bezpośrednie stawianie bloków jako obiekty fizyczne.",
-
   "config.barehanded.option.enableImpactDisassemble": "Włącz demontaż uderzeniowy",
   "config.barehanded.option.enableImpactDisassemble.tooltip": "Uderz chwyconą strukturą o blok świata, aby ją rozmontować.",
   "config.barehanded.option.impactForceThreshold": "Próg siły uderzenia",
@@ -153,7 +147,6 @@
   "config.barehanded.option.keybindPositionTolerance.tooltip": "Maksymalne odchylenie pozycji dla demontażu klawiszem.",
   "config.barehanded.option.disassembleBlockLimit": "Maksymalny limit bloków demontażu",
   "config.barehanded.option.disassembleBlockLimit.tooltip": "Maksymalna liczba bloków struktury pozwalająca na demontaż. 0 = bez limitu.",
-
   "config.barehanded.option.enableEncumbrance": "Włącz obciążenie",
   "config.barehanded.option.enableEncumbrance.tooltip": "Włącza kary do ruchu i kamery na podstawie masy chwyconego obiektu.",
   "config.barehanded.option.physicsGravity": "Grawitacja fizyczna",
@@ -182,7 +175,6 @@
   "config.barehanded.option.recoilVelocityThreshold.tooltip": "Minimalna prędkość oddalania wymagana do przyłożenia siły odrzutu.",
   "config.barehanded.option.tetherHardEscapeBuffer": "Sztywny bufor ucieczki uwięzi",
   "config.barehanded.option.tetherHardEscapeBuffer.tooltip": "Bezwzględna odległość, przy której uwięź całkowicie likwiduje prędkość oddalania.",
-
   "config.barehanded.option.enableExhaustion": "Włącz zmęczenie",
   "config.barehanded.option.enableExhaustion.tooltip": "Zużywa poziom głodu na podstawie wysiłku fizycznego.",
   "config.barehanded.option.exhaustionIdleRate": "Bierne zużycie głodu",
@@ -205,7 +197,6 @@
   "config.barehanded.option.exhaustionKineticReferenceSpeed.tooltip": "Prędkość bloku, przy której zmęczenie kinetyczne osiąga maksimum.",
   "config.barehanded.option.exhaustionVerticalWeightFactor": "Pionowy współczynnik ciężaru",
   "config.barehanded.option.exhaustionVerticalWeightFactor.tooltip": "Mnożnik ruchu pionowego gracza (skoków) przy obliczaniu zmęczenia.",
-
   "config.barehanded.option.standingOnGrabSuspendTicks": "Ticki zawieszenia przy staniu na obiekcie",
   "config.barehanded.option.standingOnGrabSuspendTicks.tooltip": "Czas zawieszenia fizyki po zejściu z trzymanego obiektu.",
   "config.barehanded.option.grabProximityEyeSuspendDistance": "Odległość zawieszenia przy bliskości oczu",
@@ -220,14 +211,12 @@
   "config.barehanded.option.creativeTensionSuspendThreshold.tooltip": "Próg zawieszenia w trybie super siły.",
   "config.barehanded.option.creativeTensionBreakThreshold": "Zerwanie naprężenia w trybie Kreatywnym",
   "config.barehanded.option.creativeTensionBreakThreshold.tooltip": "Próg zerwania w trybie super siły.",
-
   "config.barehanded.option.maxPlayerVelocityYUp": "Maks. prędkość Y w górę (m/t)",
   "config.barehanded.option.maxPlayerVelocityYUp.tooltip": "Maksymalna dopuszczalna prędkość w górę podczas chwytania.",
   "config.barehanded.option.maxPlayerVelocityYDown": "Maks. prędkość Y w dół (m/t)",
   "config.barehanded.option.maxPlayerVelocityYDown.tooltip": "Maksymalna dopuszczalna prędkość w dół podczas chwytania.",
   "config.barehanded.option.maxPlayerVelocityXZ": "Maks. prędkość poziomą XZ (m/t)",
   "config.barehanded.option.maxPlayerVelocityXZ.tooltip": "Maksymalna dopuszczalna prędkość pozioma podczas chwytania.",
-
   "config.barehanded.option.ignoreCollisionsGrabSelf": "[Chwyt] Ignoruj siebie",
   "config.barehanded.option.ignoreCollisionsGrabSelf.tooltip": "Zapobiega kolizji trzymanego obiektu z graczem.",
   "config.barehanded.option.ignoreCollisionsGrabOtherPlayers": "[Chwyt] Ignoruj innych graczy",
@@ -246,7 +235,6 @@
   "config.barehanded.option.ignoreCollisionsRotationEntities.tooltip": "Zapobiega kolizjom ze stworzeniami podczas obracania.",
   "config.barehanded.option.ignoreCollisionsRotationEverything": "[Obrót] Ignoruj wszystko",
   "config.barehanded.option.ignoreCollisionsRotationEverything.tooltip": "Sprawia, że obiekt jest całkowicie przenikalny podczas obracania.",
-
   "config.barehanded.option.stiffness": "Sztywność",
   "config.barehanded.option.stiffness.tooltip": "Podstawowa sztywność sprężyny. Wyższa = bardziej sztywny obiekt.",
   "config.barehanded.option.damping": "Tłumienie",
@@ -293,7 +281,6 @@
   "config.barehanded.option.swayStiffnessEdgeRangeFactor.tooltip": "Mnożnik zasięgu kołysania przy trzymaniu za krawędzie.",
   "config.barehanded.option.freePivotDampingMultiplier": "Tłumienie swobodnego punktu obrotu",
   "config.barehanded.option.freePivotDampingMultiplier.tooltip": "Tarcie stosowane przy swobodnym wiszeniu obiektu.",
-
   "config.barehanded.option.baseMovementPenalty": "Podstawowa kara do ruchu",
   "config.barehanded.option.baseMovementPenalty.tooltip": "Podstawowe spowolnienie przy trzymaniu jakiegokolwiek obiektu.",
   "config.barehanded.option.weightPenaltyMultiplier": "Mnożnik kary za wagę",
@@ -310,14 +297,12 @@
   "config.barehanded.option.tensionPenaltyMaxDistance.tooltip": "Odległość naprężenia, przy której kara osiąga maksimum.",
   "config.barehanded.option.kineticPenaltyReferenceSpeed": "Prędkość odniesienia kary kinetycznej",
   "config.barehanded.option.kineticPenaltyReferenceSpeed.tooltip": "Prędkość bloku, przy której kara kinetyczna osiąga maksimum.",
-
   "config.barehanded.option.leadVelocityThreshold": "Próg prędkości przewidywania",
   "config.barehanded.option.leadVelocityThreshold.tooltip": "Próg prędkości gracza do aktywacji przewidywania celu.",
   "config.barehanded.option.leadPredictionFactor": "Współczynnik przewidywania celu",
   "config.barehanded.option.leadPredictionFactor.tooltip": "Mnożnik wyprzedzenia celu kotwicy przed ruchem gracza.",
   "config.barehanded.option.leadDownwardClamp": "Ograniczenie przewidywania w dół",
   "config.barehanded.option.leadDownwardClamp.tooltip": "Ogranicza przewidywanie w dół, zapobiegając wciąganiu obiektu w podłogę.",
-
   "config.barehanded.option.sableRagdollsCompatAllowGrabbingPlayerRagdolls": "[Sable: Ragdolls] Zezwól na chwytanie ragdolli graczy",
   "config.barehanded.option.sableRagdollsCompatAllowGrabbingPlayerRagdolls.tooltip": "Zezwala na chwytanie ciał graczy.",
   "config.barehanded.option.sableRagdollsCompatAllowGrabbingMobRagdolls": "[Sable: Ragdolls] Zezwól na chwytanie ragdolli stworzeń",
@@ -326,7 +311,6 @@
   "config.barehanded.option.sableRagdollsCompatMobRagdollMaxSize.tooltip": "Maksymalny rozmiar stworzenia, które można chwycić.",
   "config.barehanded.option.treeAssemblyMode": "Tryb montażu drzew",
   "config.barehanded.option.treeAssemblyMode.tooltip": "AUTO: Tryb BREAK jeśli wykryto modyfikację drzew, w przeciwnym razie NONE.\nNONE: Normalny montaż.\nBREAK: Niszczy pniak dla natywnej ścinki.\nBLOCK: Zabrania montażu pni drzew.",
-
   "config.barehanded.option.verticalRotationSensitivity": "Pionowa czułość obrotu",
   "config.barehanded.option.verticalRotationSensitivity.tooltip": "Czułość myszy dla obracania w górę/w dół.",
   "config.barehanded.option.horizontalRotationSensitivity": "Pozioma czułość obrotu",
@@ -339,7 +323,6 @@
   "config.barehanded.option.invertHorizontalRotation.tooltip": "Odwraca oś X podczas obracania.",
   "config.barehanded.option.rotateAroundCenter": "Domyślny obrót wokół środka",
   "config.barehanded.option.rotateAroundCenter.tooltip": "Chwycone podpoziomy domyślnie obracają się wokół środka ciężkości.",
-
   "config.barehanded.option.hideHandsWhileGrabbing": "Ukryj ramiona globalnie",
   "config.barehanded.option.hideHandsWhileGrabbing.tooltip": "Ukrywa ramiona w 1. i 3. osobie.",
   "config.barehanded.option.hideFirstPersonArms": "Ukryj ramiona w 1. osobie",
@@ -348,7 +331,6 @@
   "config.barehanded.option.hideThirdPersonArms.tooltip": "Ukrywa wyciągnięte ramiona podczas trzymania obiektu w 3. osobie.",
   "config.barehanded.option.armTransitionSpeed": "Prędkość przejścia ramion",
   "config.barehanded.option.armTransitionSpeed.tooltip": "Prędkość podnoszenia ramion przy chwytaniu bloku.",
-
   "config.barehanded.option.assemblyShakeMultiplier": "Mnożnik drgań wizualnych",
   "config.barehanded.option.assemblyShakeMultiplier.tooltip": "Intensywność drgań ekranu/ramion podczas wyrywania bloku.",
   "config.barehanded.option.preventAssemblyWhenMining": "Zapobiegaj montażowi podczas kopania",
@@ -357,14 +339,12 @@
   "config.barehanded.option.barehandedAssemblyMiningThreshold.tooltip": "Postęp kopania wymagany do anulowania przypadkowego montażu.",
   "config.barehanded.option.unsneakOnTreeBreak": "Wstań przy ścince drzewa",
   "config.barehanded.option.unsneakOnTreeBreak.tooltip": "Tymczasowo przestaje się skradać przy niszczeniu pnia dla wsparcia modów ścinki.",
-
   "config.barehanded.option.hideGrabHud": "Ukryj HUD chwytu",
   "config.barehanded.option.hideGrabHud.tooltip": "Ukrywa wskaźniki obrotu/masy podczas chwytu.",
   "config.barehanded.option.hidePhysicsPlacementOverlay": "Ukryj nakładkę stawiania",
   "config.barehanded.option.hidePhysicsPlacementOverlay.tooltip": "Ukrywa stałą nakładkę stawiania fizycznego.",
   "config.barehanded.option.showPhysicsPlacementMessage": "Pokaż komunikat stawiania",
   "config.barehanded.option.showPhysicsPlacementMessage.tooltip": "Wyświetla tymczasowy komunikat przy przełączaniu stawiania fizycznego.",
-
   "hud.barehanded.hold_to_rotate": "Przytrzymaj [ %s ], aby obrócić ",
   "hud.barehanded.rotation_pivot": "Punkt obrotu: %s",
   "hud.barehanded.pivot.center_of_mass": "ŚRODEK CIĘŻKOŚCI ",
@@ -374,7 +354,6 @@
   "hud.barehanded.pivot.grab_point_short": "Punkt chwytu ",
   "hud.barehanded.pivot.center_mass_short": "Środek ciężkości ",
   "hud.barehanded.physics_placement": "Stawianie fizyczne",
-
   "message.barehanded.placement_mode": "Stawianie bloków: ",
   "message.barehanded.placement_mode.physics": "Fizyczne",
   "message.barehanded.placement_mode.normal": "Zwykłe",
@@ -386,5 +365,7 @@
   "message.barehanded.grab.cannot_grab_ungrabbable": "Nie można chwycić: zawiera zabronione bloki",
   "message.barehanded.grab.too_many_blocks": "[Sable] Zbyt wiele bloków (Limit: %s)",
   "message.barehanded.disassemble.structure_too_large": "Struktura zbyt duża do rozmontowania (Limit: %s)",
-  "message.barehanded.disassemble.cannot_place_here": "Nie można tu postawić"
+  "message.barehanded.disassemble.cannot_place_here": "Nie można tu postawić",
+  "config.barehanded.option.preventMovementWhileRotating": "Zablokuj ruch podczas obracania",
+  "config.barehanded.option.preventMovementWhileRotating.tooltip": "Zablokuje wejścia ruchu gracza podczas obracania chwyconego obiektu."
 }
