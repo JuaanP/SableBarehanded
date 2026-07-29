@@ -18,7 +18,7 @@ public class ServerConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final File FILE = Paths.get("config", Constants.MOD_ID + "-server.json").toFile();
 
-    public int configVersion = 12;
+    public int configVersion = 13;
 
     public double maxForce = 90.0;
     public double minDistance = 1.5;
@@ -175,9 +175,9 @@ public class ServerConfig {
 
     public boolean enableExhaustion = true;
     public double exhaustionIdleRate = 0.03;
-    public double exhaustionMovementRate = 0.08;
-    public double exhaustionTensionRate = 0.06;
-    public double exhaustionForceRate = 0.07;
+    public double exhaustionMovementRate = 0.05;
+    public double exhaustionTensionRate = 0.04;
+    public double exhaustionForceRate = 0.04;
     public double exhaustionPassiveThreshold = 20.0;
     public double exhaustionSupportHeightThreshold = 0.8;
     public double exhaustionLowSupportMultiplier = 0.5;

@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - **Rotation Movement Lock:** Refactored movement locking during object rotation to ignore movement inputs rather than overriding entity physical velocity. Also, this option is now disabled by default.
+- **Exhaustion Rates:** Adjusted hunger depletion rates to be less aggressive when holding or moving heavy objects.
+
+### Fixed
+- **Rotation Collision Filtering:** Fixed an issue where `ignoreCollisionsRotationSelf` was not applied properly on the client side during active rotation. The player can now rotate objects through themselves without collision when enabled.
 
 ### Added
 - **Config Option:** Exposed `preventMovementWhileRotating` (Client) (Disabled by default) in the configuration screen to allow/disallow player movement while actively rotating a sub-level.
