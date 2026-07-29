@@ -27,7 +27,7 @@ public class KeybindDisassembleHandler {
         if (limit > 0 && DisassembleHandler.getBlockCount(subLevel) > limit) {
             if (ServerConfig.INSTANCE.showDisassembleMessages) {
                 player.displayClientMessage(
-                        Component.literal("Structure is too large to disassemble (Limit: " + limit + ")")
+                        Component.translatable("message.barehanded.disassemble.structure_too_large", limit)
                                 .withStyle(ChatFormatting.RED), true);
             }
             return;
@@ -47,7 +47,7 @@ public class KeybindDisassembleHandler {
 
         if (isAltDown) {
             if (ServerConfig.INSTANCE.showDisassembleMessages) {
-                player.displayClientMessage(Component.literal("Merge Failed: No support detected").withStyle(ChatFormatting.RED), true);
+                player.displayClientMessage(Component.translatable("message.barehanded.disassemble.merge_failed_no_support_alt").withStyle(ChatFormatting.RED), true);
             }
             return;
         }
@@ -72,7 +72,7 @@ public class KeybindDisassembleHandler {
         } else {
             if (ServerConfig.INSTANCE.showDisassembleMessages) {
                 player.displayClientMessage(
-                        Component.literal("Cannot place here")
+                        Component.translatable("message.barehanded.disassemble.cannot_place_here")
                                 .withStyle(ChatFormatting.RED), true);
             }
         }

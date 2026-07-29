@@ -103,7 +103,7 @@ public class GrabActionHandler {
                                 if (checkUngrabbable && state.is(Constants.Tags.UNGRABBABLE)) {
                                     if (ServerConfig.INSTANCE.showDisassembleMessages) {
                                         player.displayClientMessage(
-                                                Component.literal("Cannot grab: contains ungrabbable blocks")
+                                                Component.translatable("message.barehanded.grab.cannot_grab_ungrabbable")
                                                         .withStyle(ChatFormatting.RED), true);
                                     }
                                     Services.NETWORK.sendStopGrabbingAnimation(player);
@@ -114,7 +114,7 @@ public class GrabActionHandler {
                                     blockCount++;
                                     if (blockCount > limit) {
                                         player.displayClientMessage(
-                                                Component.literal("[Sable] Too many blocks (Limit: " + limit + ")")
+                                                Component.translatable("message.barehanded.grab.too_many_blocks", limit)
                                                         .withStyle(ChatFormatting.RED), true);
                                         Services.NETWORK.sendStopGrabbingAnimation(player);
                                         return;

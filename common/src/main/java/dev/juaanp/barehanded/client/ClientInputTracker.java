@@ -55,12 +55,13 @@ public class ClientInputTracker {
             placeToggleActive = !placeToggleActive;
             net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
             if (mc.player != null && ClientConfig.INSTANCE.showPhysicsPlacementMessage) {
-                String state = placeToggleActive ? "Physics" : "Normal";
-                net.minecraft.ChatFormatting color = placeToggleActive ? net.minecraft.ChatFormatting.AQUA : net.minecraft.ChatFormatting.WHITE;
+                net.minecraft.network.chat.Component stateComp = placeToggleActive
+                        ? net.minecraft.network.chat.Component.translatable("message.barehanded.placement_mode.physics").withStyle(net.minecraft.ChatFormatting.AQUA)
+                        : net.minecraft.network.chat.Component.translatable("message.barehanded.placement_mode.normal").withStyle(net.minecraft.ChatFormatting.WHITE);
                 mc.player.displayClientMessage(
-                        net.minecraft.network.chat.Component.literal("Block Placement: ")
+                        net.minecraft.network.chat.Component.translatable("message.barehanded.placement_mode")
                                 .withStyle(net.minecraft.ChatFormatting.GRAY)
-                                .append(net.minecraft.network.chat.Component.literal(state).withStyle(color)),
+                                .append(stateComp),
                         true);
             }
         }

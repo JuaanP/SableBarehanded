@@ -9,14 +9,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class KeyBindings {
-    public static final KeyMapping ROTATE_KEY = new KeyMapping("Rotate Sub-level", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_R, "Barehanded");
-    public static final KeyMapping PIVOT_KEY = new KeyMapping("Modifier Key (Pivot/Priority)", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_LEFT_ALT, "Barehanded");
-    public static final KeyMapping DISASSEMBLE_KEY = new KeyMapping("Disassemble Sub-level", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_Q, "Barehanded");
-    public static final KeyMapping PLACE_TOGGLE_KEY = new KeyMapping("Physics Placement Toggle", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_X, "Barehanded");
-    public static final KeyMapping GRAB_KEY = new KeyMapping("Toggle Grab Sub-level", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_G, "Barehanded");
+    public static final KeyMapping ROTATE_KEY = new KeyMapping("key.barehanded.rotate", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_R, "key.categories.barehanded");
+    public static final KeyMapping PIVOT_KEY = new KeyMapping("key.barehanded.pivot", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_LEFT_ALT, "key.categories.barehanded");
+    public static final KeyMapping DISASSEMBLE_KEY = new KeyMapping("key.barehanded.disassemble", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_Q, "key.categories.barehanded");
+    public static final KeyMapping PLACE_TOGGLE_KEY = new KeyMapping("key.barehanded.place_toggle", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_X, "key.categories.barehanded");
+    public static final KeyMapping GRAB_KEY = new KeyMapping("key.barehanded.grab", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_G, "key.categories.barehanded");
 
-    public static final KeyMapping PULL_KEY = new KeyMapping("Pull Object Closer", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_MINUS, "Barehanded");
-    public static final KeyMapping PUSH_KEY = new KeyMapping("Push Object Further", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_EQUAL, "Barehanded");
+    public static final KeyMapping PULL_KEY = new KeyMapping("key.barehanded.pull", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_MINUS, "key.categories.barehanded");
+    public static final KeyMapping PUSH_KEY = new KeyMapping("key.barehanded.push", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_EQUAL, "key.categories.barehanded");
 
     private static final Map<KeyMapping, Boolean> wasPhysicallyDown = new HashMap<>();
 

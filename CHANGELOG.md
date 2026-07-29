@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.6.6]
+
+### Added
+- **Full Text Localization:** Un-hardcoded all mod strings to standard translatable components.
+- **Multi-language Support:** Added complete, language files for **31 locales**:
+  `en_us`, `en_gb`, `en_ca`, `en_au`, `en_nz`, `en_in`, `es_es`, `es_mx`, `es_ar`, `es_cl`, `es_co`, `es_ec`, `es_pe`, `es_uy`, `es_ve`, `pt_br`, `pt_pt`, `de_de`, `de_at`, `de_ch`, `fr_fr`, `fr_ca`, `zh_cn`, `zh_tw`, `zh_hk`, `ru_ru`, `ja_jp`, `hi_in`, `id_id`, `ko_kr`, `pl_pl`.
+
+> **Note:** Translations were AI made and may contain inaccuracies. Contributions on github are welcome.
+
 ## [1.6.5]
 
 ### Compatibility

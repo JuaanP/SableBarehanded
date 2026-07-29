@@ -63,7 +63,7 @@ public class DisassembleHandler {
         if (ragdollCompat != null && (ragdollCompat.isAnyRagdollSubLevel(source) || ragdollCompat.isAnyRagdollSubLevel(target))) {
             if (ServerConfig.INSTANCE.showDisassembleMessages) {
                 player.displayClientMessage(
-                        net.minecraft.network.chat.Component.literal("Cannot merge with ragdolls")
+                        net.minecraft.network.chat.Component.translatable("message.barehanded.disassemble.cannot_merge_ragdolls")
                                 .withStyle(net.minecraft.ChatFormatting.RED), true);
             }
             return false;
@@ -77,7 +77,7 @@ public class DisassembleHandler {
         Rotation relativeRot = getRelativeRotation(source, target);
         if (!isRelativelyAligned(source, target, ServerConfig.INSTANCE.impactRotationTolerance, ServerConfig.INSTANCE.impactPositionTolerance)) {
             if (ServerConfig.INSTANCE.showDisassembleMessages) {
-                player.displayClientMessage(net.minecraft.network.chat.Component.literal("Merge Failed: Poor alignment or invalid angle.").withStyle(net.minecraft.ChatFormatting.RED), true);
+                player.displayClientMessage(net.minecraft.network.chat.Component.translatable("message.barehanded.disassemble.merge_failed_alignment").withStyle(net.minecraft.ChatFormatting.RED), true);
             }
             return false;
         }
@@ -118,7 +118,7 @@ public class DisassembleHandler {
             BlockState targetState = plotLevel.getBlockState(tp);
             if (!targetState.isAir() && !targetState.canBeReplaced()) {
                 if (ServerConfig.INSTANCE.showDisassembleMessages) {
-                    player.displayClientMessage(net.minecraft.network.chat.Component.literal("Merge Failed: Blocks are overlapping.").withStyle(net.minecraft.ChatFormatting.RED), true);
+                    player.displayClientMessage(net.minecraft.network.chat.Component.translatable("message.barehanded.disassemble.merge_failed_overlapping").withStyle(net.minecraft.ChatFormatting.RED), true);
                 }
                 return false;
             }
@@ -140,7 +140,7 @@ public class DisassembleHandler {
 
         if (!hasSupport) {
             if (ServerConfig.INSTANCE.showDisassembleMessages) {
-                player.displayClientMessage(net.minecraft.network.chat.Component.literal("Merge Failed: No support detected.").withStyle(net.minecraft.ChatFormatting.RED), true);
+                player.displayClientMessage(net.minecraft.network.chat.Component.translatable("message.barehanded.disassemble.merge_failed_no_support").withStyle(net.minecraft.ChatFormatting.RED), true);
             }
             return false;
         }
